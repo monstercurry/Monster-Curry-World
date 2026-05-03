@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Curry Personality Test Prototype</title>
+	<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+	<main class="shell">
+		<section class="card hero" id="intro-screen">
+			<div class="hero-copy">
+				<div>
+					<span class="eyebrow">Industry collaboration concept</span>
+					<h1>Curry Personality Test</h1>
+					<p class="lede">
+						A lightweight prototype that turns a few simple decisions into a curry personality.
+						It is intentionally brand-neutral, grayscale, and focused on the flow of answering, scoring, and revealing a result.
+					</p>
+				</div>
+
+				<div class="hero-actions">
+					<button class="button-primary" id="start-button" type="button">Start the test</button>
+					<button class="button-secondary" id="skip-preview-button" type="button">Preview the workflow</button>
+				</div>
+			</div>
+
+			<div class="hero-side">
+				<div class="mini-grid">
+					<article class="info-tile">
+						<span>Flow</span>
+						<strong>Intro, 5 questions, result</strong>
+					</article>
+					<article class="info-tile">
+						<span>Visual style</span>
+						<strong>Placeholder art and monochrome UI</strong>
+					</article>
+					<article class="info-tile">
+						<span>Scoring</span>
+						<strong>Simple buckets from answer choices</strong>
+					</article>
+					<article class="info-tile">
+						<span>Output</span>
+						<strong>Curry personality with short facts</strong>
+					</article>
+				</div>
+				<p class="mini-note">
+					The prototype deliberately keeps the content generic so the workflow can be reviewed without brand lock-in or final illustration work.
+				</p>
+			</div>
+		</section>
+
+		<section class="card quiz" id="quiz-screen" aria-live="polite">
+			<div class="quiz-panel">
+				<div class="quiz-head">
+					<div>
+						<div class="quiz-kicker">Question flow</div>
+						<h2 class="quiz-title" id="quiz-title">Answer the prompts</h2>
+					</div>
+					<div class="quiz-meta">
+						<div class="progress-label" id="progress-label">Question 1 of 5</div>
+						<div class="progress-track" aria-hidden="true">
+							<div class="progress-fill" id="progress-fill"></div>
+						</div>
+					</div>
+				</div>
+
+				<form id="quiz-form">
+					<div id="question-viewport"></div>
+
+					<div class="quiz-actions">
+						<div class="left">
+							<button class="button-secondary" id="back-button" type="button">Back</button>
+							<button class="button-secondary" id="restart-button" type="button">Restart</button>
+						</div>
+						<div class="right">
+							<p class="hint" id="hint-copy">Pick the option that feels closest. Each answer nudges the final curry personality into a different bucket.</p>
+							<button class="button-primary" id="next-button" type="button">Next question</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+
+		<section class="card result hidden" id="result-screen" aria-live="polite">
+			<div class="result-panel">
+				<div class="result-head">
+					<div>
+						<div class="result-kicker">Final result</div>
+						<h2 class="result-title" id="result-name">Your curry personality</h2>
+					</div>
+					<div class="result-badge" id="result-badge">Balanced score</div>
+				</div>
+
+				<div class="result-layout">
+					<article class="result-figure">
+						<div class="drawing-stage" aria-hidden="true">
+							<div class="dish-icon">
+								<span class="steam"></span>
+								<span class="steam"></span>
+								<span class="steam"></span>
+								<div class="dish-plate"></div>
+								<div class="dish-rings"></div>
+								<div class="dish-center"></div>
+							</div>
+						</div>
+						<p class="scoreline" id="scoreline">Your answers placed you in the middle range.</p>
+					</article>
+
+					<article class="result-copy">
+						<p class="result-description" id="result-description"></p>
+						<div class="facts" id="fact-list"></div>
+						<div class="hero-actions">
+							<button class="button-primary" id="play-again-button" type="button">Try again</button>
+							<button class="button-secondary" id="edit-answers-button" type="button">Review answers</button>
+						</div>
+					</article>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="scripts.js"></script>
+</body>
+</html>
