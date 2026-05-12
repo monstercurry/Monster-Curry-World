@@ -1,111 +1,45 @@
-const quizData = [
-	{
-		prompt: "When your meal arrives, what do you notice first?",
-		choices: [
-			{ label: "Visual balance", detail: "I like a clean, even presentation.", score: 1 },
-			{ label: "Bold aroma", detail: "I want the strongest scent in the room.", score: 2 },
-			{ label: "Comfort factor", detail: "I care most about how cozy it feels.", score: 0 },
-			{ label: "Texture variety", detail: "I want every bite to feel a little different.", score: 1 }
-		]
-	},
-	{
-		prompt: "How do you usually handle spice?",
-		choices: [
-			{ label: "Keep it calm", detail: "A smoother heat works best for me.", score: 0 },
-			{ label: "Steady warmth", detail: "I like warmth that builds without surprise.", score: 1 },
-			{ label: "Turn it up", detail: "I want the flavor to be loud and direct.", score: 2 },
-			{ label: "Mix and match", detail: "Different levels make the experience fun.", score: 1 }
-		]
-	},
-	{
-		prompt: "What kind of pace feels right to you?",
-		choices: [
-			{ label: "Slow and settled", detail: "I prefer something thoughtful and measured.", score: 0 },
-			{ label: "Smooth momentum", detail: "I like a rhythm that keeps moving.", score: 1 },
-			{ label: "Fast impact", detail: "I want a result that grabs attention quickly.", score: 2 },
-			{ label: "Flexible tempo", detail: "I enjoy changing pace depending on the moment.", score: 1 }
-		]
-	},
-	{
-		prompt: "What would the ideal side note be?",
-		choices: [
-			{ label: "Classic and tidy", detail: "The smallest details keep it polished.", score: 0 },
-			{ label: "Rich and layered", detail: "I want a lot happening beneath the surface.", score: 1 },
-			{ label: "Straight to the point", detail: "A strong core idea is enough for me.", score: 2 },
-			{ label: "Lightly unexpected", detail: "A subtle twist makes it more memorable.", score: 1 }
-		]
-	},
-	{
-		prompt: "If this personality were a vibe, it would be...",
-		choices: [
-			{ label: "Quietly dependable", detail: "Balanced, soft, and always welcome.", score: 0 },
-			{ label: "Focused and layered", detail: "Clear structure with a little depth.", score: 1 },
-			{ label: "Hot-blooded and loud", detail: "Direct, intense, and impossible to ignore.", score: 2 },
-			{ label: "Curious and adaptable", detail: "Able to fit into many moods.", score: 1 }
-		]
-	}
+const questions = [
+	{ prompt: "What describes your mood right now?", options: [{ text: "Calm", score: 0 }, { text: "Curious", score: 1 }, { text: "Bold", score: 2 }, { text: "Wild", score: 3 }] },
+	{ prompt: "Pick a weekend plan.", options: [{ text: "Stay in", score: 0 }, { text: "Cafe hop", score: 1 }, { text: "Road trip", score: 2 }, { text: "Festival", score: 3 }] },
+	{ prompt: "How spicy is your ideal meal?", options: [{ text: "Mild", score: 0 }, { text: "Medium", score: 1 }, { text: "Hot", score: 2 }, { text: "Extreme", score: 3 }] },
+	{ prompt: "Your work style is...", options: [{ text: "Steady", score: 0 }, { text: "Balanced", score: 1 }, { text: "Fast", score: 2 }, { text: "All-in", score: 3 }] },
+	{ prompt: "Choose a flavor profile.", options: [{ text: "Creamy", score: 0 }, { text: "Savory", score: 1 }, { text: "Smoky", score: 2 }, { text: "Fiery", score: 3 }] },
+	{ prompt: "When solving problems, you...", options: [{ text: "Take it slow", score: 0 }, { text: "Test options", score: 1 }, { text: "Trust instinct", score: 2 }, { text: "Dive first", score: 3 }] },
+	{ prompt: "Pick your soundtrack.", options: [{ text: "Lo-fi", score: 0 }, { text: "Pop", score: 1 }, { text: "Rock", score: 2 }, { text: "EDM", score: 3 }] },
+	{ prompt: "What motivates you most?", options: [{ text: "Stability", score: 0 }, { text: "Growth", score: 1 }, { text: "Impact", score: 2 }, { text: "Excitement", score: 3 }] },
+	{ prompt: "Your social battery is usually...", options: [{ text: "Low", score: 0 }, { text: "Medium", score: 1 }, { text: "High", score: 2 }, { text: "Infinite", score: 3 }] },
+	{ prompt: "How do you make decisions?", options: [{ text: "Carefully", score: 0 }, { text: "With context", score: 1 }, { text: "Quickly", score: 2 }, { text: "Instantly", score: 3 }] },
+	{ prompt: "Choose a weather mood.", options: [{ text: "Cloudy", score: 0 }, { text: "Breezy", score: 1 }, { text: "Sunny", score: 2 }, { text: "Thunder", score: 3 }] },
+	{ prompt: "Your communication style is...", options: [{ text: "Soft", score: 0 }, { text: "Friendly", score: 1 }, { text: "Direct", score: 2 }, { text: "Intense", score: 3 }] },
+	{ prompt: "Pick a power-up.", options: [{ text: "Patience", score: 0 }, { text: "Focus", score: 1 }, { text: "Confidence", score: 2 }, { text: "Fearless", score: 3 }] },
+	{ prompt: "How do friends describe you?", options: [{ text: "Reliable", score: 0 }, { text: "Thoughtful", score: 1 }, { text: "Energetic", score: 2 }, { text: "Explosive", score: 3 }] },
+	{ prompt: "Final pick: your vibe tonight?", options: [{ text: "Cozy", score: 0 }, { text: "Chill", score: 1 }, { text: "Hyped", score: 2 }, { text: "Unstoppable", score: 3 }] }
 ];
 
-const results = [
+const personalities = [
 	{
 		min: 0,
-		max: 1,
-		name: "Gentle Broth",
-		badge: "Low score bucket",
-		description: "You read as calm, dependable, and easy to enjoy. This personality favors comfort over drama, with a steady presence that never asks for attention but still leaves an impression.",
-		facts: [
-			"Best at creating a relaxed first impression.",
-			"Prefers smooth pacing and balanced choices.",
-			"Feels most natural in quiet, cozy settings."
-		]
+		max: 14,
+		name: "Creamy Katsu",
+		description: "You are warm, reliable, and easy to love. You bring comfort to people around you and keep things steady even when life gets noisy."
 	},
 	{
-		min: 2,
-		max: 3,
-		name: "Balanced Simmer",
-		badge: "Middle-low score bucket",
-		description: "You lean toward structure with enough personality to stay interesting. This is the adaptable result: practical, layered, and comfortable moving between mellow and bold moments.",
-		facts: [
-			"Carries a clear core with subtle depth.",
-			"Works well when the experience needs balance.",
-			"Feels thoughtful without becoming intense."
-		]
+		min: 15,
+		max: 29,
+		name: "Classic Curry",
+		description: "You are balanced and adaptable. You can play it cool, but you know when to turn up the flavor and make your presence known."
 	},
 	{
-		min: 4,
-		max: 5,
-		name: "Midnight Curry",
-		badge: "Middle score bucket",
-		description: "You have a sharper edge and a stronger sense of contrast. This personality feels composed at first, then reveals more intensity once the conversation gets going.",
-		facts: [
-			"Makes a strong impression without overpowering the room.",
-			"Likes a mix of calm structure and bold accents.",
-			"Often feels the most versatile in the lineup."
-		]
+		min: 30,
+		max: 44,
+		name: "Spicy Dynamite",
+		description: "You are bold and high-energy. You move fast, think big, and make everything more exciting wherever you go."
 	},
 	{
-		min: 6,
-		max: 7,
-		name: "Spice Surge",
-		badge: "Middle-high score bucket",
-		description: "You push toward louder flavor and quicker impact. This personality is confident, energetic, and very clear about what it wants to be.",
-		facts: [
-			"Thrives on strong contrasts and direct energy.",
-			"Feels best when the result is impossible to miss.",
-			"Leans into momentum, heat, and presence."
-		]
-	},
-	{
-		min: 8,
-		max: 10,
-		name: "Volcanic Heat",
-		badge: "High score bucket",
-		description: "You read as bold, intense, and unapologetically vivid. This is the most dramatic curry personality in the prototype, built for answers that keep choosing the strongest option.",
-		facts: [
-			"Commands attention the moment it appears.",
-			"Prefers maximum flavor and confidence.",
-			"Feels most at home in a high-energy setting."
-		]
+		min: 45,
+		max: 60,
+		name: "Monster Volcano",
+		description: "You are intense, fearless, and unforgettable. You do not hold back, and people always remember the heat you bring."
 	}
 ];
 
@@ -113,181 +47,100 @@ const introScreen = document.getElementById("intro-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
 const startButton = document.getElementById("start-button");
-const previewButton = document.getElementById("skip-preview-button");
 const backButton = document.getElementById("back-button");
-const restartButton = document.getElementById("restart-button");
-const nextButton = document.getElementById("next-button");
-const playAgainButton = document.getElementById("play-again-button");
-const editAnswersButton = document.getElementById("edit-answers-button");
-const quizTitle = document.getElementById("quiz-title");
-const progressLabel = document.getElementById("progress-label");
+const homeButton = document.getElementById("home-button");
 const progressFill = document.getElementById("progress-fill");
-const questionViewport = document.getElementById("question-viewport");
+const progressLabel = document.getElementById("progress-label");
+const questionPrompt = document.getElementById("question-prompt");
+const optionList = document.getElementById("option-list");
 const resultName = document.getElementById("result-name");
-const resultBadge = document.getElementById("result-badge");
 const resultDescription = document.getElementById("result-description");
-const factList = document.getElementById("fact-list");
-const scoreline = document.getElementById("scoreline");
-const quizForm = document.getElementById("quiz-form");
-const hintCopy = document.getElementById("hint-copy");
 
 let currentQuestion = 0;
 let totalScore = 0;
-const selections = Array(quizData.length).fill(null);
+const answers = Array(questions.length).fill(null);
 
-function getResult(score) {
-	return results.find((entry) => score >= entry.min && score <= entry.max) || results[results.length - 1];
-}
-
-function showScreen(screen) {
-	introScreen.classList.toggle("hidden", screen !== "intro");
-	quizScreen.classList.toggle("active", screen === "quiz");
-	quizScreen.classList.toggle("hidden", screen !== "quiz");
-	resultScreen.classList.toggle("active", screen === "result");
-	resultScreen.classList.toggle("hidden", screen !== "result");
-}
-
-function renderQuestion() {
-	const question = quizData[currentQuestion];
-	quizTitle.textContent = "Answer the prompts";
-	progressLabel.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
-	progressFill.style.width = `${(currentQuestion / quizData.length) * 100}%`;
-	nextButton.textContent = currentQuestion === quizData.length - 1 ? "See result" : "Next question";
-	backButton.disabled = currentQuestion === 0;
-	backButton.style.opacity = currentQuestion === 0 ? 0.45 : 1;
-	backButton.style.cursor = currentQuestion === 0 ? "not-allowed" : "pointer";
-	hintCopy.textContent = "Pick the option that feels closest. Each answer nudges the final curry personality into a different bucket.";
-
-	questionViewport.innerHTML = `
-		<article class="question active" data-question-index="${currentQuestion}">
-			<p class="question-kicker quiz-kicker">Prompt ${currentQuestion + 1}</p>
-			<h3 class="question-text">${question.prompt}</h3>
-			<div class="choice-grid" role="group" aria-label="${question.prompt}">
-				${question.choices
-					.map(
-						(choice, index) => `
-							<button
-								type="button"
-								class="choice"
-								data-question="${currentQuestion}"
-								data-choice-index="${index}"
-								data-score="${choice.score}"
-								aria-pressed="${selections[currentQuestion] === index ? "true" : "false"}"
-							>
-								<small>Option ${String.fromCharCode(65 + index)}</small>
-								<span>${choice.label}</span>
-								<span class="hint">${choice.detail}</span>
-							</button>
-						`
-					)
-					.join("")}
-			</div>
-		</article>
-	`;
-
-	questionViewport.querySelectorAll(".choice").forEach((choiceButton) => {
-		choiceButton.addEventListener("click", () => {
-			const choiceIndex = Number(choiceButton.dataset.choiceIndex);
-			const score = Number(choiceButton.dataset.score);
-			const previousSelection = selections[currentQuestion];
-
-			selections[currentQuestion] = choiceIndex;
-			if (previousSelection !== null) {
-				const previousScore = quizData[currentQuestion].choices[previousSelection].score;
-				totalScore -= previousScore;
-			}
-			totalScore += score;
-
-			questionViewport.querySelectorAll(".choice").forEach((button) => {
-				button.setAttribute("aria-pressed", button === choiceButton ? "true" : "false");
-			});
-		});
-	});
-}
-
-function goToQuiz(startAtCurrent = 0) {
-	currentQuestion = startAtCurrent;
-	progressFill.style.width = `${(currentQuestion / quizData.length) * 100}%`;
-	showScreen("quiz");
-	renderQuestion();
-}
-
-function validateSelection() {
-	return selections[currentQuestion] !== null;
+function showScreen(name) {
+	introScreen.classList.toggle("hidden", name !== "intro");
+	quizScreen.classList.toggle("hidden", name !== "quiz");
+	resultScreen.classList.toggle("hidden", name !== "result");
 }
 
 function resetQuiz() {
 	currentQuestion = 0;
 	totalScore = 0;
-	selections.fill(null);
-	progressFill.style.width = "0%";
-	factList.innerHTML = "";
-	scoreline.textContent = "";
+	answers.fill(null);
+	progressFill.style.width = `${(1 / questions.length) * 100}%`;
+	progressLabel.textContent = `1/${questions.length}`;
+}
+
+function renderQuestion() {
+	const question = questions[currentQuestion];
+	const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+
+	progressFill.style.width = `${progressPercent}%`;
+	progressLabel.textContent = `${currentQuestion + 1}/${questions.length}`;
+	questionPrompt.textContent = question.prompt;
+	optionList.innerHTML = "";
+
+	question.options.forEach((option, optionIndex) => {
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "option-button";
+		button.textContent = option.text;
+		button.dataset.optionIndex = String(optionIndex);
+
+		button.addEventListener("click", () => {
+			const previousSelection = answers[currentQuestion];
+			if (previousSelection !== null) {
+				totalScore -= question.options[previousSelection].score;
+			}
+
+			answers[currentQuestion] = optionIndex;
+			totalScore += option.score;
+
+			if (currentQuestion < questions.length - 1) {
+				currentQuestion += 1;
+				renderQuestion();
+			} else {
+				renderResult();
+			}
+		});
+
+		optionList.appendChild(button);
+	});
+}
+
+function getPersonality(score) {
+	return personalities.find((entry) => score >= entry.min && score <= entry.max) || personalities[0];
 }
 
 function renderResult() {
-	const outcome = getResult(totalScore);
-	resultName.textContent = outcome.name;
-	resultBadge.textContent = outcome.badge;
-	resultDescription.textContent = outcome.description;
-	scoreline.textContent = `You scored ${totalScore} out of ${quizData.length * 2}.`;
-	factList.innerHTML = outcome.facts.map((fact) => `<div class="fact">${fact}</div>`).join("");
+	const personality = getPersonality(totalScore);
+	resultName.textContent = personality.name;
+	resultDescription.textContent = personality.description;
 	showScreen("result");
-	progressFill.style.width = "100%";
-}
-
-function moveNext() {
-	if (!validateSelection()) {
-		hintCopy.textContent = "Choose one answer before moving on.";
-		return;
-	}
-
-	if (currentQuestion < quizData.length - 1) {
-		currentQuestion += 1;
-		renderQuestion();
-	} else {
-		renderResult();
-	}
-}
-
-function moveBack() {
-	if (currentQuestion === 0) {
-		return;
-	}
-	currentQuestion -= 1;
-	renderQuestion();
-}
-
-function startOver() {
-	resetQuiz();
-	showScreen("intro");
 }
 
 startButton.addEventListener("click", () => {
 	resetQuiz();
-	goToQuiz(0);
-});
-
-previewButton.addEventListener("click", () => {
-	resetQuiz();
-	goToQuiz(0);
-});
-
-nextButton.addEventListener("click", moveNext);
-backButton.addEventListener("click", moveBack);
-restartButton.addEventListener("click", startOver);
-playAgainButton.addEventListener("click", () => {
-	resetQuiz();
-	goToQuiz(0);
-});
-editAnswersButton.addEventListener("click", () => {
 	showScreen("quiz");
 	renderQuestion();
 });
 
-quizForm.addEventListener("submit", (event) => {
-	event.preventDefault();
-	moveNext();
+backButton.addEventListener("click", () => {
+	if (currentQuestion === 0) {
+		showScreen("intro");
+		return;
+	}
+
+	currentQuestion -= 1;
+	renderQuestion();
+});
+
+homeButton.addEventListener("click", () => {
+	resetQuiz();
+	showScreen("intro");
 });
 
 showScreen("intro");
