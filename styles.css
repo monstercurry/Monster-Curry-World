@@ -96,17 +96,32 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: flex-start;
 	text-align: center;
 	width: min(100%, 760px);
 	min-height: min(760px, calc(100vh - 180px));
 }
 
-.intro-copy,
-.intro-visual {
+/* center content for intro frame specifically */
+.intro-frame {
+	justify-content: center;
+}
+
+.intro-copy {
 	width: 100%;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	gap: clamp(12px, 2vw, 20px);
+	padding-top: 0;
+	padding-bottom: 0;
+	text-align: center;
 }
 
 .intro-visual {
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -136,20 +151,30 @@ body {
 
 .frame-title-row {
 	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: 12px;
+	position: relative;
+	text-align: center;
+	margin-bottom: clamp(10px, 2vw, 18px);
+}
+
+.frame-title-row .frame-progress {
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 h1 {
 	margin: 0;
-	text-align: left;
+	text-align: center;
 	font-family: "Baloo 2", "Nunito", sans-serif;
-	font-size: var(--type-4);
-	line-height: 1.08;
+	font-size: clamp(2.25rem, 7vw, 4rem);
+	line-height: 1.02;
 	font-weight: 700;
 	color: var(--white);
+}
+
+/* hide any frame-progress inside the intro frame (defensive) */
+.intro-frame .frame-progress {
+	display: none;
 }
 
 .frame-progress {
@@ -181,21 +206,28 @@ h1 {
 	color: #000000;
 }
 
+/* make the intro hero slightly smaller than the main H1 */
+.intro-frame .hero-line {
+	font-size: clamp(1.2rem, 4.2vw, 2rem);
+	color: #000000;
+	margin-top: 8px;
+}
+
 .body-copy,
 .question-prompt {
-	margin: 14px 0 0;
-	max-width: 34ch;
+	margin: 8px 0 0;
+	max-width: 40ch;
 	font-size: var(--type-2);
-	line-height: 1.45;
-	text-align: left;
+	line-height: 1.6;
+	text-align: center;
 	font-weight: 400;
 }
 
 .action-button {
-	margin-top: auto;
+	margin-top: 12px;
 	border: 0;
 	border-radius: 6px;
-	padding: 5px 14px;
+	padding: 6px 16px;
 	font-size: var(--type-3);
 	line-height: 1;
 	background: #ffffff;
@@ -389,19 +421,20 @@ h1 {
 	}
 
 	.intro-frame {
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-		gap: clamp(24px, 3vw, 40px);
-		align-items: center;
-		text-align: left;
-	}
-
-	.intro-copy {
-		align-self: stretch;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		padding-right: clamp(12px, 2vw, 28px);
+		align-items: center;
+		text-align: center;
+	}
+
+	.intro-copy {
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding-right: 0;
+		max-width: 600px;
 	}
 
 	.intro-visual {
