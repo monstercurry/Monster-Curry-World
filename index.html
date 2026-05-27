@@ -25,36 +25,43 @@
 
 		<section class="stage" aria-live="polite">
 			<article class="frame intro-frame" id="intro-screen">
-				<div class="intro-copy">
-					<div class="frame-title-row">
-						<h1>Curry<br />Personality Test</h1>
+				<div class="frame-body">
+					<div class="intro-copy">
+						<div class="frame-title-row">
+							<h1>Curry<br />Personality Test</h1>
+						</div>
+						<h2 class="hero-line">Want to know more about your personality?</h2>
+						<p class="body-copy">
+							some body text idk all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy
+						</p>
 					</div>
-					<h2 class="hero-line">Want to know more about your personality?</h2>
-					<p class="body-copy">
-						some body text idk all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy
-					</p>
-					<button class="action-button" id="start-button" type="button">Start</button>
 				</div>
+				<button class="action-button" id="start-button" type="button">Start</button>
 			</article>
 
 			<article class="frame quiz-frame hidden" id="quiz-screen">
-				<div class="progress-row">
-					<div class="progress-track" aria-hidden="true">
-						<div class="progress-fill" id="progress-fill"></div>
+				<div class="frame-body">
+					<div class="progress-row">
+						<div class="progress-track" aria-hidden="true">
+							<div class="progress-fill" id="progress-fill"></div>
+						</div>
+						<span class="frame-progress" id="progress-label">1/15</span>
 					</div>
-					<span class="frame-progress" id="progress-label">1/15</span>
+					<div class="illustration">Cute Illustration</div>
+					<h2 class="question-heading">Questions</h2>
+					<p class="question-prompt" id="question-prompt"></p>
+					<div class="option-list" id="option-list"></div>
 				</div>
-				<div class="illustration">Cute Illustration</div>
-				<h2 class="question-heading">Questions</h2>
-				<p class="question-prompt" id="question-prompt"></p>
-				<div class="option-list" id="option-list"></div>
 				<button class="action-button" id="back-button" type="button">Back</button>
 			</article>
 
 			<article class="frame result-frame hidden" id="result-screen">
-				<div class="illustration">Cute Illustration</div>
-				<h2 class="result-name" id="result-name">Personality name</h2>
-				<p class="body-copy" id="result-description"></p>
+				<div class="frame-body">
+					<div class="result-illustration" id="result-illustration">Cute Illustration</div>
+					<h2 class="result-name" id="result-name">Personality name</h2>
+					<p class="result-background" id="result-background"></p>
+					<p class="result-description" id="result-description"></p>
+				</div>
 				<button class="action-button" id="home-button" type="button">Home</button>
 			</article>
 		</section>
