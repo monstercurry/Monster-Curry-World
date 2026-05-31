@@ -166,3 +166,60 @@ homeButton.addEventListener("click", () => {
 });
 
 showScreen("intro");
+
+let selectedRating = 0;
+
+const stars = document.querySelectorAll(".star");
+const submitBtn = document.getElementById("submit-feedback");
+const feedbackMessage = document.getElementById("feedback-message");
+
+stars.forEach(star => {
+    star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.rating);
+
+        stars.forEach(s => {
+            s.classList.toggle(
+                "active",
+                parseInt(s.dataset.rating) <= selectedRating
+            );
+        });
+    });
+});
+
+submitBtn.addEventListener("click", () => {
+    const comment = document
+        .getElementById("feedback-comment")
+        .value
+        .trim();
+
+    if (selectedRating === 0) {
+        feedbackMessage.textContent =
+            "Please select a star rating.";
+        return;
+    }
+
+    const feedback = {
+        rating: selectedRating,
+        comment,
+        date: new Date().toISOString()
+    };
+
+    // Save locally
+    const existing =
+        JSON.parse(localStorage.getItem("quizFeedback")) || [];
+
+    existing.push(feedback);
+
+    localStorage.setItem(
+        "quizFeedback",
+        JSON.stringify(existing)
+    );
+
+    feedbackMessage.textContent =
+        "Thank you for your feedback!";
+
+    document.getElementById("feedback-comment").value = "";
+
+    stars.forEach(s => s.classList.remove("active"));
+    selectedRating = 0;
+});
