@@ -2,7 +2,7 @@
   --app-bg: #1a1d23;
   --surface: #ececec;
   --header-red: #f51722; /* slightly richer red */
-  --quiz-pink: #f38b8f; /* warmer pink to match screenshot */
+  --quiz-pink: #FFE2CF; /* warmer pink to match screenshot */
   --white: #ffffff;
   --text: #111111;
   --muted: rgba(0,0,0,0.36);
@@ -176,6 +176,9 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
     padding:16px 16px 28px;
     display:flex;
     justify-content:center;
+    /* make stage take remaining viewport and center its child vertically */
+    min-height: calc(100vh - 64px); /* account for fixed topbar height */
+    align-items: center;
   }
 
   .frame{
@@ -183,7 +186,7 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
     max-width:840px;
     min-height:720px;
     max-height:none;
-    margin:36px auto 0;
+    margin:0 auto; /* remove top offset so parent (.stage) can vertically center */
     padding:26px 28px 36px;
     gap:16px;
     border-radius:28px;
@@ -229,6 +232,22 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
     align-items:center;
     overflow:visible;
     padding-right:0;
+  }
+
+  /* Center the intro red card vertically in the viewport on large screens */
+  .intro-frame .frame-body{
+    /* let the parent .stage control vertical centering; keep inner body flexible */
+    min-height: auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* On very wide screens prefer a 100px offset to keep the card fully centered */
+  @media (min-width:1400px){
+    .intro-frame .frame-body{
+      min-height: calc(100vh - 100px);
+    }
   }
   .frame-body .option-list{ width:88%; gap:12px; padding:0; }
   .frame-body .option-list .option-button{ width:100%; padding:14px 22px; font-size:1.08rem; }
@@ -290,6 +309,93 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
 .monster-red-gradient { background: linear-gradient(135deg, #bc0100 0%, #eb0000 100%); }
 .glass-effect { backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.04); }
 .pulse-glow:hover { box-shadow: 0 0 25px rgba(188,1,0,0.35); }
+
+/* Floating animation for background monsters and hero image */
+@keyframes floaty {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+.fixed-bg-monsters img.monster-watermark{ animation: floaty 10s ease-in-out infinite; }
+.fixed-bg-monsters img.monster-watermark:nth-child(1){ animation-delay: 0s; }
+.fixed-bg-monsters img.monster-watermark:nth-child(2){ animation-delay: -2s; }
+.fixed-bg-monsters img.monster-watermark:nth-child(3){ animation-delay: -4s; }
+.fixed-bg-monsters img.monster-watermark:nth-child(4){ animation-delay: -1s; }
+.fixed-bg-monsters img.monster-watermark:nth-child(5){ animation-delay: -3s; }
+
+/* subtle floating for hero image */
+.container .relative img{ animation: floaty 8s ease-in-out infinite; transition: transform .32s ease; }
+.container .relative img:hover{ transform: translateY(-6px) rotate(1deg) scale(1.01); }
+
+/* Header: make background slightly more opaque and brand red */
+header.fixed.top-0{ background: rgba(255,255,255,0.95) !important; color: var(--primary); border-bottom: 1px solid rgba(0,0,0,0.04); }
+header.fixed.top-0 .material-symbols-outlined{ color: rgba(0,0,0,0.6); }
+
+/* Hero typography and spacing tweaks */
+.monster-red-gradient h1{ font-size:2.6rem; line-height:1; }
+@media (min-width:900px){ .monster-red-gradient h1{ font-size:3.2rem; } }
+
+/* Card radius & shadow stronger */
+.monster-red-gradient{ border-radius:28px; box-shadow: 0 30px 80px rgba(188,1,0,0.18); max-width:720px; }
+
+/* Make hero image visible on medium screens */
+@media (min-width:768px){ .w-full.lg\:w-5\/12.hidden.lg\:block{ display:block !important; } }
+
+/* Slightly reduce monster contrast so the watermark feels subtle */
+.fixed-bg-monsters img.monster-watermark{ opacity:0.48; filter:grayscale(1) contrast(0.9); }
+
+/* Center the hero inner flex row and constrain the quiz card width to make the red card centered */
+.frame-body .container > .flex{ justify-content: center; }
+.monster-red-gradient{ max-width:720px; width:100%; margin:0 auto; }
+
+/* Make CTA more prominent */
+#start-button{
+  background:#ffffff; /* bright white */
+  color: var(--header-red); /* ensure visible red text on white button */
+  font-weight:800;
+  padding:18px 26px;
+  border-radius:12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-size:1.05rem;
+  line-height:1;
+  text-align:center;
+}
+
+/* Force single-column layout for quiz answer bubbles inside the revamped quiz screen */
+.quiz-frame #option-list{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.quiz-frame #option-list .option-button,
+.quiz-frame #option-list .quiz-option-card{
+  width:100%;
+}
+
+/* Question answer box color (user requested FFAA78) */
+/* question box color moved to .question-box (set in HTML) */
+.quiz-frame .question-box{
+  background: #FFAA78; /* warm orange question card */
+  color: #1a1200;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.quiz-frame .question-box .question-heading,
+.quiz-frame .question-box .question-prompt{
+  color: #1a1200;
+}
+#start-button:hover{ transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.14); }
+
+/* Header icons: consistent size and even spacing */
+header .max-w-\[1200px\] .flex.items-center > button{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background: transparent;
+}
+header .max-w-\[1200px\] .flex.items-center{ gap:14px; }
 
 /* Top app bar */
 .app-topbar{ position:fixed; top:0; left:0; right:0; z-index:40; background:var(--surface); backdrop-filter:blur(6px); border-bottom:1px solid rgba(0,0,0,0.04); }
