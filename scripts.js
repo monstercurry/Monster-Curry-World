@@ -70,6 +70,17 @@ function showScreen(name) {
 	introScreen.classList.toggle("hidden", name !== "intro");
 	quizScreen.classList.toggle("hidden", name !== "quiz");
 	resultScreen.classList.toggle("hidden", name !== "result");
+
+	// update document title to follow naming convention
+	if (name === "intro") {
+		document.title = "Curry Personality Test - Home (Fun Background)";
+	} else if (name === "quiz") {
+		document.title = "Curry Personality Test - Quiz (Fun Background)";
+	} else if (name === "result") {
+		// result title is set in renderResult with personality name
+		// fallback if no personality yet
+		document.title = "Curry Personality Test - Result (Fun Background)";
+	}
 }
 
 function resetQuiz() {
@@ -127,6 +138,9 @@ function renderResult() {
 	resultIllustration.textContent = `${personality.name}`;
 	resultBackground.textContent = personality.background;
 	resultDescription.textContent = personality.description;
+
+	// set descriptive document title including personality name
+	document.title = `Curry Personality Test - Result: ${personality.name} (Fun Background)`;
 	showScreen("result");
 }
 

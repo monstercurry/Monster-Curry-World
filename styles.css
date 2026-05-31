@@ -19,7 +19,7 @@
 html,body{ height:100%; }
 body{
   margin:0;
-  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: 'Work Sans', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   background: var(--app-bg);
   color: var(--text);
   display:flex;
@@ -29,10 +29,12 @@ body{
 
 .phone-shell{
   width:100%;
-  max-width:420px;
+  max-width:1200px;
+  margin:0 auto;
   background: var(--surface);
   border-radius: 6px;
   overflow: hidden;
+  padding-top:64px; /* space for fixed topbar */
 }
 
 .topbar{
@@ -93,8 +95,21 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
 .question-prompt{ margin-bottom:14px; }
 
 .option-list{ width:100%; display:flex; flex-direction:column; gap:12px; padding:0 12px; }
-.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:12px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); }
+.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:18px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); text-align:center }
 .option-button:hover{ background: rgba(255,255,255,0.12); }
+
+/* quiz card */
+.quiz-card{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.06); }
+.label-pill{ color:var(--white); }
+
+/* result card tweaks */
+.result-card{ border:1px solid rgba(0,0,0,0.06); box-shadow: 0 18px 40px rgba(0,0,0,0.12); }
+
+/* make option buttons look like cards on larger screens */
+@media (min-width:900px){
+  .option-list{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .option-button{ padding:18px 22px; font-size:1.03rem; }
+}
 
 .result-name{ font-size:var(--type-4); font-weight:700; margin-top:12px; }
 .result-illustration{
@@ -120,6 +135,9 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
 }
 .result-background{ font-size:1rem; font-weight:600; }
 .result-description{ font-size:0.98rem; }
+
+/* space between the short "background" line and the longer story/description */
+.result-background{ margin-bottom:12px; }
 
 /* Center Start, Back and other frame action buttons */
 .frame .action-button{ align-self:center; margin:16px auto 0; }
@@ -265,3 +283,24 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
 .frame::-webkit-scrollbar{ width:10px; }
 .frame::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.08); border-radius:6px; }
 .frame::-webkit-scrollbar-track{ background: transparent; }
+
+/* Redesigned utilities and fun background styles */
+.fixed-bg-monsters{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.fixed-bg-monsters img.monster-watermark{ position:absolute; z-index:0; opacity:0.6; pointer-events:none; filter:grayscale(1); user-select:none; }
+.monster-red-gradient { background: linear-gradient(135deg, #bc0100 0%, #eb0000 100%); }
+.glass-effect { backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.04); }
+.pulse-glow:hover { box-shadow: 0 0 25px rgba(188,1,0,0.35); }
+
+/* Top app bar */
+.app-topbar{ position:fixed; top:0; left:0; right:0; z-index:40; background:var(--surface); backdrop-filter:blur(6px); border-bottom:1px solid rgba(0,0,0,0.04); }
+.app-topbar-inner{ max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; }
+.app-brand{ font-weight:800; font-size:1.05rem; color:var(--primary); }
+.app-actions{ display:flex; gap:8px; }
+.icon-btn{ background:transparent; border:0; color:var(--white); padding:8px; border-radius:8px; cursor:pointer; }
+
+/* Footer */
+.site-footer{ margin-top:18px; padding:18px 12px; background:rgba(255,255,255,0.03); border-top:1px solid rgba(0,0,0,0.04); z-index:30; }
+.site-footer-inner{ max-width:840px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.footer-links{ display:flex; gap:12px; }
+.footer-links a{ color:rgba(0,0,0,0.6); text-decoration:none; font-weight:600; }
+.site-copy{ color:rgba(0,0,0,0.6); font-size:0.9rem; }

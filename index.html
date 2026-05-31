@@ -3,68 +3,144 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Curry Personality Test Prototype</title>
+	<title>Curry Personality Test - Home (Fun Background)</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet" />
+	<!-- Material Symbols -->
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+	<!-- Tailwind CDN (used by the design) -->
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<script id="tailwind-config">
+		tailwind.config = {
+			darkMode: "class",
+			theme: {
+				extend: {
+					spacing: {
+						"gutter": "24px",
+						"stack-lg": "48px",
+						"stack-md": "32px"
+					}
+				}
+			}
+		}
+	</script>
 	<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-	<main class="phone-shell">
-		<header class="topbar">
-			<div class="brand-block">
-				<div class="brand-kicker">MONSTER</div>
-				<div class="brand-name">CURRY</div>
+	<!-- Floating background monsters (fun background) -->
+	<div aria-hidden="true" class="fixed-bg-monsters">
+		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8" alt="" />
+		<img class="monster-watermark" style="bottom:6%; left:30%; width:20rem; transform:rotate(-4deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNvCaRRymWechv1QkLVydPjEGVZP3rrvdx3_t9WFyh8ha2WnzjlxIDvPA8vQ6wTfmMq3oUN4qfx09v42ZCaETempc9dSlNMspuyxLItL7Hy7tppcZC3UuOQBmXlM7lUqBPUtxcUK2I5h72Ute6ym7-X6RWOozoyAOPl-gIQ486AjW-dBI7AIpwUzdp9zQDWtYLUc8K86Q3D1qXiEBEG0j67UKCvFuSsffVzekjNEIKR0KpAYnu_cxt5paySj0OIjbA5Nz988dVpE8" alt="" />
+		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM" alt="" />
+	</div>
+		<!-- TopAppBar Component (from HomePage) -->
+		<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
+			<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center">
+				<div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
+					Monster Curry
+				</div>
+				<div class="flex items-center gap-base">
+					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform">
+						<span class="material-symbols-outlined" data-icon="share">share</span>
+					</button>
+					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform">
+						<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+					</button>
+				</div>
 			</div>
-			<nav class="socials" aria-label="Social links">
-				<button type="button" class="social-icon" aria-label="TikTok">t</button>
-				<button type="button" class="social-icon" aria-label="Instagram">ig</button>
-				<button type="button" class="social-icon" aria-label="Facebook">f</button>
-			</nav>
 		</header>
 
+	<main class="phone-shell">
 		<section class="stage" aria-live="polite">
+			<!-- Atmospheric Background Decoration -->
+			<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]"></div>
+			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]"></div>
+			<!-- Intro / Hero (keeps id intro-screen) -->
 			<article class="frame intro-frame" id="intro-screen">
 				<div class="frame-body">
-					<div class="intro-copy">
-						<div class="frame-title-row">
-							<h1>Curry<br />Personality Test</h1>
+					<div class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+						<div class="flex flex-col lg:flex-row gap-stack-lg items-center">
+							<!-- Left Column: Visual Impact -->
+							<div class="w-full lg:w-5/12 hidden lg:block">
+								<div class="relative group">
+									<div class="absolute -inset-4 bg-primary/20 rounded-[48px] blur-2xl group-hover:bg-primary/30 transition-all duration-500"></div>
+									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec" alt="Curry plate">
+								</div>
+							</div>
+							<!-- Right Column: The Quiz Card -->
+							<div class="w-full lg:w-7/12">
+								<div class="monster-red-gradient rounded-[40px] p-stack-md md:p-stack-lg flex flex-col items-center text-center text-on-primary shadow-[0px_20px_60px_rgba(188,1,0,0.3)] transition-transform hover:scale-[1.01] duration-500 relative z-20">
+									<div class="mb-stack-md">
+										<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-base">Flavor Quest</span>
+										<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-on-primary mt-base leading-tight">Curry <br>Personality Test</h1>
+									</div>
+									<p class="font-body-md text-body-md text-white/90 max-w-md mb-stack-sm">Want to know more about your personality?</p>
+									<p class="font-body-sm text-body-sm text-white/70 max-w-sm mb-stack-lg leading-relaxed">Uncover the "monster" flavor profile that rules your tastebuds. Whether you're a fiery Spiced King or a smooth Savory Giant, your plate tells a story.</p>
+									<div class="w-full flex flex-col gap-base mt-stack-md">
+										<button id="start-button" class="w-full md:w-auto md:min-w-[200px] mx-auto bg-on-primary text-primary px-stack-lg py-4 rounded-xl font-label-bold text-label-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 pulse-glow">Start Quiz</button>
+										<div class="mt-stack-md flex justify-center gap-stack-sm items-center opacity-80">
+											<div class="flex -space-x-2">
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">MC</div>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">MM</div>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">CS</div>
+											</div>
+											<span class="font-body-sm text-body-sm text-white/80">Join 12,000+ Curry Monsters</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-						<h2 class="hero-line">Want to know more about your personality?</h2>
-						<p class="body-copy">
-							some body text idk all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy all work no play make kaixuan a dull boy
-						</p>
 					</div>
 				</div>
-				<button class="action-button" id="start-button" type="button">Start</button>
 			</article>
 
+			<!-- Quiz screen (keeps id quiz-screen) -->
 			<article class="frame quiz-frame hidden" id="quiz-screen">
 				<div class="frame-body">
-					<div class="progress-row">
-						<div class="progress-track" aria-hidden="true">
-							<div class="progress-fill" id="progress-fill"></div>
+					<div class="quiz-card glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto">
+						<div class="progress-row" style="margin-bottom:18px">
+							<div class="progress-track" aria-hidden="true" style="height:10px;background:rgba(255,255,255,0.3)">
+								<div class="progress-fill" id="progress-fill"></div>
+							</div>
+							<span class="frame-progress" id="progress-label">1/15</span>
 						</div>
-						<span class="frame-progress" id="progress-label">1/15</span>
+
+						<div class="illustration" style="width:160px;height:160px;margin:0 auto 14px;background:rgba(255,255,255,0.95)"></div>
+						<h2 class="question-heading">Questions</h2>
+						<p class="question-prompt" id="question-prompt"></p>
+
+						<div class="option-list" id="option-list"></div>
 					</div>
-					<div class="illustration">Cute Illustration</div>
-					<h2 class="question-heading">Questions</h2>
-					<p class="question-prompt" id="question-prompt"></p>
-					<div class="option-list" id="option-list"></div>
 				</div>
 				<button class="action-button" id="back-button" type="button">Back</button>
 			</article>
 
+			<!-- Result screen (keeps id result-screen) -->
 			<article class="frame result-frame hidden" id="result-screen">
 				<div class="frame-body">
-					<div class="result-illustration" id="result-illustration">Cute Illustration</div>
-					<h2 class="result-name" id="result-name">Personality name</h2>
-					<p class="result-background" id="result-background"></p>
-					<p class="result-description" id="result-description"></p>
+					<div class="result-card glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">
+						<div class="result-illustration" id="result-illustration">Cute Illustration</div>
+						<h2 class="result-name" id="result-name">Personality name</h2>
+						<p class="result-background" id="result-background"></p>
+						<p class="result-description" id="result-description"></p>
+					</div>
 				</div>
 				<button class="action-button" id="home-button" type="button">Home</button>
 			</article>
 		</section>
+		<!-- footer moved inside phone-shell for consistent width -->
+		<footer class="site-footer">
+			<div class="site-footer-inner">
+				<div class="site-brand">Monster Curry</div>
+				<div class="footer-links">
+					<a href="#">Privacy Policy</a>
+					<a href="#">Terms of Service</a>
+					<a href="#">Locations</a>
+				</div>
+				<div class="site-copy">© 2024 Monster Curry. Unleash the Flavor.</div>
+			</div>
+		</footer>
 	</main>
 
 	<script src="scripts.js"></script>
