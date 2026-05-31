@@ -1,3 +1,26 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+	getFirestore,
+	collection,
+	addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+console.log("SCRIPT LOADED");
+
+/* ---------------- FIREBASE ---------------- */
+const firebaseConfig = {
+	apiKey: "AIzaSyC1lCGw5eI3oFxw9_FKxBp86k1cMPGWbic",
+	authDomain: "monstercurryfeedback.firebaseapp.com",
+	projectId: "monstercurryfeedback",
+	storageBucket: "monstercurryfeedback.appspot.com",
+	messagingSenderId: "881609695456",
+	appId: "1:881609695456:web:b84a60ed669112d937b085"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* ---------------- QUIZ DATA ---------------- */
 const questions = [
 	{ prompt: "What describes your mood right now?", options: [{ text: "Calm", score: 0 }, { text: "Curious", score: 1 }, { text: "Bold", score: 2 }, { text: "Wild", score: 3 }] },
 	{ prompt: "Pick a weekend plan.", options: [{ text: "Stay in", score: 0 }, { text: "Cafe hop", score: 1 }, { text: "Road trip", score: 2 }, { text: "Festival", score: 3 }] },
@@ -17,156 +40,120 @@ const questions = [
 ];
 
 const personalities = [
-	{
-		min: 0,
-		max: 14,
-		name: "Creamy Katsu",
-		background: "Creamy Katsu is the cozy comfort bowl of the curry world, known for its soft flavor and calm presence.",
-		description: "You are warm, reliable, and easy to love. You bring comfort to people around you and keep things steady even when life gets noisy. People likely feel safe opening up to you because you do not rush or judge. You prefer consistency, kindness, and a pace that lets everyone breathe. Even when things get busy, you help keep the mood gentle and grounded."
-	},
-	{
-		min: 15,
-		max: 29,
-		name: "Classic Curry",
-		background: "Classic Curry is a balanced favorite with a smooth flavor that feels familiar, flexible, and dependable.",
-		description: "You are balanced and adaptable. You can play it cool, but you know when to turn up the flavor and make your presence known. You probably adjust well to different people and situations without losing yourself. There is a steady, thoughtful side to you that makes others trust your judgment. When needed, you can become more expressive and take the lead without feeling forced. You bring harmony while still keeping things interesting."
-	},
-	{
-		min: 30,
-		max: 44,
-		name: "Spicy Dynamite",
-		background: "Spicy Dynamite is the bold curry with a lively kick, made to stand out and wake up every bite.",
-		description: "You are bold and high-energy. You move fast, think big, and make everything more exciting wherever you go. People notice your presence quickly because you bring momentum into the room. You likely enjoy action, change, and a little bit of challenge. Your confidence helps others feel more alive around you. At the same time, your energy can inspire people to be braver and speak up more."
-	},
-	{
-		min: 45,
-		max: 60,
-		name: "Monster Volcano",
-		background: "Monster Volcano is the hottest curry in the lineup, intense and unforgettable with a powerful kick.",
-		description: "You are intense, fearless, and unforgettable. You do not hold back, and people always remember the heat you bring. You probably have a strong sense of direction and know what you want. Your presence can feel powerful, motivating, and impossible to ignore. You may push yourself harder than most people do. When you show up, you change the energy of the whole space."
-	}
+	{ min: 0, max: 14, name: "Creamy Katsu", background: "Soft and calm.", description: "You are warm and steady." },
+	{ min: 15, max: 29, name: "Classic Curry", background: "Balanced flavor.", description: "You are adaptable and reliable." },
+	{ min: 30, max: 44, name: "Spicy Dynamite", background: "Bold and exciting.", description: "You bring energy everywhere." },
+	{ min: 45, max: 999, name: "Monster Volcano", background: "Intense heat.", description: "You are powerful and unforgettable." }
 ];
 
+/* ---------------- UI ---------------- */
 const introScreen = document.getElementById("intro-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
+
 const startButton = document.getElementById("start-button");
 const backButton = document.getElementById("back-button");
 const homeButton = document.getElementById("home-button");
+
 const progressFill = document.getElementById("progress-fill");
 const progressLabel = document.getElementById("progress-label");
 const questionPrompt = document.getElementById("question-prompt");
 const optionList = document.getElementById("option-list");
+
 const resultName = document.getElementById("result-name");
-const resultIllustration = document.getElementById("result-illustration");
 const resultBackground = document.getElementById("result-background");
 const resultDescription = document.getElementById("result-description");
 
+/* ---------------- STATE ---------------- */
 let currentQuestion = 0;
 let totalScore = 0;
 const answers = Array(questions.length).fill(null);
 
+/* ---------------- NAV ---------------- */
 function showScreen(name) {
 	introScreen.classList.toggle("hidden", name !== "intro");
 	quizScreen.classList.toggle("hidden", name !== "quiz");
 	resultScreen.classList.toggle("hidden", name !== "result");
-
-	// update document title to follow naming convention
-	if (name === "intro") {
-		document.title = "Curry Personality Test - Home (Fun Background)";
-	} else if (name === "quiz") {
-		document.title = "Curry Personality Test - Quiz (Fun Background)";
-	} else if (name === "result") {
-		// result title is set in renderResult with personality name
-		// fallback if no personality yet
-		document.title = "Curry Personality Test - Result (Fun Background)";
-	}
 }
 
+/* ---------------- QUIZ ---------------- */
 function resetQuiz() {
 	currentQuestion = 0;
 	totalScore = 0;
 	answers.fill(null);
-	progressFill.style.width = `${(1 / questions.length) * 100}%`;
-	progressLabel.textContent = `1/${questions.length}`;
 }
 
 function renderQuestion() {
-	const question = questions[currentQuestion];
-	const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+	const q = questions[currentQuestion];
 
-	progressFill.style.width = `${progressPercent}%`;
+	progressFill.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
 	progressLabel.textContent = `${currentQuestion + 1}/${questions.length}`;
-	questionPrompt.textContent = question.prompt;
+
+	questionPrompt.textContent = q.prompt;
 	optionList.innerHTML = "";
 
-	question.options.forEach((option, optionIndex) => {
-		const button = document.createElement("button");
-		button.type = "button";
-		button.className = "option-button";
-		button.textContent = option.text;
-		button.dataset.optionIndex = String(optionIndex);
+	q.options.forEach((opt, i) => {
+		const btn = document.createElement("button");
+		btn.className = "option-button";
+		btn.textContent = opt.text;
 
-		button.addEventListener("click", () => {
-			const previousSelection = answers[currentQuestion];
-			if (previousSelection !== null) {
-				totalScore -= question.options[previousSelection].score;
+		btn.onclick = () => {
+			const prev = answers[currentQuestion];
+
+			if (prev !== null) {
+				totalScore -= q.options[prev].score;
 			}
 
-			answers[currentQuestion] = optionIndex;
-			totalScore += option.score;
+			answers[currentQuestion] = i;
+			totalScore += opt.score;
 
 			if (currentQuestion < questions.length - 1) {
-				currentQuestion += 1;
+				currentQuestion++;
 				renderQuestion();
 			} else {
 				renderResult();
 			}
-		});
+		};
 
-		optionList.appendChild(button);
+		optionList.appendChild(btn);
 	});
 }
 
 function getPersonality(score) {
-	return personalities.find((entry) => score >= entry.min && score <= entry.max) || personalities[0];
+	return personalities.find(p => score >= p.min && score <= p.max);
 }
 
 function renderResult() {
-	const personality = getPersonality(totalScore);
-	resultName.textContent = personality.name;
-	resultIllustration.textContent = `${personality.name}`;
-	resultBackground.textContent = personality.background;
-	resultDescription.textContent = personality.description;
+	const p = getPersonality(totalScore);
 
-	// set descriptive document title including personality name
-	document.title = `Curry Personality Test - Result: ${personality.name} (Fun Background)`;
+	resultName.textContent = p.name;
+	resultBackground.textContent = p.background;
+	resultDescription.textContent = p.description;
+
 	showScreen("result");
 }
 
-startButton.addEventListener("click", () => {
+/* ---------------- EVENTS ---------------- */
+startButton.onclick = () => {
 	resetQuiz();
 	showScreen("quiz");
 	renderQuestion();
-});
+};
 
-backButton.addEventListener("click", () => {
-	if (currentQuestion === 0) {
-		showScreen("intro");
-		return;
-	}
-
-	currentQuestion -= 1;
+backButton.onclick = () => {
+	if (currentQuestion === 0) return showScreen("intro");
+	currentQuestion--;
 	renderQuestion();
-});
+};
 
-homeButton.addEventListener("click", () => {
+homeButton.onclick = () => {
 	resetQuiz();
 	showScreen("intro");
-});
+};
 
 showScreen("intro");
 
+/* ---------------- FEEDBACK (FIREBASE FIXED) ---------------- */
 let selectedRating = 0;
 
 const stars = document.querySelectorAll(".star");
@@ -174,52 +161,41 @@ const submitBtn = document.getElementById("submit-feedback");
 const feedbackMessage = document.getElementById("feedback-message");
 
 stars.forEach(star => {
-    star.addEventListener("click", () => {
-        selectedRating = parseInt(star.dataset.rating);
+	star.onclick = () => {
+		selectedRating = Number(star.dataset.rating);
 
-        stars.forEach(s => {
-            s.classList.toggle(
-                "active",
-                parseInt(s.dataset.rating) <= selectedRating
-            );
-        });
-    });
+		stars.forEach(s => {
+			s.classList.toggle(
+				"active",
+				Number(s.dataset.rating) <= selectedRating
+			);
+		});
+	};
 });
 
-submitBtn.addEventListener("click", () => {
-    const comment = document
-        .getElementById("feedback-comment")
-        .value
-        .trim();
+submitBtn.onclick = async () => {
+	const comment = document.getElementById("feedback-comment").value.trim();
 
-    if (selectedRating === 0) {
-        feedbackMessage.textContent =
-            "Please select a star rating.";
-        return;
-    }
+	if (selectedRating === 0) {
+		feedbackMessage.textContent = "Please select a star rating.";
+		return;
+	}
 
-    const feedback = {
-        rating: selectedRating,
-        comment,
-        date: new Date().toISOString()
-    };
+	try {
+		await addDoc(collection(db, "feedback"), {
+			rating: selectedRating,
+			comment: comment,
+			createdAt: new Date()
+		});
 
-    // Save locally
-    const existing =
-        JSON.parse(localStorage.getItem("quizFeedback")) || [];
+		feedbackMessage.textContent = "Thanks for your feedback!";
 
-    existing.push(feedback);
+		document.getElementById("feedback-comment").value = "";
+		stars.forEach(s => s.classList.remove("active"));
+		selectedRating = 0;
 
-    localStorage.setItem(
-        "quizFeedback",
-        JSON.stringify(existing)
-    );
-
-    feedbackMessage.textContent =
-        "Thank you for your feedback!";
-
-    document.getElementById("feedback-comment").value = "";
-
-    stars.forEach(s => s.classList.remove("active"));
-    selectedRating = 0;
-});
+	} catch (err) {
+		console.error(err);
+		feedbackMessage.textContent = "Error sending feedback.";
+	}
+};
