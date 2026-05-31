@@ -40,10 +40,34 @@ const questions = [
 ];
 
 const personalities = [
-	{ min: 0, max: 14, name: "Creamy Katsu", background: "Soft and calm.", description: "You are warm and steady." },
-	{ min: 15, max: 29, name: "Classic Curry", background: "Balanced flavor.", description: "You are adaptable and reliable." },
-	{ min: 30, max: 44, name: "Spicy Dynamite", background: "Bold and exciting.", description: "You bring energy everywhere." },
-	{ min: 45, max: 999, name: "Monster Volcano", background: "Intense heat.", description: "You are powerful and unforgettable." }
+	{
+		min: 0,
+		max: 14,
+		name: "Creamy Katsu",
+		background: "Creamy Katsu is the cozy comfort bowl of the curry world, known for its soft flavor and calm presence.",
+		description: "You are warm, reliable, and easy to love. You bring comfort to people around you and keep things steady even when life gets noisy. People likely feel safe opening up to you because you do not rush or judge. You prefer consistency, kindness, and a pace that lets everyone breathe. Even when things get busy, you help keep the mood gentle and grounded."
+	},
+	{
+		min: 15,
+		max: 29,
+		name: "Classic Curry",
+		background: "Classic Curry is a balanced favorite with a smooth flavor that feels familiar, flexible, and dependable.",
+		description: "You are balanced and adaptable. You can play it cool, but you know when to turn up the flavor and make your presence known. You probably adjust well to different people and situations without losing yourself. There is a steady, thoughtful side to you that makes others trust your judgment. When needed, you can become more expressive and take the lead without feeling forced. You bring harmony while still keeping things interesting."
+	},
+	{
+		min: 30,
+		max: 44,
+		name: "Spicy Dynamite",
+		background: "Spicy Dynamite is the bold curry with a lively kick, made to stand out and wake up every bite.",
+		description: "You are bold and high-energy. You move fast, think big, and make everything more exciting wherever you go. People notice your presence quickly because you bring momentum into the room. You likely enjoy action, change, and a little bit of challenge. Your confidence helps others feel more alive around you. At the same time, your energy can inspire people to be braver and speak up more."
+	},
+	{
+		min: 45,
+		max: 60,
+		name: "Monster Volcano",
+		background: "Monster Volcano is the hottest curry in the lineup, intense and unforgettable with a powerful kick.",
+		description: "You are intense, fearless, and unforgettable. You do not hold back, and people always remember the heat you bring. You probably have a strong sense of direction and know what you want. Your presence can feel powerful, motivating, and impossible to ignore. You may push yourself harder than most people do. When you show up, you change the energy of the whole space."
+	}
 ];
 
 /* ---------------- UI ---------------- */
