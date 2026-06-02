@@ -517,3 +517,69 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
+
+/* Mobile layout: make header and phone card align and center correctly */
+@media (max-width: 599px) {
+  body { padding: 8px; background: #f2f2f2; }
+
+  /* center the app shell to a phone width */
+  .phone-shell {
+    max-width: 420px;
+    margin: 12px auto;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    overflow: visible;
+    background: var(--surface);
+    padding-top: 0; /* header will sit inside the shell */
+  }
+
+  /* header: keep inside the shell (relative) so it lines up exactly with the card */
+  header.fixed.top-0 {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    height: 56px;
+    border-radius: 12px 12px 0 0;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    z-index: 10;
+  }
+
+  /* make the inner header container match shell width and center items */
+  header.fixed.top-0 > .max-w-\[1200px\] {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+  }
+
+  header.fixed.top-0 .font-headline-lg { font-size: 1rem; }
+
+  /* remove large decorative backgrounds which can overlap */
+  .fixed-bg-monsters { display: none !important; }
+
+  /* stack columns into a single column and center content */
+  .flex.flex-col.lg\:flex-row { flex-direction: column !important; align-items: center; }
+  .w-full.lg\:w-5\/12.hidden.md\:block { display: none !important; }
+
+  .monster-red-gradient { width: calc(100% - 36px); margin: 18px auto; padding: 20px; border-radius: 14px; }
+  .monster-red-gradient h1 { font-size: 1.9rem; text-align: center; }
+
+  /* CTAs full width & easy to tap */
+  #start-button, .option-button, .action-button, #back-button, #submit-feedback {
+    width: 100% !important;
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+
+}
