@@ -83,6 +83,7 @@ const progressFill = document.getElementById("progress-fill");
 const progressLabel = document.getElementById("progress-label");
 const questionPrompt = document.getElementById("question-prompt");
 const optionList = document.getElementById("option-list");
+const quizLogoFillWrapper = document.getElementById("quiz-logo-fill-wrapper");
 
 const resultName = document.getElementById("result-name");
 const resultBackground = document.getElementById("result-background");
@@ -105,10 +106,19 @@ function resetQuiz() {
 	currentQuestion = 0;
 	totalScore = 0;
 	answers.fill(null);
+	updateQuizLogoProgress(0);
+}
+
+function updateQuizLogoProgress(answeredCount) {
+	if (!quizLogoFillWrapper) return;
+
+	const percentage = Math.max(0, Math.min(100, (answeredCount / questions.length) * 100));
+	quizLogoFillWrapper.style.height = `${percentage}%`;
 }
 
 function renderQuestion() {
 	const q = questions[currentQuestion];
+	updateQuizLogoProgress(currentQuestion);
 
 	progressFill.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
 	progressLabel.textContent = `${currentQuestion + 1}/${questions.length}`;
@@ -149,6 +159,7 @@ function getPersonality(score) {
 
 function renderResult() {
 	const p = getPersonality(totalScore);
+	updateQuizLogoProgress(questions.length);
 
 	resultName.textContent = p.name;
 	resultBackground.textContent = p.background;

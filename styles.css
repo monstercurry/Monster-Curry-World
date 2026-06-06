@@ -107,6 +107,93 @@ h3,
 
 .illustration{ width:64px; height:64px; background:rgba(255,255,255,0.98); border-radius:8px; display:grid; place-items:center; margin:8px auto 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); font-size:0.85rem; }
 
+/* Water-fill logo progress icon (used in quiz and progressicon demo) */
+.progress-demo-page{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  gap:20px;
+  background:#f2f2f2;
+}
+
+.progress-container,
+.logo-progress-icon{
+  position:relative;
+  aspect-ratio:1 / 1;
+}
+
+.progress-container{
+  width:min(62vw, 220px);
+}
+
+.logo-progress-icon{
+  width:100%;
+  max-width:200px;
+}
+
+.logo-base,
+.logo-progress-base,
+.logo-colored,
+.logo-progress-color{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.fill-wrapper,
+.logo-progress-fill{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:0%;
+  overflow:hidden;
+  transition:height .55s ease;
+}
+
+.wave,
+.logo-progress-wave{
+  position:absolute;
+  top:-14px;
+  left:-40%;
+  width:180%;
+  height:24px;
+  background:linear-gradient(180deg, rgba(127, 191, 255, 0.72), rgba(83, 158, 238, 0.52));
+  border-radius:42% 58% 0 0;
+  animation: wave-flow 3.2s linear infinite;
+  display:none;
+}
+
+.logo-progress-wave::after,
+.wave::after{
+  content:"";
+  position:absolute;
+  top:-8px;
+  left:12%;
+  width:76%;
+  height:18px;
+  background:rgba(255,255,255,0.26);
+  border-radius:45% 55% 0 0;
+}
+
+#test-btn{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:700;
+  background:#fff;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+}
+
+@keyframes wave-flow {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-14%); }
+  100% { transform: translateX(0); }
+}
+
 .question-heading{ font-size:var(--type-4); margin:14px 0 6px; letter-spacing: -0.01em; text-align:center; }
 .question-prompt{ margin-bottom:14px; }
 
@@ -284,6 +371,8 @@ h3,
     border-radius:10px;
     margin:8px auto 10px;
   }
+
+  .logo-progress-icon{ max-width:190px; }
 
   .frame-body{
     display:flex;
