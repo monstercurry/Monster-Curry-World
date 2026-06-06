@@ -80,7 +80,9 @@ body{
   padding-right:6px; /* prevents content being hidden under scrollbar */
 }
 
-.intro-frame{ background: var(--header-red); color:var(--white); }
+.intro-frame {
+  background: #f5ac0f7f !important; /* your chosen colour, independent of the variable */
+}
 .quiz-frame,.result-frame{ background: var(--quiz-pink); color:#111; }
 
 .frame-title-row{ width:100%; text-align:center; margin-bottom:8px; position:relative; }
@@ -198,7 +200,7 @@ h3,
 .question-prompt{ margin-bottom:14px; }
 
 .option-list{ width:100%; display:flex; flex-direction:column; gap:var(--space-md); padding:0 12px; }
-.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:18px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); text-align:center; transition: background 0.15s ease; }
+.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:18px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); text-align:center }
 .option-button:hover{ background: rgba(255,255,255,0.12); }
 
 /* quiz card */
@@ -390,7 +392,13 @@ h3,
     align-items:center;
     justify-content:center;
   }
-}
+
+  /* On very wide screens prefer a 100px offset to keep the card fully centered */
+  @media (min-width:1400px){
+    .intro-frame .frame-body{
+      min-height: calc(100vh - 100px);
+    }
+  }
   .frame-body .option-list{ width:100%; max-width:700px; gap:var(--space-md); padding:0; }
   .frame-body .option-list .option-button{ width:100%; padding:14px 22px; font-size:1.08rem; }
   .frame-body .progress-row, .frame-body .frame-title-row{ width:100%; max-width:700px; }
@@ -447,25 +455,16 @@ h3,
 
 /* Redesigned utilities and fun background styles */
 .fixed-bg-monsters{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-.fixed-bg-monsters img.monster-watermark{
-  position:absolute;
-  z-index:0;
-  opacity:0.6;
-  pointer-events:none;
-  filter:grayscale(1);
-  user-select:none;
-  will-change: transform;
-  contain: layout style;
-}
-.monster-red-gradient { background: linear-gradient(135deg, #bc0100 0%, #eb0000 100%); }
+.fixed-bg-monsters img.monster-watermark{ position:absolute; z-index:0; opacity:0.6; pointer-events:none; filter:grayscale(1); user-select:none; }
+.monster-red-gradient { background: linear-gradient(135deg, #F5AD0F 0%, #F5AD0F 100%); }
 .glass-effect { backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.04); }
 .pulse-glow:hover { box-shadow: 0 0 25px rgba(188,1,0,0.35); }
 
 /* Floating animation for background monsters and hero image */
 @keyframes floaty {
-  0%   { transform: translateY(0px); }
-  50%  { transform: translateY(-12px); }
-  100% { transform: translateY(0px); }
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
 }
 .fixed-bg-monsters img.monster-watermark{ animation: floaty 10s ease-in-out infinite; }
 .fixed-bg-monsters img.monster-watermark:nth-child(1){ animation-delay: 0s; }
@@ -479,8 +478,25 @@ h3,
 .container .relative img:hover{ transform: translateY(-6px) rotate(1deg) scale(1.01); }
 
 /* Header: make background slightly more opaque and brand red */
-header.fixed.top-0{ background: rgba(255,255,255,0.95) !important; color: var(--primary); border-bottom: 1px solid rgba(0,0,0,0.04); }
-header.fixed.top-0 .material-symbols-outlined{ color: rgba(0,0,0,0.6); }
+.top-0{ background: rgba(245, 23, 34, 0.95); color: var(--primary); border-bottom: 1px solid rgba(0,0,0,0.04); }
+header.fixed.top-0 .material-symbols-outlined{ color: rgb(255, 255, 255); }
+header.fixed.top-0 {
+  height: 90px; /* locks the navbar height */
+}
+
+header.fixed.top-0 .max-w-\[1200px\] {
+  height: 100%;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  align-items: center;
+  display: flex;
+}
+
+header.fixed.top-0 img[alt="Monster Curry"] {
+  height: 85px; /* logo fills most of the fixed 90px bar */
+  width: auto;
+  display: block;
+}
 
 /* Hero typography and spacing tweaks */
 .monster-red-gradient h1{ font-size:2.6rem; line-height:1; }
@@ -511,7 +527,6 @@ header.fixed.top-0 .material-symbols-outlined{ color: rgba(0,0,0,0.6); }
   font-size:1.05rem;
   line-height:1;
   text-align:center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Force single-column layout for quiz answer bubbles inside the revamped quiz screen */
@@ -621,47 +636,128 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-/* Mobile layout: make header and phone card align and center correctly */
+/* =============================================
+   TABLET — 600px to 899px
+   ============================================= */
+@media (min-width: 600px) and (max-width: 899px) {
+
+  body {
+    padding: 0;
+    background: rgba(245, 23, 34, 0.95);
+  }
+
+  .phone-shell {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 64px;
+    border-radius: 0;
+    box-shadow: none;
+    padding-top: 0;
+  }
+
+  header.fixed.top-0 {
+    height: 64px;
+    background: rgba(245, 23, 34, 0.95) !important;
+  }
+
+  header.fixed.top-0 img[alt="Monster Curry"] {
+    height: 56px;
+    width: auto;
+    display: block;
+  }
+
+  header.fixed.top-0 .material-symbols-outlined {
+    color: rgba(255,255,255,0.9);
+  }
+
+  .monster-red-gradient {
+    padding: 28px 24px;
+    border-radius: 24px;
+  }
+
+  /* Text colours to match desktop */
+  .monster-red-gradient h1,
+  .monster-red-gradient .font-headline-xl {
+    color: #ffffff !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+  }
+
+  .monster-red-gradient span.inline-block {
+    color: #ffffff !important;
+  }
+
+  .monster-red-gradient p {
+    color: rgba(255,255,255,0.9) !important;
+  }
+
+  .monster-red-gradient .font-body-sm,
+  .monster-red-gradient span.font-body-sm {
+    color: rgba(255,255,255,0.8) !important;
+  }
+
+  .monster-red-gradient .w-8 {
+    color: var(--header-red) !important;
+    background: #fff !important;
+    border-color: #fff !important;
+  }
+
+  .option-button {
+    width: 100% !important;
+    min-height: 52px;
+  }
+
+  #start-button {
+    min-height: 52px;
+  }
+
+}
+
+/* =============================================
+   MOBILE — max-width: 599px
+   All desktop colour/style changes mirrored here
+   ============================================= */
 @media (max-width: 599px) {
+
+  /* Body: full-width, no side padding */
   body {
     display: block;
-    padding: 8px;
-    background: #f2f2f2;
+    padding: 0;
+    background: rgba(245, 23, 34, 0.95);
   }
 
-  /* center the app shell to a phone width */
+  /* Phone shell: full width, account for fixed header */
   .phone-shell {
-    width: min(100%, 420px);
-    max-width: 420px;
-    margin: 12px auto;
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 64px;
+    border-radius: 0;
+    box-shadow: none;
     overflow: visible;
     background: var(--surface);
-    padding-top: 0; /* header will sit inside the shell */
+    padding-top: 0;
   }
 
-  /* header: keep inside the shell (relative) so it lines up exactly with the card */
+  /* Header: match desktop — same red, same height */
   header.fixed.top-0 {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     width: 100%;
-    max-width: none;
-    margin: 0;
-    height: 56px;
-    border-radius: 0;
-    background: rgba(255,255,255,0.98);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    z-index: 10;
+    height: 64px;
+    background: rgba(245, 23, 34, 0.95) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    z-index: 50;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
 
-  /* make the inner header container span the viewport */
+  /* Inner header row */
   header.fixed.top-0 > .max-w-\[1200px\] {
     width: 100%;
-    max-width: none;
-    margin: 0 auto;
+    max-width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -669,24 +765,111 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     padding: 0 16px;
   }
 
-  .phone-shell {
-    margin-top: 68px;
+  /* Logo: smaller on mobile */
+  header.fixed.top-0 img[alt="Monster Curry"] {
+    height: 48px;
+    width: auto;
+    display: block;
   }
 
-  header.fixed.top-0 .font-headline-lg { font-size: 1rem; }
+  /* Icons: white to match desktop */
+  header.fixed.top-0 .material-symbols-outlined {
+    color: rgba(255,255,255,0.9);
+  }
 
-  /* remove large decorative backgrounds which can overlap */
+  /* Hide decorative background monsters */
   .fixed-bg-monsters { display: none !important; }
 
-  /* stack columns into a single column and center content */
+  /* Outer frame colour matches desktop */
+  .intro-frame {
+    background: #f5ac0f7f !important;
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  /* ---- TEXT: force white + correct font to match desktop ---- */
+
+  /* Main heading */
+  .monster-red-gradient h1,
+  .monster-red-gradient .font-headline-xl {
+    color: #ffffff !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+  }
+
+  /* "FLAVOR QUEST" pill label */
+  .monster-red-gradient span.inline-block {
+    color: #ffffff !important;
+  }
+
+  /* Body paragraphs inside the card */
+  .monster-red-gradient p {
+    color: rgba(255,255,255,0.9) !important;
+  }
+
+  /* "Join 12,000+" line */
+  .monster-red-gradient .font-body-sm,
+  .monster-red-gradient span.font-body-sm {
+    color: rgba(255,255,255,0.8) !important;
+  }
+
+  /* Avatar initials circles */
+  .monster-red-gradient .w-8 {
+    color: var(--header-red) !important;
+    background: #fff !important;
+    border-color: #fff !important;
+  }
+
+  /* Inner card: full width */
+  .monster-red-gradient {
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 20px;
+    border-radius: 20px;
+    max-width: 100%;
+  }
+
+  .monster-red-gradient h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  /* Stack layout columns */
   .flex.flex-col.lg\:flex-row { flex-direction: column !important; align-items: center; }
   .w-full.lg\:w-5\/12.hidden.md\:block { display: none !important; }
 
-  .monster-red-gradient { width: calc(100% - 36px); margin: 18px auto; padding: 20px; border-radius: 14px; }
-  .monster-red-gradient h1 { font-size: 1.9rem; text-align: center; }
+  /* Quiz frame */
+  .quiz-frame { padding: 12px; }
+  .quiz-frame .question-box { padding: 16px; border-radius: 20px; }
+  .question-heading { font-size: 1.6rem; }
 
-  /* CTAs full width & easy to tap */
-  #start-button, .option-button, .action-button, #back-button, #submit-feedback {
+  /* Result card */
+  .result-card { padding: 16px; border-radius: 16px; }
+  .result-illustration { width: 120px; height: 120px; }
+  .result-name { font-size: 1.6rem; }
+
+  /* Feedback */
+  .feedback-section { margin-top: 1.5rem; }
+  #feedback-comment { font-size: 0.95rem; }
+
+  /* CTAs: full width, easy to tap */
+  #start-button {
+    width: 100% !important;
+    min-height: 52px;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .option-button {
+    width: 100% !important;
+    min-height: 52px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    border-radius: 14px;
+  }
+
+  .action-button, #submit-feedback {
     width: 100% !important;
     min-height: 48px;
     padding: 12px 16px;
@@ -698,13 +881,11 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     width: auto !important;
     min-width: 0;
     display: inline-flex;
+    min-height: 44px;
   }
 
-}
+  /* Footer */
+  .site-footer { padding: 16px 12px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 12px; }
 
-/* Wide screens: keep intro card vertically centered with a small offset */
-@media (min-width:1400px){
-  .intro-frame .frame-body{
-    min-height: calc(100vh - 100px);
-  }
 }
