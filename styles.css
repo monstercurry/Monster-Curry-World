@@ -198,7 +198,7 @@ h3,
 .question-prompt{ margin-bottom:14px; }
 
 .option-list{ width:100%; display:flex; flex-direction:column; gap:var(--space-md); padding:0 12px; }
-.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:18px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); text-align:center }
+.option-button{ background: rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.95); color:#fff; padding:14px 16px; border-radius:18px; font-size:1rem; cursor:pointer; box-shadow: inset 0 -2px rgba(0,0,0,0.03); text-align:center; transition: background 0.15s ease; }
 .option-button:hover{ background: rgba(255,255,255,0.12); }
 
 /* quiz card */
@@ -390,13 +390,7 @@ h3,
     align-items:center;
     justify-content:center;
   }
-
-  /* On very wide screens prefer a 100px offset to keep the card fully centered */
-  @media (min-width:1400px){
-    .intro-frame .frame-body{
-      min-height: calc(100vh - 100px);
-    }
-  }
+}
   .frame-body .option-list{ width:100%; max-width:700px; gap:var(--space-md); padding:0; }
   .frame-body .option-list .option-button{ width:100%; padding:14px 22px; font-size:1.08rem; }
   .frame-body .progress-row, .frame-body .frame-title-row{ width:100%; max-width:700px; }
@@ -453,16 +447,25 @@ h3,
 
 /* Redesigned utilities and fun background styles */
 .fixed-bg-monsters{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-.fixed-bg-monsters img.monster-watermark{ position:absolute; z-index:0; opacity:0.6; pointer-events:none; filter:grayscale(1); user-select:none; }
+.fixed-bg-monsters img.monster-watermark{
+  position:absolute;
+  z-index:0;
+  opacity:0.6;
+  pointer-events:none;
+  filter:grayscale(1);
+  user-select:none;
+  will-change: transform;
+  contain: layout style;
+}
 .monster-red-gradient { background: linear-gradient(135deg, #bc0100 0%, #eb0000 100%); }
 .glass-effect { backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.04); }
 .pulse-glow:hover { box-shadow: 0 0 25px rgba(188,1,0,0.35); }
 
 /* Floating animation for background monsters and hero image */
 @keyframes floaty {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
 }
 .fixed-bg-monsters img.monster-watermark{ animation: floaty 10s ease-in-out infinite; }
 .fixed-bg-monsters img.monster-watermark:nth-child(1){ animation-delay: 0s; }
@@ -508,6 +511,7 @@ header.fixed.top-0 .material-symbols-outlined{ color: rgba(0,0,0,0.6); }
   font-size:1.05rem;
   line-height:1;
   text-align:center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Force single-column layout for quiz answer bubbles inside the revamped quiz screen */
@@ -696,4 +700,11 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     display: inline-flex;
   }
 
+}
+
+/* Wide screens: keep intro card vertically centered with a small offset */
+@media (min-width:1400px){
+  .intro-frame .frame-body{
+    min-height: calc(100vh - 100px);
+  }
 }

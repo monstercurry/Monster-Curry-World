@@ -30,8 +30,8 @@
 <body>
 	<!-- Floating background monsters (fun background) -->
 	<div aria-hidden="true" class="fixed-bg-monsters">
-		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8" alt="" />
-		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM" alt="" />
+		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8" alt="" loading="lazy" decoding="async" />
+		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM" alt="" loading="lazy" decoding="async" />
 	</div>
 		<!-- TopAppBar Component (from HomePage) -->
 		<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
@@ -40,10 +40,10 @@
 					Monster Curry
 				</div>
 				<div class="flex items-center gap-base">
-					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform">
+					<button id="share-button" class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Share this page">
 						<span class="material-symbols-outlined" data-icon="share">share</span>
 					</button>
-					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform">
+					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Restaurant menu">
 						<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
 					</button>
 				</div>
@@ -64,7 +64,7 @@
 							<div class="w-full lg:w-5/12 hidden md:block">
 								<div class="relative group">
 									<div class="absolute -inset-4 bg-primary/20 rounded-[48px] blur-2xl group-hover:bg-primary/30 transition-all duration-500"></div>
-									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec" alt="Curry plate">
+									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec" alt="Curry plate" fetchpriority="high" decoding="async">
 								</div>
 							</div>
 							<!-- Right Column: The Quiz Card -->

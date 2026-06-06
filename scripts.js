@@ -132,14 +132,13 @@ function renderQuestion() {
 		btn.textContent = opt.text;
 
 		btn.onclick = () => {
-			const prev = answers[currentQuestion];
-
-			if (prev !== null) {
-				totalScore -= q.options[prev].score;
-			}
-
 			answers[currentQuestion] = i;
-			totalScore += opt.score;
+
+			// Recalculate total from scratch to avoid drift on back+re-answer
+			totalScore = answers.reduce((sum, answerIdx, qIdx) => {
+				if (answerIdx === null) return sum;
+				return sum + questions[qIdx].options[answerIdx].score;
+			}, 0);
 
 			if (currentQuestion < questions.length - 1) {
 				currentQuestion++;
@@ -216,6 +215,10 @@ submitBtn.onclick = async () => {
 		return;
 	}
 
+	// Prevent double-submission
+	submitBtn.disabled = true;
+	submitBtn.textContent = "Sending…";
+
 	try {
 		await addDoc(collection(db, "feedback"), {
 			rating: selectedRating,
@@ -231,6 +234,9 @@ submitBtn.onclick = async () => {
 
 	} catch (err) {
 		console.error(err);
-		feedbackMessage.textContent = "Error sending feedback.";
+		feedbackMessage.textContent = "Error sending feedback. Please try again.";
+	} finally {
+		submitBtn.disabled = false;
+		submitBtn.textContent = "Submit Feedback";
 	}
 };
