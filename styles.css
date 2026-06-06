@@ -18,6 +18,7 @@
   --space-md: clamp(1rem, 2vw, 1.5rem);
   --space-lg: clamp(1.5rem, 3vw, 2rem);
   --space-xl: clamp(2rem, 4vw, 3rem);
+  --font-heading: Rockwell, "Rockwell Extra Bold", "Book Antiqua", Palatino, serif;
 }
 
 * { box-sizing: border-box; }
@@ -51,9 +52,9 @@ body{
   justify-content:space-between;
 }
 
-.brand-block{ color:var(--white); font-family: 'Baloo 2', 'Nunito', sans-serif; }
+.brand-block{ color:var(--white); }
 .brand-kicker{ font-size:0.85rem; opacity:0.95; line-height:1; margin-bottom:2px; }
-.brand-name{ font-size:1.35rem; font-weight:800; line-height:1; letter-spacing: -0.01em; }
+.brand-name{ font-size:1.35rem; font-weight:800; line-height:1; letter-spacing: -0.01em; font-family: var(--font-heading); }
 
 .socials{ display:flex; gap:8px; }
 .social-icon{ width:34px; height:34px; border-radius:8px; background:#0d0d10; color:#fff; display:grid; place-items:center; font-weight:700; }
@@ -85,7 +86,16 @@ body{
 .frame-title-row{ width:100%; text-align:center; margin-bottom:8px; position:relative; }
 .frame-progress{ position:absolute; right:8px; top:0; font-size:var(--type-1); color:var(--muted); }
 
-h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-height:1; }
+h1{ margin:0 0 6px 0; font-family: var(--font-heading); font-size:1.9rem; line-height:1; }
+.font-headline-lg,
+.font-headline-xl,
+h2,
+h3,
+.question-heading,
+.result-name,
+.monster-red-gradient h1{
+  font-family: var(--font-heading);
+}
 .hero-line{ margin-top:6px; font-size:1rem; font-weight:700; }
 .body-copy, .question-prompt{ margin-top:8px; max-width:42ch; font-size:var(--type-2); line-height:1.6; text-align:center; }
 
@@ -97,7 +107,7 @@ h1{ margin:0 0 6px 0; font-family:'Baloo 2', sans-serif; font-size:1.9rem; line-
 
 .illustration{ width:64px; height:64px; background:rgba(255,255,255,0.98); border-radius:8px; display:grid; place-items:center; margin:8px auto 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); font-size:0.85rem; }
 
-.question-heading{ font-size:var(--type-4); margin:14px 0 6px; font-family:'Baloo 2', sans-serif; letter-spacing: -0.01em; text-align:center; }
+.question-heading{ font-size:var(--type-4); margin:14px 0 6px; letter-spacing: -0.01em; text-align:center; }
 .question-prompt{ margin-bottom:14px; }
 
 .option-list{ width:100%; display:flex; flex-direction:column; gap:var(--space-md); padding:0 12px; }
@@ -520,10 +530,15 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 
 /* Mobile layout: make header and phone card align and center correctly */
 @media (max-width: 599px) {
-  body { padding: 8px; background: #f2f2f2; }
+  body {
+    display: block;
+    padding: 8px;
+    background: #f2f2f2;
+  }
 
   /* center the app shell to a phone width */
   .phone-shell {
+    width: min(100%, 420px);
     max-width: 420px;
     margin: 12px auto;
     border-radius: 14px;
@@ -535,30 +550,34 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 
   /* header: keep inside the shell (relative) so it lines up exactly with the card */
   header.fixed.top-0 {
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     max-width: none;
     margin: 0;
     height: 56px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0;
     background: rgba(255,255,255,0.98);
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     z-index: 10;
   }
 
-  /* make the inner header container match shell width and center items */
+  /* make the inner header container span the viewport */
   header.fixed.top-0 > .max-w-\[1200px\] {
     width: 100%;
-    max-width: 420px;
+    max-width: none;
     margin: 0 auto;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 0 16px;
+  }
+
+  .phone-shell {
+    margin-top: 68px;
   }
 
   header.fixed.top-0 .font-headline-lg { font-size: 1rem; }
@@ -580,6 +599,12 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     padding: 12px 16px;
     font-size: 1rem;
     border-radius: 12px;
+  }
+
+  #back-button {
+    width: auto !important;
+    min-width: 0;
+    display: inline-flex;
   }
 
 }
