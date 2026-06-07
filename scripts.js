@@ -222,6 +222,7 @@ const questions = [
 const personalities = [
 	{
 		id: P.katsu,
+		image: "images/Katsu-Chan.png",
 		name: "🍗 Katsu-Chan",
 		title: "The Classic Comfort Hero",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
@@ -229,6 +230,7 @@ const personalities = [
 	},
 	{
 		id: P.monstora,
+		image: "images/Monstora_Sharemi.png",
 		name: "🍛 Monstora Sharemi",
 		title: "The Social Feast Buddy",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
@@ -236,6 +238,7 @@ const personalities = [
 	},
 	{
 		id: P.giga,
+		image: "images/Giga_Nomu.png",
 		name: "🍖 Giga Nomu",
 		title: "The Big Appetite Beast",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
@@ -243,6 +246,7 @@ const personalities = [
 	},
 	{
 		id: P.tamago,
+		image: "images/Tamago_Puffy.png",
 		name: "🥚 Tamago Puffy",
 		title: "The Soft & Cozy Dreamer",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
@@ -250,6 +254,7 @@ const personalities = [
 	},
 	{
 		id: P.cheezu,
+		image: "images/Cheezu_Mellow.png",
 		name: "🧀 Cheezu Mellow",
 		title: "The Cheesy Comfort Lover",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
@@ -257,6 +262,7 @@ const personalities = [
 	},
 	{
 		id: P.ramy,
+		image: "images/Ramy_Noodleton.png",
 		name: "🍜 Ramy Noodleton",
 		title: "The Chill Slurper",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
@@ -264,6 +270,7 @@ const personalities = [
 	},
 	{
 		id: P.hotsizz,
+		image: "images/Hot_Sizz.png",
 		name: "🔥 Hot Sizz",
 		title: "The Hotplate Performer",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
@@ -271,6 +278,7 @@ const personalities = [
 	},
 	{
 		id: P.teppa,
+		image: "images/Teppa_Spark.jpg",
 		name: "🍳 Teppa Spark",
 		title: "The Precision Show Chef",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
@@ -319,6 +327,15 @@ function updateQuizLogoProgress(answeredCount) {
 
 	const percentage = Math.max(0, Math.min(100, (answeredCount / questions.length) * 100));
 	quizLogoFillWrapper.style.height = `${percentage}%`;
+
+	// Remove wave mask at 100% so fill is clean and solid
+	if (percentage >= 100) {
+		quizLogoFillWrapper.style.webkitMaskImage = 'none';
+		quizLogoFillWrapper.style.maskImage = 'none';
+	} else {
+		quizLogoFillWrapper.style.webkitMaskImage = '';
+		quizLogoFillWrapper.style.maskImage = '';
+	}
 }
 
 function renderQuestion() {
@@ -372,6 +389,12 @@ function renderResult() {
 	resultName.textContent = p.name;
 	resultBackground.textContent = p.title + " — " + p.background;
 	resultDescription.textContent = p.description;
+
+	const illustrationImg = document.getElementById("result-illustration-img");
+	if (illustrationImg) {
+		illustrationImg.src = p.image;
+		illustrationImg.alt = p.name;
+	}
 
 	showScreen("result");
 }
