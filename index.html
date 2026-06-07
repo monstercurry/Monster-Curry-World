@@ -39,13 +39,16 @@
 				<div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
 					<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry" style="display:block;">
 				</div>
-				<div class="flex items-center gap-base">
-					<button id="share-button" class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Share this page">
-						<span class="material-symbols-outlined" data-icon="share">share</span>
-					</button>
-					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Restaurant menu">
-						<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
-					</button>
+				<div class="flex items-center gap-3">
+					<a href="#" aria-label="Facebook" class="social-logo-link">
+						<img src="images/facebook_logo.png" alt="Facebook" class="social-logo-icon">
+					</a>
+					<a href="#" aria-label="TikTok" class="social-logo-link">
+						<img src="images/tiktok_logo.png" alt="TikTok" class="social-logo-icon">
+					</a>
+					<a href="#" aria-label="Instagram" class="social-logo-link">
+						<img src="images/instagram_logo.png" alt="Instagram" class="social-logo-icon">
+					</a>
 				</div>
 			</div>
 		</header>
@@ -95,7 +98,7 @@
 			</article>
 
 			<!-- Quiz screen (revamped from Questions.html) -->
-			<article class="frame quiz-frame hidden" id="quiz-screen">
+			<article class="frame quiz-frame hidden" id="quiz-screen" style="display:none">
 				<div class="frame-body">
 					<div class="relative z-10 w-full max-w-[680px] mx-auto">
 						<div class="question-box bg-outline-variant/40 rounded-[28px] p-6 md:p-8 shadow-2xl backdrop-blur-md border border-white/10">
@@ -126,7 +129,7 @@
 			</article>
 
 			<!-- Result screen (keeps id result-screen) -->
-			<article class="frame result-frame hidden" id="result-screen">
+			<article class="frame result-frame hidden" id="result-screen" style="display:none">
 				<div class="frame-body">
 					<div class="result-card even-space glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">
 						<div class="result-illustration" id="result-illustration">

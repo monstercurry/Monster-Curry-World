@@ -5,8 +5,6 @@ import {
 	addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-console.log("SCRIPT LOADED");
-
 /* ---------------- FIREBASE ---------------- */
 const firebaseConfig = {
 	apiKey: "AIzaSyC1lCGw5eI3oFxw9_FKxBp86k1cMPGWbic",
@@ -21,10 +19,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* ---------------- QUIZ DATA ---------------- */
-// Scoring key: each option awards points to specific personalities.
-// Format per option: { text, scores: { personalityId: points, ... } }
+// Scoring: each option awards points to specific personalities.
 // +3 = strong match, +1 = similar, -1 = opposite
-const PERSONALITIES = {
+const P = {
 	katsu:    "katsu",
 	monstora: "monstora",
 	giga:     "giga",
@@ -34,7 +31,6 @@ const PERSONALITIES = {
 	hotsizz:  "hotsizz",
 	teppa:    "teppa"
 };
-const P = PERSONALITIES;
 
 const questions = [
 	{
@@ -51,8 +47,8 @@ const questions = [
 		options: [
 			{ text: "Extra spicy please",    scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "Medium spice is enough", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Mild only",             scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1, [P.tamago]: -1 } },
-			{ text: "No spice at all",       scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "Mild only",             scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
+			{ text: "No spice at all",       scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
@@ -67,25 +63,25 @@ const questions = [
 	{
 		prompt: "Food presentation matters as much as taste.",
 		options: [
-			{ text: "Looks are everything",  scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "Looks are everything",    scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Taste is more important", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Both matter",           scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "I want comfort food",   scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "Both matter",             scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "I want comfort food",     scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
 		prompt: "I would try the giant Monster Challenge curry.",
 		options: [
-			{ text: "Definitely",            scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Maybe with friends",    scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Probably not",          scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } },
-			{ text: "Only if there's a reward", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } }
+			{ text: "Definitely",               scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "Maybe with friends",        scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Probably not",              scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
+			{ text: "Only if there's a reward",  scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } }
 		]
 	},
 	{
 		prompt: "Cheese makes every dish better.",
 		options: [
-			{ text: "Cheese solves everything", scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1, [P.tamago]: -1 } },
+			{ text: "Cheese solves everything", scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
 			{ text: "Sometimes yes",            scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
 			{ text: "Not necessary",            scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "I prefer strong flavors",  scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
@@ -94,19 +90,19 @@ const questions = [
 	{
 		prompt: "I choose food based on comfort, not adventure.",
 		options: [
-			{ text: "Comfort food forever",  scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } },
-			{ text: "Usually comfort food",  scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I like both",           scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Adventure first",       scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
+			{ text: "Comfort food forever", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
+			{ text: "Usually comfort food", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "I like both",          scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Adventure first",      scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
 		]
 	},
 	{
 		prompt: "I like sharing food with friends.",
 		options: [
-			{ text: "Sharing is caring",  scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Depends who",        scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1, [P.tamago]: -1 } },
-			{ text: "Maybe one bite",     scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "My food is mine",    scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Sharing is caring", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Depends who",       scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
+			{ text: "Maybe one bite",    scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "My food is mine",   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
@@ -121,28 +117,28 @@ const questions = [
 	{
 		prompt: "I would post my Monster Curry meal on Instagram.",
 		options: [
-			{ text: "Of course",              scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Of course",               scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "Only if it looks amazing", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Rarely",                 scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Never",                  scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Rarely",                  scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Never",                   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
 		prompt: "I enjoy being the center of attention.",
 		options: [
-			{ text: "I love attention",  scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Sometimes",         scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Not really",        scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I avoid it",        scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "I love attention", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Sometimes",        scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Not really",       scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "I avoid it",       scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
 		prompt: "I prefer planning over spontaneity.",
 		options: [
-			{ text: "I plan everything",   scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "I plan everything",    scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Important things only", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I go with the flow",  scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Chaos is fun",        scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
+			{ text: "I go with the flow",   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Chaos is fun",         scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
 		]
 	},
 	{
@@ -150,32 +146,32 @@ const questions = [
 		options: [
 			{ text: "Always",    scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
 			{ text: "Often",     scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Sometimes", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } },
+			{ text: "Sometimes", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
 			{ text: "Rarely",    scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
 		]
 	},
 	{
 		prompt: "I enjoy competition.",
 		options: [
-			{ text: "Winning matters",    scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Challenge is fun",   scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "I prefer peace",     scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } },
+			{ text: "Winning matters",     scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "Challenge is fun",    scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "I prefer peace",      scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
 			{ text: "I avoid competition", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
 		prompt: "I like life to be exciting and unpredictable.",
 		options: [
-			{ text: "Absolutely",         scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Sometimes",          scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "I prefer stability", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Peaceful life is best", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "Absolutely",            scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Sometimes",             scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "I prefer stability",    scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "Peaceful life is best", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
 		prompt: "I trust my emotions more than logic.",
 		options: [
-			{ text: "Feelings first",       scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1, [P.tamago]: -1 } },
+			{ text: "Feelings first",       scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
 			{ text: "Depends on situation", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
 			{ text: "Logic first",          scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Balance both",         scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } }
@@ -184,9 +180,9 @@ const questions = [
 	{
 		prompt: "I like helping people solve problems.",
 		options: [
-			{ text: "Always helping",         scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "If they ask",            scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Depends on energy",      scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Always helping",          scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "If they ask",             scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "Depends on energy",       scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
 			{ text: "I focus on myself first", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
 		]
 	},
@@ -196,7 +192,7 @@ const questions = [
 			{ text: "New experiences are exciting", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "Sometimes",                    scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
 			{ text: "I prefer familiar things",     scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Safe choices only",            scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "Safe choices only",            scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
@@ -205,7 +201,7 @@ const questions = [
 			{ text: "Pressure motivates me", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Sometimes",             scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "I prefer calm",         scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "I avoid stress",        scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1, [P.cheezu]: -1 } }
+			{ text: "I avoid stress",        scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
@@ -286,62 +282,55 @@ const personalities = [
 	}
 ];
 
-/* ---------------- UI ---------------- */
-const introScreen = document.getElementById("intro-screen");
-const quizScreen = document.getElementById("quiz-screen");
+/* ---------------- UI ELEMENTS ---------------- */
+const introScreen  = document.getElementById("intro-screen");
+const quizScreen   = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
 
-const startButton = document.getElementById("start-button");
-const backButton = document.getElementById("back-button");
-const homeButton = document.getElementById("home-button");
-
-const quizLogoFillWrapper = document.getElementById("quiz-logo-fill-wrapper");
-
-const questionPrompt = document.getElementById("question-prompt");
-const optionList = document.getElementById("option-list");
-
-const resultName = document.getElementById("result-name");
-const resultBackground = document.getElementById("result-background");
-const resultDescription = document.getElementById("result-description");
+const startButton          = document.getElementById("start-button");
+const backButton           = document.getElementById("back-button");
+const homeButton           = document.getElementById("home-button");
+const quizLogoFillWrapper  = document.getElementById("quiz-logo-fill-wrapper");
+const questionPrompt       = document.getElementById("question-prompt");
+const optionList           = document.getElementById("option-list");
+const resultName           = document.getElementById("result-name");
+const resultBackground     = document.getElementById("result-background");
+const resultDescription    = document.getElementById("result-description");
 
 /* ---------------- STATE ---------------- */
 let currentQuestion = 0;
 const answers = Array(questions.length).fill(null);
 
-/* ---------------- NAV ---------------- */
+/* ---------------- HELPERS ---------------- */
 function showScreen(name) {
-	introScreen.classList.toggle("hidden", name !== "intro");
-	quizScreen.classList.toggle("hidden", name !== "quiz");
-	resultScreen.classList.toggle("hidden", name !== "result");
+	[introScreen, quizScreen, resultScreen].forEach(el => {
+		el.style.display = "none";
+		el.classList.add("hidden");
+	});
+	const active = name === "intro" ? introScreen : name === "quiz" ? quizScreen : resultScreen;
+	active.style.display = "";
+	active.classList.remove("hidden");
 }
 
-/* ---------------- QUIZ ---------------- */
+function updateQuizLogoProgress(answeredCount) {
+	if (!quizLogoFillWrapper) return;
+	const pct = Math.max(0, Math.min(100, (answeredCount / questions.length) * 100));
+	quizLogoFillWrapper.style.height = `${pct}%`;
+	const noMask = pct >= 100 ? "none" : "";
+	quizLogoFillWrapper.style.webkitMaskImage = noMask;
+	quizLogoFillWrapper.style.maskImage = noMask;
+}
+
 function resetQuiz() {
 	currentQuestion = 0;
 	answers.fill(null);
 	updateQuizLogoProgress(0);
 }
 
-function updateQuizLogoProgress(answeredCount) {
-	if (!quizLogoFillWrapper) return;
-
-	const percentage = Math.max(0, Math.min(100, (answeredCount / questions.length) * 100));
-	quizLogoFillWrapper.style.height = `${percentage}%`;
-
-	// Remove wave mask at 100% so fill is clean and solid
-	if (percentage >= 100) {
-		quizLogoFillWrapper.style.webkitMaskImage = 'none';
-		quizLogoFillWrapper.style.maskImage = 'none';
-	} else {
-		quizLogoFillWrapper.style.webkitMaskImage = '';
-		quizLogoFillWrapper.style.maskImage = '';
-	}
-}
-
+/* ---------------- QUIZ ---------------- */
 function renderQuestion() {
 	const q = questions[currentQuestion];
 	updateQuizLogoProgress(currentQuestion);
-
 	questionPrompt.textContent = q.prompt;
 	optionList.innerHTML = "";
 
@@ -349,10 +338,8 @@ function renderQuestion() {
 		const btn = document.createElement("button");
 		btn.className = "option-button";
 		btn.textContent = opt.text;
-
 		btn.onclick = () => {
 			answers[currentQuestion] = i;
-
 			if (currentQuestion < questions.length - 1) {
 				currentQuestion++;
 				renderQuestion();
@@ -360,110 +347,71 @@ function renderQuestion() {
 				renderResult();
 			}
 		};
-
 		optionList.appendChild(btn);
 	});
 }
 
 function getPersonality() {
-	// Tally points per personality across all answered questions
 	const tally = {};
 	personalities.forEach(p => tally[p.id] = 0);
-
-	answers.forEach((answerIdx, qIdx) => {
-		if (answerIdx === null) return;
-		const scores = questions[qIdx].options[answerIdx].scores;
-		Object.entries(scores).forEach(([id, pts]) => {
+	answers.forEach((ansIdx, qIdx) => {
+		if (ansIdx === null) return;
+		Object.entries(questions[qIdx].options[ansIdx].scores).forEach(([id, pts]) => {
 			if (tally[id] !== undefined) tally[id] += pts;
 		});
 	});
-
-	// Return the personality with the highest tally
 	return personalities.reduce((best, p) => tally[p.id] > tally[best.id] ? p : best, personalities[0]);
 }
 
 function renderResult() {
 	const p = getPersonality();
 	updateQuizLogoProgress(questions.length);
-
-	resultName.textContent = p.name;
-	resultBackground.textContent = p.title + " — " + p.background;
+	resultName.textContent        = p.name;
+	resultBackground.textContent  = p.title + " — " + p.background;
 	resultDescription.textContent = p.description;
-
-	const illustrationImg = document.getElementById("result-illustration-img");
-	if (illustrationImg) {
-		illustrationImg.src = p.image;
-		illustrationImg.alt = p.name;
-	}
-
+	const img = document.getElementById("result-illustration-img");
+	if (img) { img.src = p.image; img.alt = p.name; }
 	showScreen("result");
 }
 
 /* ---------------- EVENTS ---------------- */
-startButton.onclick = () => {
-	resetQuiz();
-	showScreen("quiz");
-	renderQuestion();
-};
-
-backButton.onclick = () => {
-	if (currentQuestion === 0) return showScreen("intro");
-	currentQuestion--;
-	renderQuestion();
-};
-
-homeButton.onclick = () => {
-	resetQuiz();
-	showScreen("intro");
-};
+startButton.onclick = () => { resetQuiz(); showScreen("quiz"); renderQuestion(); };
+backButton.onclick  = () => { if (currentQuestion === 0) return showScreen("intro"); currentQuestion--; renderQuestion(); };
+homeButton.onclick  = () => { resetQuiz(); showScreen("intro"); };
 
 showScreen("intro");
 
-/* ---------------- FEEDBACK (FIREBASE FIXED) ---------------- */
+/* ---------------- FEEDBACK ---------------- */
 let selectedRating = 0;
 
-const stars = document.querySelectorAll(".star");
-const submitBtn = document.getElementById("submit-feedback");
+const stars          = document.querySelectorAll(".star");
+const submitBtn      = document.getElementById("submit-feedback");
 const feedbackMessage = document.getElementById("feedback-message");
 
 stars.forEach(star => {
 	star.onclick = () => {
 		selectedRating = Number(star.dataset.rating);
-
-		stars.forEach(s => {
-			s.classList.toggle(
-				"active",
-				Number(s.dataset.rating) <= selectedRating
-			);
-		});
+		stars.forEach(s => s.classList.toggle("active", Number(s.dataset.rating) <= selectedRating));
 	};
 });
 
 submitBtn.onclick = async () => {
 	const comment = document.getElementById("feedback-comment").value.trim();
+	if (selectedRating === 0) { feedbackMessage.textContent = "Please select a star rating."; return; }
 
-	if (selectedRating === 0) {
-		feedbackMessage.textContent = "Please select a star rating.";
-		return;
-	}
-
-	// Prevent double-submission
 	submitBtn.disabled = true;
 	submitBtn.textContent = "Sending…";
 
 	try {
 		await addDoc(collection(db, "feedback"), {
 			rating: selectedRating,
-			comment: comment,
+			comment,
 			createdAt: new Date()
 		});
-
 		feedbackMessage.textContent = "Thanks for your feedback!";
-
 		document.getElementById("feedback-comment").value = "";
 		stars.forEach(s => s.classList.remove("active"));
 		selectedRating = 0;
-
 	} catch (err) {
 		console.error(err);
 		feedbackMessage.textContent = "Error sending feedback. Please try again.";
