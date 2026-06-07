@@ -93,7 +93,8 @@ h3,
   font-family: var(--font-heading);
 }
 .hero-line{ margin-top:6px; font-size:1rem; font-weight:700; }
-.body-copy, .question-prompt{ margin-top:8px; max-width:42ch; font-size:var(--type-2); line-height:1.6; text-align:center; }
+.body-copy, .question-prompt{ margin-top:8px; max-width:52ch; line-height:1.5; text-align:center; }
+.question-prompt:not(.question-heading){ font-size:var(--type-2); }
 
 .action-button{ margin-top:14px; background:#fff; color:#111; border:0; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; }
 
@@ -184,6 +185,7 @@ h3,
   display:flex;
   flex-direction:column;
   align-items:center;
+  gap: 16px;
 }
 
 /* Make textarea and submit button align and space evenly */
@@ -197,7 +199,7 @@ h3,
 }
 
 .result-card .feedback-section #submit-feedback{
-  margin-top:0;
+  margin-top: 0;
   align-self:center;
   padding:12px 22px;
   border-radius:12px;
@@ -211,8 +213,9 @@ h3,
 
 /* When the card has extra vertical space, distribute children evenly */
 .result-card.even-space .feedback-section{
-  justify-content: space-between;
-  min-height: 260px; /* adjust as needed to control spacing */
+  justify-content: center;
+  gap: 16px;
+  min-height: auto;
 }
 
 /* make option buttons look like cards on larger screens */
@@ -557,11 +560,6 @@ header .max-w-\[1200px\] .flex.items-center{ gap:14px; }
 }
 
 /* Footer */
-.site-footer{ margin-top:18px; padding:18px 12px; background:rgba(255,255,255,0.03); border-top:1px solid rgba(0,0,0,0.04); z-index:30; }
-.site-footer-inner{ max-width:840px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; }
-.footer-links{ display:flex; gap:var(--space-md); }
-.footer-links a{ color:rgba(0,0,0,0.6); text-decoration:none; font-weight:600; }
-.site-copy{ color:rgba(0,0,0,0.6); font-size:0.9rem; }
 
 /* === Responsive spacing fix pack === */
 h1{font-size:clamp(2rem,5vw,3rem);}
@@ -601,22 +599,6 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 #feedback-comment {
     background: white;
     color: black;
-}
-
-.feedback-section {
-    margin-top: 2rem;
-}
-
-#submit-feedback {
-    background: white;
-    color: #bc0100;
-    padding: 14px 32px;
-    border-radius: 12px;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    cursor: pointer;
-    border: none;
-    transition: all 0.3s ease;
 }
 
 #submit-feedback:hover {
@@ -883,8 +865,6 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   }
 
   /* Footer */
-  .site-footer { padding: 16px 12px; }
-  .footer-links { flex-wrap: wrap; justify-content: center; gap: 12px; }
 
   /* Stage: no side padding so cards go edge-to-edge */
   .stage { padding: 8px; overflow-x: hidden; }
