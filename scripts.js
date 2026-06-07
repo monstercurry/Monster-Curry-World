@@ -310,6 +310,11 @@ function showScreen(name) {
 	const active = name === "intro" ? introScreen : name === "quiz" ? quizScreen : resultScreen;
 	active.style.display = "";
 	active.classList.remove("hidden");
+
+	// Show back button only on quiz screen
+	if (backButton) {
+		backButton.style.display = name === "quiz" ? "" : "none";
+	}
 }
 
 function updateQuizLogoProgress(answeredCount) {
@@ -336,6 +341,7 @@ function renderQuestion() {
 
 	q.options.forEach((opt, i) => {
 		const btn = document.createElement("button");
+		btn.type = "button";
 		btn.className = "option-button";
 		btn.textContent = opt.text;
 		btn.onclick = () => {
