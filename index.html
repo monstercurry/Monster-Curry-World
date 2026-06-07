@@ -39,13 +39,16 @@
 				<div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
 					<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry" style="display:block;">
 				</div>
-				<div class="flex items-center gap-base">
-					<button id="share-button" class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Share this page">
-						<span class="material-symbols-outlined" data-icon="share">share</span>
-					</button>
-					<button class="p-2 text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200 active:scale-95 transition-transform" type="button" aria-label="Restaurant menu">
-						<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
-					</button>
+				<div class="flex items-center gap-3">
+					<a href="#" aria-label="Facebook" class="social-logo-link">
+						<img src="images/facebook_logo.png" alt="Facebook" class="social-logo-icon">
+					</a>
+					<a href="#" aria-label="TikTok" class="social-logo-link">
+						<img src="images/tiktok_logo.png" alt="TikTok" class="social-logo-icon">
+					</a>
+					<a href="#" aria-label="Instagram" class="social-logo-link">
+						<img src="images/instagram_logo.png" alt="Instagram" class="social-logo-icon">
+					</a>
 				</div>
 			</div>
 		</header>
@@ -95,7 +98,7 @@
 			</article>
 
 			<!-- Quiz screen (revamped from Questions.html) -->
-			<article class="frame quiz-frame hidden" id="quiz-screen">
+			<article class="frame quiz-frame hidden" id="quiz-screen" style="display:none">
 				<div class="frame-body">
 					<div class="relative z-10 w-full max-w-[680px] mx-auto">
 						<div class="question-box bg-outline-variant/40 rounded-[28px] p-6 md:p-8 shadow-2xl backdrop-blur-md border border-white/10">
@@ -105,13 +108,11 @@
 									<div class="logo-progress-icon">
 										<img src="images/MC_Logo_Round_Black_n_White.png" class="logo-progress-base" alt="">
 										<div class="logo-progress-fill" id="quiz-logo-fill-wrapper" style="height: 0%;">
-											<div class="logo-progress-wave"></div>
 											<img src="images/MC_Logo_Round_White.png" class="logo-progress-color" alt="">
 										</div>
 									</div>
 								</div>
-								<h2 class="question-heading">Questions</h2>
-								<p class="question-prompt" id="question-prompt"></p>
+								<p class="question-heading question-prompt" id="question-prompt"></p>
 
 								<div class="w-full mt-4 space-y-4" id="option-list"></div>
 							</div>
@@ -127,10 +128,12 @@
 			</article>
 
 			<!-- Result screen (keeps id result-screen) -->
-			<article class="frame result-frame hidden" id="result-screen">
+			<article class="frame result-frame hidden" id="result-screen" style="display:none">
 				<div class="frame-body">
 					<div class="result-card even-space glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">
-						<div class="result-illustration" id="result-illustration">Cute Illustration</div>
+						<div class="result-illustration" id="result-illustration">
+								<img id="result-illustration-img" src="" alt="" style="width:100%;height:100%;object-fit:contain;">
+							</div>
 						<h2 class="result-name" id="result-name">Personality name</h2>
 						<p class="result-background" id="result-background"></p>
 						<p class="result-description" id="result-description"></p>
@@ -166,18 +169,6 @@
 				<button class="action-button" id="home-button" type="button">Home</button>
 			</article>
 		</section>
-		<!-- footer moved inside phone-shell for consistent width -->
-		<footer class="site-footer">
-			<div class="site-footer-inner">
-				<div class="site-brand">Monster Curry</div>
-				<div class="footer-links">
-					<a href="#">Privacy Policy</a>
-					<a href="#">Terms of Service</a>
-					<a href="#">Locations</a>
-				</div>
-				<div class="site-copy">© 2024 Monster Curry. Unleash the Flavor.</div>
-			</div>
-		</footer>
 	</main>
 
 	<script type="module" src="scripts.js"></script>
