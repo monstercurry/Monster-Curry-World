@@ -219,7 +219,7 @@ const personalities = [
 	{
 		id: P.katsu,
 		image: "images/Katsu-Chan.png",
-		name: "🍗 Katsu-Chan",
+		name: "Katsu-Chan",
 		title: "The Classic Comfort Hero",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
 		description: "Calm, comforting, and consistently good in any situation. You are reliable, friendly, and dependable. People gravitate toward you because you bring stability and warmth without making things complicated. You're everyone's safe choice — and that's a superpower."
@@ -227,7 +227,7 @@ const personalities = [
 	{
 		id: P.monstora,
 		image: "images/Monstora_Sharemi.png",
-		name: "🍛 Monstora Sharemi",
+		name: "Monstora Sharemi",
 		title: "The Social Feast Buddy",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
 		description: "Outgoing, generous, and group-oriented — you love sharing and bringing people together. If you're eating with someone, expect extra spoons and shared bites. You thrive in social settings and make everyone feel included in the fun."
@@ -235,7 +235,7 @@ const personalities = [
 	{
 		id: P.giga,
 		image: "images/Giga_Nomu.png",
-		name: "🍖 Giga Nomu",
+		name: "Giga Nomu",
 		title: "The Big Appetite Beast",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
 		description: "Bold, energetic, and fearless — you live for big experiences and never hold back. You always finish what others can't, and your enthusiasm is contagious. You're built for full-throttle living, and people love your unstoppable energy."
@@ -243,7 +243,7 @@ const personalities = [
 	{
 		id: P.tamago,
 		image: "images/Tamago_Puffy.png",
-		name: "🥚 Tamago Puffy",
+		name: "Tamago Puffy",
 		title: "The Soft & Cozy Dreamer",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
 		description: "Gentle, cute, and comfort-loving — you find joy in the quiet, cozy moments of life. You're the person who makes others feel instantly at ease. Your warmth is subtle but deeply felt, and your emotional softness is your greatest strength."
@@ -251,7 +251,7 @@ const personalities = [
 	{
 		id: P.cheezu,
 		image: "images/Cheezu_Mellow.png",
-		name: "🧀 Cheezu Mellow",
+		name: "Cheezu Mellow",
 		title: "The Cheesy Comfort Lover",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
 		description: "Affectionate, cozy, and a little over-the-top in the best way. You love indulgence and emotional warmth. You're expressive, caring, and impossible not to love. When you're around, people feel wrapped in something warm and good."
@@ -259,7 +259,7 @@ const personalities = [
 	{
 		id: P.ramy,
 		image: "images/Ramy_Noodleton.png",
-		name: "🍜 Ramy Noodleton",
+		name: "Ramy Noodleton",
 		title: "The Chill Slurper",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
 		description: "Relaxed, easygoing, and quietly cool — you go with the flow and never let life stress you out. You have a laid-back charm that draws people in. You know how to enjoy the moment without overcomplicating things."
@@ -267,7 +267,7 @@ const personalities = [
 	{
 		id: P.hotsizz,
 		image: "images/Hot_Sizz.png",
-		name: "🔥 Hot Sizz",
+		name: "Hot Sizz",
 		title: "The Hotplate Performer",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
 		description: "Energetic, dramatic, and passionate — you bring heat wherever you go. You thrive in the spotlight and have the kind of presence people can't look away from. Your intensity is magnetic, and life is never boring when you're in the room."
@@ -275,7 +275,7 @@ const personalities = [
 	{
 		id: P.teppa,
 		image: "images/Teppa_Spark.jpg",
-		name: "🍳 Teppa Spark",
+		name: "Teppa Spark",
 		title: "The Precision Show Chef",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
 		description: "Focused, skillful, and stylish — you do everything with intention and flair. You're the kind of person who makes hard things look effortless. Detail-oriented and quietly confident, your precision and cool-headedness make you someone people deeply respect."
@@ -310,6 +310,11 @@ function showScreen(name) {
 	const active = name === "intro" ? introScreen : name === "quiz" ? quizScreen : resultScreen;
 	active.style.display = "";
 	active.classList.remove("hidden");
+
+	// Show back button only on quiz screen
+	if (backButton) {
+		backButton.style.display = name === "quiz" ? "" : "none";
+	}
 }
 
 function updateQuizLogoProgress(answeredCount) {
@@ -336,6 +341,7 @@ function renderQuestion() {
 
 	q.options.forEach((opt, i) => {
 		const btn = document.createElement("button");
+		btn.type = "button";
 		btn.className = "option-button";
 		btn.textContent = opt.text;
 		btn.onclick = () => {
