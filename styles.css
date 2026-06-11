@@ -751,21 +751,69 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   /* Hide decorative background monsters */
   .fixed-bg-monsters { display: none !important; }
 
-  /* Outer frame colour matches desktop */
+  /* ---- MOBILE INTRO CARD: tighten all spacing so it fits on screen ---- */
+
+  /* Reduce outer frame padding */
   .intro-frame {
     background: #f5ac0f7f !important;
     border-radius: 0;
-    padding: 16px;
+    padding: 8px !important;
+  }
+
+  /* Kill the huge py-stack-lg (48px) container padding */
+  .intro-frame .frame-body .container {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Tighten the inner card padding */
+  .monster-red-gradient {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 16px 16px !important;
+    border-radius: 20px;
+    max-width: 100%;
+  }
+
+  /* Shrink the gap between heading block and body text */
+  .monster-red-gradient .mb-stack-md {
+    margin-bottom: 12px !important;
+  }
+
+  /* Reduce gap between body text paragraphs */
+  .monster-red-gradient .mb-stack-sm {
+    margin-bottom: 6px !important;
+  }
+
+  /* Reduce bottom margin on last body text */
+  .monster-red-gradient .mb-stack-lg {
+    margin-bottom: 10px !important;
+  }
+
+  /* Shrink the "join" block top margin */
+  .monster-red-gradient .mt-stack-md {
+    margin-top: 12px !important;
+  }
+
+  /* Tighten the CTA + social proof block */
+  .monster-red-gradient .w-full.flex.flex-col {
+    gap: 8px !important;
+  }
+
+  /* Reduce join/avatar block top margin */
+  .monster-red-gradient .mt-stack-md.flex {
+    margin-top: 8px !important;
   }
 
   /* ---- TEXT: force white + correct font to match desktop ---- */
 
-  /* Main heading */
   .monster-red-gradient h1,
   .monster-red-gradient .font-headline-xl {
     color: #ffffff !important;
     font-family: var(--font-heading) !important;
     font-weight: 700 !important;
+    font-size: 1.9rem !important;
+    line-height: 1.05 !important;
   }
 
   /* "FLAVOR QUEST" pill label */
@@ -776,12 +824,15 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   /* Body paragraphs inside the card */
   .monster-red-gradient p {
     color: rgba(255,255,255,0.9) !important;
+    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
   }
 
   /* "Join 12,000+" line */
   .monster-red-gradient .font-body-sm,
   .monster-red-gradient span.font-body-sm {
     color: rgba(255,255,255,0.8) !important;
+    font-size: 0.82rem !important;
   }
 
   /* Avatar initials circles */
@@ -791,22 +842,14 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     border-color: #fff !important;
   }
 
-  /* Inner card: full width */
-  .monster-red-gradient {
-    width: 100%;
-    margin: 0 auto;
-    padding: 24px 20px;
-    border-radius: 20px;
-    max-width: 100%;
-  }
-
   .monster-red-gradient h1 {
-    font-size: 2rem;
+    font-size: 1.9rem;
     text-align: center;
+    line-height: 1.05;
   }
 
   /* Stack layout columns */
-  .flex.flex-col.lg\:flex-row { flex-direction: column !important; align-items: center; }
+  .flex.flex-col.lg\:flex-row { flex-direction: column !important; align-items: center; gap: 0 !important; }
   .w-full.lg\:w-5\/12.hidden.md\:block { display: none !important; }
 
   /* Quiz frame */
