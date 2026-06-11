@@ -871,12 +871,18 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     border-radius: 12px;
   }
 
-  #back-button {
-    width: auto !important;
-    min-width: 0;
-    display: inline-flex;
-    min-height: 44px;
-  }
+/* Stacking Context Fixes for Navigation Interactions */
+#back-button, 
+#home-button {
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+/* Optional safety fallback to ensure background blurs never swallow click interactions */
+.stage > .absolute {
+  pointer-events: none !important;
+}
 
   /* Footer */
 
