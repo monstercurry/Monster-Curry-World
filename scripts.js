@@ -33,7 +33,7 @@ const P = {
 };
 
 const questions = [
-	{
+{
 		prompt: "I always want extra toppings on my curry.",
 		options: [
 			{ text: "More toppings = better life",  scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
@@ -124,93 +124,48 @@ const questions = [
 		]
 	},
 	{
-		prompt: "I enjoy being the center of attention.",
+		prompt: "Which Monster Curry menu item speaks to you most?",
 		options: [
-			{ text: "I love attention", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Sometimes",        scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Not really",       scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I avoid it",       scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
+			{ text: "Classic Chicken Katsu Curry",              scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Monster Challenge (Extra Large)",           scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
+			{ text: "Cheese Curry with Extra Toppings",         scores: { cheezu: 3, monstora: 1, tamago: 1 } },
+			{ text: "Spicy Hotplate Sizzling Curry",            scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
 		]
 	},
 	{
-		prompt: "I prefer planning over spontaneity.",
+		prompt: "How do you like your curry sauce?",
 		options: [
-			{ text: "I plan everything",    scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Important things only", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I go with the flow",   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Chaos is fun",         scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
+			{ text: "Rich and thick — the more the better",     scores: { giga: 3, monstora: 1, cheezu: 1, teppa: -1 } },
+			{ text: "Smooth and balanced, not too heavy",       scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Fiery and bold with a strong kick",        scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
+			{ text: "Light and flavourful — just enough",       scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
 		]
 	},
 	{
-		prompt: "I often take care of others first.",
+		prompt: "What would you add first as an extra topping?",
 		options: [
-			{ text: "Always",    scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Often",     scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Sometimes", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
-			{ text: "Rarely",    scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
+			{ text: "Melted cheese — always",                   scores: { cheezu: 3, monstora: 1, tamago: 1 } },
+			{ text: "A perfectly fried egg",                    scores: { tamago: 3, katsu: 1, cheezu: 1 } },
+			{ text: "Extra crispy katsu",                       scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Extra chilli — make it hurt",              scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
 		]
 	},
 	{
-		prompt: "I enjoy competition.",
+		prompt: "You're eating at Monster Curry with friends. You:",
 		options: [
-			{ text: "Winning matters",     scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Challenge is fun",    scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "I prefer peace",      scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
-			{ text: "I avoid competition", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Order the sharing Monster Combo platter",   scores: { monstora: 3, giga: 1, cheezu: 1, ramy: -1 } },
+			{ text: "Get your personal favourite and focus",     scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Try something new from the specials board", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
+			{ text: "Let everyone order first, then decide",     scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
 		]
 	},
 	{
-		prompt: "I like life to be exciting and unpredictable.",
+		prompt: "Pick your ideal Monster Curry experience:",
 		options: [
-			{ text: "Absolutely",            scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Sometimes",             scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "I prefer stability",    scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Peaceful life is best", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
-		]
-	},
-	{
-		prompt: "I trust my emotions more than logic.",
-		options: [
-			{ text: "Feelings first",       scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
-			{ text: "Depends on situation", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Logic first",          scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Balance both",         scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } }
-		]
-	},
-	{
-		prompt: "I like helping people solve problems.",
-		options: [
-			{ text: "Always helping",          scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "If they ask",             scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Depends on energy",       scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "I focus on myself first", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
-		]
-	},
-	{
-		prompt: "I enjoy trying unusual experiences.",
-		options: [
-			{ text: "New experiences are exciting", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Sometimes",                    scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "I prefer familiar things",     scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Safe choices only",            scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
-		]
-	},
-	{
-		prompt: "I work best under pressure.",
-		options: [
-			{ text: "Pressure motivates me", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Sometimes",             scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "I prefer calm",         scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "I avoid stress",        scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
-		]
-	},
-	{
-		prompt: "My friends come to me for advice.",
-		options: [
-			{ text: "Very often", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Sometimes",  scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Rarely",     scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Never",      scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } }
+			{ text: "Teppanyaki-style — watching the chef cook live", scores: { teppa: 3, katsu: 1, ramy: 1, giga: -1 } },
+			{ text: "Sizzling hotplate arriving at the table",         scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
+			{ text: "Giant bowl challenge with the whole group",       scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
+			{ text: "Quiet solo meal with a comforting classic",       scores: { tamago: 3, katsu: 1, cheezu: 1 } }
 		]
 	}
 ];
@@ -281,6 +236,17 @@ const personalities = [
 		description: "Focused, skillful, and stylish — you do everything with intention and flair. You're the kind of person who makes hard things look effortless. Detail-oriented and quietly confident, your precision and cool-headedness make you someone people deeply respect."
 	}
 ];
+// Expose for the 'Check out other personalities' modal
+window.CHARACTERS = personalities;
+window.showResult = function(p) {
+	updateQuizLogoProgress(questions.length);
+	resultName.textContent        = p.name;
+	resultBackground.textContent  = p.title + ' — ' + p.background;
+	resultDescription.textContent = p.description;
+	const img = document.getElementById('result-illustration-img');
+	if (img) { img.src = p.image; img.alt = p.name; }
+	showScreen('result');
+};
 
 /* ---------------- UI ELEMENTS ---------------- */
 const introScreen  = document.getElementById("intro-screen");
@@ -346,13 +312,18 @@ function renderQuestion() {
 		btn.className = "option-button";
 		btn.textContent = opt.text;
 		btn.onclick = () => {
+			// Visual feedback: add .selected (iOS-safe alternative to :active)
+			optionList.querySelectorAll('.option-button').forEach(b => b.classList.remove('selected'));
+			btn.classList.add('selected');
 			answers[currentQuestion] = i;
-			if (currentQuestion < questions.length - 1) {
-				currentQuestion++;
-				renderQuestion();
-			} else {
-				renderResult();
-			}
+			setTimeout(() => {
+				if (currentQuestion < questions.length - 1) {
+					currentQuestion++;
+					renderQuestion();
+				} else {
+					renderResult();
+				}
+			}, 180); // brief delay so user sees selection before advancing
 		};
 		optionList.appendChild(btn);
 	});

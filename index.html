@@ -24,6 +24,86 @@
 		}
 	</script>
 	<link rel="stylesheet" href="styles.css" />
+	<style>
+		/* iOS tap highlight fix — prevents grey/blue flash on selected options */
+		* {
+			-webkit-tap-highlight-color: transparent;
+		}
+		/* Ensure option buttons use explicit background so iOS respects it */
+		.option-btn, [class*="option"] button, #option-list button, #option-list label {
+			-webkit-tap-highlight-color: transparent !important;
+			-webkit-appearance: none;
+		}
+		/* "Check out other personalities" button */
+		#check-personalities-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 1.25rem;
+			padding: 0.75rem 1.5rem;
+			border-radius: 9999px;
+			border: 2px solid rgba(255,255,255,0.35);
+			background: rgba(255,255,255,0.12);
+			color: #fff;
+			font-weight: 700;
+			font-size: 0.875rem;
+			cursor: pointer;
+			transition: background 0.2s, border-color 0.2s;
+			-webkit-tap-highlight-color: transparent;
+		}
+		#check-personalities-btn:hover {
+			background: rgba(255,255,255,0.22);
+			border-color: rgba(255,255,255,0.6);
+		}
+		/* Personalities drawer/modal */
+		#personalities-modal {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 200;
+			background: rgba(0,0,0,0.65);
+			backdrop-filter: blur(4px);
+			align-items: center;
+			justify-content: center;
+		}
+		#personalities-modal.open {
+			display: flex;
+		}
+		.personalities-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+			gap: 1rem;
+			max-height: 60vh;
+			overflow-y: auto;
+			padding: 0.5rem;
+		}
+		.personality-card {
+			background: rgba(255,255,255,0.08);
+			border: 1px solid rgba(255,255,255,0.15);
+			border-radius: 16px;
+			padding: 1rem 0.75rem;
+			text-align: center;
+			cursor: pointer;
+			transition: background 0.2s, transform 0.15s;
+			color: #fff;
+		}
+		.personality-card:hover {
+			background: rgba(255,255,255,0.18);
+			transform: translateY(-2px);
+		}
+		.personality-card img {
+			width: 64px;
+			height: 64px;
+			object-fit: contain;
+			margin: 0 auto 0.5rem;
+			border-radius: 12px;
+		}
+		.personality-card p {
+			font-size: 0.8rem;
+			font-weight: 700;
+			line-height: 1.2;
+		}
+	</style>
 </head>
 <body>
 	<div aria-hidden="true" class="fixed-bg-monsters">
@@ -66,19 +146,25 @@
 							<div class="w-full lg:w-7/12">
 								<div class="monster-red-gradient rounded-[40px] p-stack-md md:p-stack-lg flex flex-col items-center text-center text-on-primary shadow-[0px_20px_60px_rgba(188,1,0,0.3)] transition-transform hover:scale-[1.01] duration-500 relative z-20">
 									<div class="mb-stack-md">
-										<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-base">Flavor Quest</span>
-										<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-on-primary mt-base leading-tight">Curry <br>Personality Test</h1>
+										<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-10">Flavour Quest</span>
+										<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-on-primary mt-4 leading-tight">Curry <br>Personality Test</h1>
 									</div>
 									<p class="font-body-md text-body-md text-white/90 max-w-md mb-stack-sm">Want to know more about your personality?</p>
-									<p class="font-body-sm text-body-sm text-white/70 max-w-sm mb-stack-lg leading-relaxed">Uncover the "monster" flavor profile that rules your tastebuds. Whether you're a fiery Spiced King or a smooth Savory Giant, your plate tells a story.</p>
+									<p class="font-body-sm text-body-sm text-white/70 max-w-sm mb-stack-lg leading-relaxed">Uncover the "monster" flavour profile that rules your tastebuds. Whether you're a fiery Spiced King or a smooth Savory Giant, your plate tells a story.</p>
 									<div class="w-full flex flex-col gap-base mt-stack-md">
 										<button id="start-button" class="w-full md:w-auto md:min-w-[200px] mx-auto bg-on-primary text-primary px-stack-lg py-4 rounded-xl font-label-bold text-label-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 pulse-glow">Start Quiz</button>
 										<div class="mt-stack-md flex flex-col items-center gap-3 opacity-80">
 											<span class="font-body-sm text-body-sm text-white/80">Join 12,000+ Curry Monsters</span>
 											<div class="flex items-center gap-3">
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">MC</div>
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">MM</div>
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">CS</div>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												</div>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												</div>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -151,6 +237,12 @@
 
    						 <p id="feedback-message" class="mt-3 text-sm"></p>
 						</div>
+						<div style="margin-top:1.5rem;">
+							<button id="check-personalities-btn" type="button">
+								<span class="material-symbols-outlined" style="font-size:18px;">diversity_3</span>
+								Check out other personalities
+							</button>
+						</div>
 					</div>
 				</div>
 				<button class="action-button relative z-30" id="home-button" type="button">Home</button>
@@ -158,6 +250,64 @@
 		</section>
 	</main>
 
+	<!-- Personalities Modal -->
+	<div id="personalities-modal" role="dialog" aria-modal="true" aria-label="All Personalities">
+		<div style="background:rgba(20,20,20,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:2rem;width:min(90vw,640px);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;gap:1rem;">
+			<div style="display:flex;justify-content:space-between;align-items:center;">
+				<h2 style="color:#fff;font-size:1.25rem;font-weight:800;">All Personalities</h2>
+				<button id="close-personalities-modal" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Close">✕</button>
+			</div>
+			<p style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Tap any personality to learn more about them.</p>
+			<div class="personalities-grid" id="personalities-grid"></div>
+		</div>
+	</div>
+
+	<script>
+	// Personalities modal — window.load ensures scripts.js module has run
+	window.addEventListener('load', function() {
+		var openBtn  = document.getElementById('check-personalities-btn');
+		var modal    = document.getElementById('personalities-modal');
+		var closeBtn = document.getElementById('close-personalities-modal');
+		var grid     = document.getElementById('personalities-grid');
+		if (!openBtn || !modal) return;
+
+		function populateGrid() {
+			grid.innerHTML = '';
+			var chars = window.CHARACTERS || [];
+			if (!chars.length) {
+				grid.innerHTML = '<p style="color:rgba(255,255,255,0.55);grid-column:1/-1;text-align:center;padding:2rem;">No personalities found.</p>';
+				return;
+			}
+			chars.forEach(function(c) {
+				var card = document.createElement('div');
+				card.className = 'personality-card';
+				var imgSrc = c.image || '';
+				var rawName = c.name || 'Unknown';
+				var displayName = rawName.replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
+				var subtitle = c.title || '';
+				card.innerHTML = imgSrc
+					? ('<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy">'
+					  + '<p style="font-size:0.82rem;font-weight:800;margin-bottom:2px;">' + displayName + '</p>'
+					  + (subtitle ? '<p style="font-size:0.72rem;opacity:0.7;line-height:1.2;">' + subtitle + '</p>' : ''))
+					: ('<div style="width:64px;height:64px;border-radius:12px;background:rgba(255,255,255,0.1);margin:0 auto 0.5rem;"></div>'
+					  + '<p>' + displayName + '</p>');
+				card.addEventListener('click', function() {
+					closeModal();
+					if (typeof window.showResult === 'function') window.showResult(c);
+				});
+				grid.appendChild(card);
+			});
+		}
+
+		function openModal()  { populateGrid(); modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+		function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+
+		openBtn.addEventListener('click', openModal);
+		closeBtn.addEventListener('click', closeModal);
+		modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+		document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+	});
+	</script>
 	<script type="module" src="scripts.js"></script>
 </body>
 </html>

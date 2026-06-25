@@ -23,6 +23,23 @@
 
 * { box-sizing: border-box; }
 
+/* ---- iOS tap highlight fix ---- */
+/* Prevents the blue/grey flash when tapping buttons on Safari iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+.option-button {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none;
+  /* Use explicit selected state class instead of :active for iOS reliability */
+}
+.option-button.selected {
+  background: rgba(210, 145, 0, 1) !important;
+  border-color: rgba(210, 145, 0, 1) !important;
+  transform: scale(0.97);
+}
+
+
 html,body{ height:100%; }
 body{
   margin:0;
