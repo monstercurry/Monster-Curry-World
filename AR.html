@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Monster Curry — Meet Your Characters in AR</title>
+
+	<!-- Same head includes as index.html, so the top bar renders identically across the transition -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<script id="tailwind-config">
+		tailwind.config = {
+			darkMode: "class",
+			theme: {
+				extend: {
+					spacing: {
+						"gutter": "24px",
+						"stack-lg": "48px",
+						"stack-md": "32px"
+					}
+				}
+			}
+		}
+	</script>
+	<link rel="stylesheet" href="styles.css" />
+	<style>
+		/* iOS tap highlight fix, matching index.html */
+		* { -webkit-tap-highlight-color: transparent; }
+	</style>
+
+	<!--
+		==========================================================
+		WEBAR LIBRARIES — load order matters.
+		1) A-Frame        = the 3D engine (renders 3D space/camera/objects via HTML)
+		2) MindAR (image)  = the AR bridge (camera access + image tracking),
+		                      built on top of A-Frame, so it must load AFTER it.
+		==========================================================
+	-->
+	<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+	<style>
+		* { box-sizing: border-box; }
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background: #0b0b0b;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			overflow: hidden;
+		}
+
+		a-scene {
+			position: fixed;
+			top: var(--header-height, 64px);
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1;
+		}
+
+		/* ---------- Overlay UI (sits above the camera/AR canvas, below the header) ---------- */
+		.ar-overlay {
+			position: fixed;
+			top: var(--header-height, 64px);
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 10;
+			pointer-events: none;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
+		}
+
+		.ar-topbar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			pointer-events: auto;
+		}
+
+		.ar-badge {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			background: rgba(0,0,0,0.55);
+			backdrop-filter: blur(6px);
+			border: 1px solid rgba(255,255,255,0.15);
+			border-radius: 999px;
+			padding: 8px 14px;
+			color: #fff;
+			font-weight: 700;
+			font-size: 0.85rem;
+			max-width: 70vw;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			transition: opacity 0.25s ease;
+		}
+
+		.ar-badge.idle { opacity: 0.6; }
+
+		.ar-close {
+			width: 40px;
+			height: 40px;
+			flex-shrink: 0;
+			border-radius: 50%;
+			background: rgba(0,0,0,0.55);
+			border: 1px solid rgba(255,255,255,0.15);
+			color: #fff;
+			font-size: 1.1rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+
+		.ar-hint {
+			align-self: center;
+			text-align: center;
+			background: rgba(0,0,0,0.55);
+			backdrop-filter: blur(6px);
+			border: 1px solid rgba(255,255,255,0.15);
+			border-radius: 18px;
+			padding: 14px 20px;
+			color: #fff;
+			max-width: 320px;
+			pointer-events: auto;
+			transition: opacity 0.3s ease;
+		}
+
+		.ar-hint p {
+			margin: 0;
+			font-size: 0.9rem;
+			line-height: 1.4;
+		}
+
+		.ar-hint.hidden { opacity: 0; }
+
+		/* ---------- Pre-start gate (camera permission needs a tap) ---------- */
+		#start-gate {
+			position: fixed;
+			top: var(--header-height, 64px);
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 100;
+			background: linear-gradient(180deg, #1a0000 0%, #350000 100%);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			padding: 32px;
+			color: #fff;
+		}
+
+		#start-gate img.logo {
+			width: 110px;
+			height: 110px;
+			object-fit: contain;
+			margin-bottom: 20px;
+			border-radius: 24px;
+			background: rgba(255,255,255,0.08);
+			padding: 12px;
+		}
+
+		#start-gate h1 {
+			font-size: 1.3rem;
+			margin: 0 0 8px;
+		}
+
+		#start-gate p {
+			font-size: 0.9rem;
+			opacity: 0.75;
+			max-width: 320px;
+			margin: 0 0 24px;
+			line-height: 1.5;
+		}
+
+		/* Small strip previewing the 8 characters the camera can recognize */
+		.character-strip {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 28px;
+			max-width: 340px;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.character-strip img {
+			width: 44px;
+			height: 44px;
+			object-fit: contain;
+			border-radius: 10px;
+			background: rgba(255,255,255,0.1);
+			padding: 4px;
+		}
+
+		#start-button {
+			background: #fff;
+			color: #bc0100;
+			border: none;
+			border-radius: 999px;
+			padding: 14px 32px;
+			font-weight: 800;
+			font-size: 1rem;
+			cursor: pointer;
+		}
+
+		#error-state {
+			display: none;
+			position: fixed;
+			top: var(--header-height, 64px);
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 100;
+			background: #1a0000;
+			color: #fff;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			padding: 32px;
+		}
+
+		#error-state p {
+			opacity: 0.75;
+			max-width: 280px;
+		}
+	</style>
+</head>
+<body>
+
+	<!-- ============ Persistent site header — identical markup to index.html ============ -->
+	<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
+		<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center">
+			<div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
+				<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry" style="display:block;">
+			</div>
+			<div class="flex items-center gap-3">
+				<a href="#" aria-label="Facebook" class="social-logo-link">
+					<img src="images/facebook_logo.png" alt="Facebook" class="social-logo-icon">
+				</a>
+				<a href="#" aria-label="TikTok" class="social-logo-link">
+					<img src="images/tiktok_logo.png" alt="TikTok" class="social-logo-icon">
+				</a>
+				<a href="#" aria-label="Instagram" class="social-logo-link">
+					<img src="images/instagram_logo.png" alt="Instagram" class="social-logo-icon">
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<!-- ============ Pre-start gate: camera access needs a user tap ============ -->
+	<div id="start-gate">
+		<img class="logo" src="images/MC_Logo_Round_White.png" alt="Monster Curry" />
+		<h1>Meet the Monster Curry Characters</h1>
+		<p>Turn on your camera, then hover it over any character illustration to watch it come alive.</p>
+		<div class="character-strip" id="character-strip"></div>
+		<button id="start-button" type="button">Turn On Camera</button>
+	</div>
+
+	<div id="error-state">
+		<h1>Camera unavailable</h1>
+		<p>We couldn't access your camera. Please allow camera permissions and reload, or try a different browser.</p>
+	</div>
+
+	<!-- ============ AR overlay UI ============ -->
+	<div class="ar-overlay">
+		<div class="ar-topbar">
+			<div class="ar-badge idle" id="character-badge">Point at a character…</div>
+			<div class="ar-close" id="close-ar" aria-label="Exit AR">✕</div>
+		</div>
+		<div class="ar-hint" id="scan-hint">
+			<p>Hover your camera over any Monster Curry character illustration.</p>
+		</div>
+	</div>
+
+	<!-- ============ AR scene container — populated by JS on start ============ -->
+	<div id="scene-container"></div>
+
+	<script>
+		/*
+			==========================================================
+			CHARACTER CONFIG
+			All 8 persona illustrations are compiled TOGETHER into one
+			targets.mind file (MindAR's offline compiler supports
+			multi-target files). Each image gets an index (0–7) in the
+			order it was fed into the compiler — that index is the
+			`targetIndex` used below, and it's what ties a detected
+			image back to the right character + video loop.
+
+			IMPORTANT: if you re-run the compiler with a different image
+			order, these indices must be updated to match.
+			==========================================================
+		*/
+		const CHARACTERS = [
+			{ id: "katsu",    targetIndex: 0, name: "Katsu-Chan",        poster: "images/Katsu-Chan.png",        video: "ar-assets/loops/katsu-loop.webm" },
+			{ id: "monstora", targetIndex: 1, name: "Monstora Sharemi",  poster: "images/Monstora_Sharemi.png",  video: "ar-assets/loops/monstora-loop.webm" },
+			{ id: "giga",     targetIndex: 2, name: "Giga Nomu",         poster: "images/Giga_Nomu.png",         video: "ar-assets/loops/giga-loop.webm" },
+			{ id: "tamago",   targetIndex: 3, name: "Tamago Puffy",      poster: "images/Tamago_Puffy.png",      video: "ar-assets/loops/tamago-loop.webm" },
+			{ id: "cheezu",   targetIndex: 4, name: "Cheezu Mellow",     poster: "images/Cheezu_Mellow.png",     video: "ar-assets/loops/cheezu-loop.webm" },
+			{ id: "ramy",     targetIndex: 5, name: "Ramy Noodleton",    poster: "images/Ramy_Noodleton.png",    video: "ar-assets/loops/ramy-loop.webm" },
+			{ id: "hotsizz",  targetIndex: 6, name: "Hot Sizz",          poster: "images/Hot_Sizz.png",          video: "ar-assets/loops/hotsizz-loop.webm" },
+			{ id: "teppa",    targetIndex: 7, name: "Teppa Spark",       poster: "images/Teppa_Spark.jpg",       video: "ar-assets/loops/teppa-loop.webm" }
+		];
+
+		const TARGETS_MIND_SRC = "ar-assets/targets.mind";
+
+		const startGate      = document.getElementById("start-gate");
+		const startButton    = document.getElementById("start-button");
+		const errorScreen    = document.getElementById("error-state");
+		const sceneContainer = document.getElementById("scene-container");
+		const characterBadge = document.getElementById("character-badge");
+		const scanHint       = document.getElementById("scan-hint");
+		const closeArBtn     = document.getElementById("close-ar");
+		const characterStrip = document.getElementById("character-strip");
+
+		// Populate the small preview strip on the start screen
+		characterStrip.innerHTML = CHARACTERS
+			.map(c => `<img src="${c.poster}" alt="${c.name}" loading="lazy">`)
+			.join("");
+
+		closeArBtn.onclick = () => {
+			// Adjust this to wherever "home" is in the main quiz app
+			window.location.href = "index.html";
+		};
+
+		startButton.onclick = () => {
+			startGate.style.display = "none";
+			initARScene();
+		};
+
+		function initARScene() {
+			// Build every <a-video> asset tag up front (one per character)
+			const assetTags = CHARACTERS
+				.map(c => `<video id="loop-${c.id}" src="${c.video}" preload="auto" loop muted playsinline webkit-playsinline></video>`)
+				.join("\n\t\t\t\t\t");
+
+			// Build one target anchor per character, each watching its own targetIndex
+			const anchorTags = CHARACTERS
+				.map(c => `
+				<a-entity mindar-image-target="targetIndex: ${c.targetIndex}" data-character-id="${c.id}" data-character-name="${c.name}">
+					<a-video src="#loop-${c.id}" width="1" height="1" position="0 0 0" rotation="0 0 0"></a-video>
+				</a-entity>`)
+				.join("");
+
+			sceneContainer.innerHTML = `
+				<a-scene
+					mindar-image="imageTargetSrc: ${TARGETS_MIND_SRC}; autoStart: true; uiScanning: no; uiLoading: no;"
+					color-space="sRGB"
+					renderer="colorManagement: true, physicallyCorrectLights"
+					vr-mode-ui="enabled: false"
+					device-orientation-permission-ui="enabled: false"
+				>
+					<a-assets>
+						${assetTags}
+					</a-assets>
+
+					<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+					${anchorTags}
+				</a-scene>
+			`;
+
+			const sceneEl = sceneContainer.querySelector("a-scene");
+
+			// Wire up targetFound/targetLost for every character anchor.
+			// Only the anchor whose image is currently in view plays its video;
+			// all others stay paused, so there's never more than one loop
+			// running (and drawing CPU/battery) at a time in practice.
+			CHARACTERS.forEach(c => {
+				const anchorEl = sceneContainer.querySelector(`[data-character-id="${c.id}"]`);
+				const videoEl = document.getElementById(`loop-${c.id}`);
+
+				anchorEl.addEventListener("targetFound", () => {
+					characterBadge.textContent = c.name;
+					characterBadge.classList.remove("idle");
+					scanHint.classList.add("hidden");
+					videoEl.currentTime = 0;
+					videoEl.play().catch(() => {
+						/* Autoplay might still be blocked on some browsers even
+						   after the initial user gesture — video is muted so
+						   this should be rare */
+					});
+				});
+
+				anchorEl.addEventListener("targetLost", () => {
+					videoEl.pause();
+					characterBadge.textContent = "Point at a character…";
+					characterBadge.classList.add("idle");
+					scanHint.classList.remove("hidden");
+				});
+			});
+
+			sceneEl.addEventListener("arError", () => {
+				sceneContainer.innerHTML = "";
+				errorScreen.style.display = "flex";
+			});
+		}
+	</script>
+</body>
+</html>

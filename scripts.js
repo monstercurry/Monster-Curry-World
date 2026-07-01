@@ -249,13 +249,18 @@ window.showResult = function(p) {
 };
 
 /* ---------------- UI ELEMENTS ---------------- */
-const introScreen  = document.getElementById("intro-screen");
-const quizScreen   = document.getElementById("quiz-screen");
-const resultScreen = document.getElementById("result-screen");
+const introScreen    = document.getElementById("intro-screen");
+const quizScreen      = document.getElementById("quiz-screen");
+const resultScreen    = document.getElementById("result-screen");
+const arTeaserScreen  = document.getElementById("ar-teaser-screen");
 
 const startButton          = document.getElementById("start-button");
 const backButton           = document.getElementById("back-button");
 const homeButton           = document.getElementById("home-button");
+const arEdgeTabIntro       = document.getElementById("ar-edge-tab-intro");
+const arEdgeTabResult      = document.getElementById("ar-edge-tab-result");
+const launchArButton       = document.getElementById("launch-ar-button");
+const arTeaserBackButton   = document.getElementById("ar-teaser-back-button");
 const quizLogoFillWrapper  = document.getElementById("quiz-logo-fill-wrapper");
 const questionPrompt       = document.getElementById("question-prompt");
 const optionList           = document.getElementById("option-list");
@@ -267,21 +272,42 @@ const resultDescription    = document.getElementById("result-description");
 let currentQuestion = 0;
 const answers = Array(questions.length).fill(null);
 
+// Remembers which screen to return to when leaving the AR teaser
+// (via swipe-back or the "Back" link), so it works from either intro or result.
+let screenBeforeArTeaser = "intro";
+
 /* ---------------- HELPERS ---------------- */
+const SCREENS = {
+	intro: introScreen,
+	quiz: quizScreen,
+	result: resultScreen,
+	"ar-teaser": arTeaserScreen
+};
+
 function showScreen(name) {
-	[introScreen, quizScreen, resultScreen].forEach(el => {
+	Object.values(SCREENS).forEach(el => {
+		if (!el) return;
 		el.style.display = "none";
 		el.classList.add("hidden");
 	});
-	const active = name === "intro" ? introScreen : name === "quiz" ? quizScreen : resultScreen;
+	const active = SCREENS[name] || introScreen;
 	active.style.display = "flex";
 	active.classList.remove("hidden");
 	window.scrollTo({ top: 0, behavior: "smooth" });
 
-	// Show back button only on quiz screen, never on intro or result
+	// Show back button only on quiz screen, never on intro, result, or the AR teaser
 	if (backButton) {
 		backButton.style.display = name === "quiz" ? "inline-flex" : "none";
 	}
+}
+
+function openArTeaser(fromScreen) {
+	screenBeforeArTeaser = fromScreen;
+	showScreen("ar-teaser");
+}
+
+function closeArTeaser() {
+	showScreen(screenBeforeArTeaser);
 }
 
 function updateQuizLogoProgress(answeredCount) {
@@ -372,6 +398,67 @@ homeButton.onclick = () => {
 };
 
 showScreen("intro");
+
+/* ---------------- AR TEASER ---------------- */
+// Desktop entry points: edge tab buttons on the intro and result screens
+if (arEdgeTabIntro)  arEdgeTabIntro.onclick  = () => openArTeaser("intro");
+if (arEdgeTabResult) arEdgeTabResult.onclick = () => openArTeaser("result");
+
+// From the teaser screen: launch the standalone AR camera experience
+if (launchArButton) {
+	launchArButton.onclick = () => {
+		window.location.href = "ar.html";
+	};
+}
+
+// Explicit back link (in addition to swipe-back on mobile)
+if (arTeaserBackButton) {
+	arTeaserBackButton.onclick = () => closeArTeaser();
+}
+
+/* ---------------- MOBILE SWIPE NAVIGATION ---------------- */
+// Swipe left on the intro/result screens opens the AR teaser.
+// Swipe right on the AR teaser screen returns to whichever screen opened it.
+// Swipe is intentionally NOT active on the quiz screen, so it never
+// conflicts with tapping answer options.
+(function setupSwipeNav() {
+	const stageEl = document.querySelector(".stage");
+	if (!stageEl) return;
+
+	const SWIPE_THRESHOLD = 60;   // minimum horizontal px to count as a swipe
+	const MAX_VERTICAL_DRIFT = 60; // ignore mostly-vertical gestures (scrolling)
+
+	let touchStartX = 0;
+	let touchStartY = 0;
+
+	stageEl.addEventListener("touchstart", (e) => {
+		if (!e.touches || e.touches.length === 0) return;
+		touchStartX = e.touches[0].clientX;
+		touchStartY = e.touches[0].clientY;
+	}, { passive: true });
+
+	stageEl.addEventListener("touchend", (e) => {
+		if (!e.changedTouches || e.changedTouches.length === 0) return;
+		const touchEndX = e.changedTouches[0].clientX;
+		const touchEndY = e.changedTouches[0].clientY;
+		const deltaX = touchEndX - touchStartX;
+		const deltaY = touchEndY - touchStartY;
+
+		if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaY) > MAX_VERTICAL_DRIFT) return;
+
+		const introVisible  = introScreen && !introScreen.classList.contains("hidden");
+		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
+		const teaserVisible = arTeaserScreen && !arTeaserScreen.classList.contains("hidden");
+
+		if (deltaX < 0 && (introVisible || resultVisible)) {
+			// Swiped left from intro or result -> open AR teaser
+			openArTeaser(introVisible ? "intro" : "result");
+		} else if (deltaX > 0 && teaserVisible) {
+			// Swiped right from AR teaser -> go back
+			closeArTeaser();
+		}
+	}, { passive: true });
+})();
 
 /* ---------------- FEEDBACK ---------------- */
 let selectedRating = 0;
