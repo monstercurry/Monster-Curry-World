@@ -104,6 +104,19 @@
 			line-height: 1.2;
 		}
 
+		/* Personality detail sub-view (shown inside the same modal, no navigation away) */
+		#personality-detail-view {
+			max-height: 60vh;
+			overflow-y: auto;
+			padding: 0.5rem;
+		}
+		#personality-detail-back {
+			transition: background 0.2s;
+		}
+		#personality-detail-back:hover {
+			background: rgba(255,255,255,0.18);
+		}
+
 		/* ---- AR entry points: desktop edge tab ---- */
 		.ar-edge-tab {
 			position: absolute;
@@ -414,11 +427,27 @@
 	<div id="personalities-modal" role="dialog" aria-modal="true" aria-label="All Personalities">
 		<div style="background:rgba(20,20,20,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:2rem;width:min(90vw,640px);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;gap:1rem;">
 			<div style="display:flex;justify-content:space-between;align-items:center;">
-				<h2 style="color:#fff;font-size:1.25rem;font-weight:800;">All Personalities</h2>
+				<h2 style="color:#fff;font-size:1.25rem;font-weight:800;" id="personalities-modal-title">All Personalities</h2>
 				<button id="close-personalities-modal" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Close">✕</button>
 			</div>
-			<p style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Tap any personality to learn more about them.</p>
-			<div class="personalities-grid" id="personalities-grid"></div>
+
+			<!-- Grid of all personalities -->
+			<div id="personalities-list-view">
+				<p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin:0 0 1rem;">Tap any personality to learn more about them.</p>
+				<div class="personalities-grid" id="personalities-grid"></div>
+			</div>
+
+			<!-- Detail shown in-place within the same overlay when a card is tapped -->
+			<div id="personality-detail-view" style="display:none;">
+				<button id="personality-detail-back" type="button" style="background:rgba(255,255,255,0.1);border:none;border-radius:999px;padding:8px 14px;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:1rem;">← All personalities</button>
+				<div style="display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;">
+					<img id="personality-detail-img" src="" alt="" style="width:140px;height:140px;object-fit:contain;border-radius:20px;background:rgba(255,255,255,0.08);padding:12px;margin-bottom:1rem;">
+					<h3 id="personality-detail-name" style="font-size:1.3rem;font-weight:800;margin:0 0 4px;"></h3>
+					<p id="personality-detail-title" style="font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.75);margin:0 0 1rem;"></p>
+					<p id="personality-detail-background" style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0 0 0.75rem;max-width:44ch;"></p>
+					<p id="personality-detail-description" style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.9);margin:0;max-width:44ch;"></p>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -437,11 +466,24 @@
 
 	// Personalities modal — window.load ensures scripts.js module has run
 	window.addEventListener('load', function() {
-		var openBtn  = document.getElementById('check-personalities-btn');
-		var modal    = document.getElementById('personalities-modal');
-		var closeBtn = document.getElementById('close-personalities-modal');
-		var grid     = document.getElementById('personalities-grid');
+		var openBtn     = document.getElementById('check-personalities-btn');
+		var modal       = document.getElementById('personalities-modal');
+		var closeBtn    = document.getElementById('close-personalities-modal');
+		var grid        = document.getElementById('personalities-grid');
+		var modalTitle  = document.getElementById('personalities-modal-title');
+		var listView    = document.getElementById('personalities-list-view');
+		var detailView  = document.getElementById('personality-detail-view');
+		var detailBack  = document.getElementById('personality-detail-back');
+		var detailImg   = document.getElementById('personality-detail-img');
+		var detailName  = document.getElementById('personality-detail-name');
+		var detailTitle = document.getElementById('personality-detail-title');
+		var detailBg    = document.getElementById('personality-detail-background');
+		var detailDesc  = document.getElementById('personality-detail-description');
 		if (!openBtn || !modal) return;
+
+		function stripEmoji(name) {
+			return (name || '').replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
+		}
 
 		function populateGrid() {
 			grid.innerHTML = '';
@@ -454,8 +496,7 @@
 				var card = document.createElement('div');
 				card.className = 'personality-card';
 				var imgSrc = c.image || '';
-				var rawName = c.name || 'Unknown';
-				var displayName = rawName.replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
+				var displayName = stripEmoji(c.name || 'Unknown');
 				var subtitle = c.title || '';
 				card.innerHTML = imgSrc
 					? ('<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy">'
@@ -463,19 +504,37 @@
 					  + (subtitle ? '<p style="font-size:0.72rem;opacity:0.7;line-height:1.2;">' + subtitle + '</p>' : ''))
 					: ('<div style="width:64px;height:64px;border-radius:12px;background:rgba(255,255,255,0.1);margin:0 auto 0.5rem;"></div>'
 					  + '<p>' + displayName + '</p>');
-				card.addEventListener('click', function() {
-					closeModal();
-					if (typeof window.showResult === 'function') window.showResult(c);
-				});
+				// Show the personality's details inline within this same overlay,
+				// rather than closing the modal and swapping out the result screen.
+				card.addEventListener('click', function() { showDetail(c); });
 				grid.appendChild(card);
 			});
 		}
 
-		function openModal()  { populateGrid(); modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
-		function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; }
+		function showDetail(c) {
+			var displayName = stripEmoji(c.name || 'Unknown');
+			if (detailImg)   { detailImg.src = c.image || ''; detailImg.alt = displayName; }
+			if (detailName)  detailName.textContent = displayName;
+			if (detailTitle) detailTitle.textContent = c.title || '';
+			if (detailBg)    detailBg.textContent = c.background || '';
+			if (detailDesc)  detailDesc.textContent = c.description || '';
+			if (modalTitle)  modalTitle.textContent = displayName;
+			listView.style.display = 'none';
+			detailView.style.display = 'block';
+		}
+
+		function showList() {
+			detailView.style.display = 'none';
+			listView.style.display = 'block';
+			if (modalTitle) modalTitle.textContent = 'All Personalities';
+		}
+
+		function openModal()  { populateGrid(); showList(); modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+		function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; showList(); }
 
 		openBtn.addEventListener('click', openModal);
 		closeBtn.addEventListener('click', closeModal);
+		if (detailBack) detailBack.addEventListener('click', showList);
 		modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 		document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 	});
