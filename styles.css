@@ -23,6 +23,23 @@
 
 * { box-sizing: border-box; }
 
+/* ---- iOS tap highlight fix ---- */
+/* Prevents the blue/grey flash when tapping buttons on Safari iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+.option-button {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-appearance: none;
+  /* Use explicit selected state class instead of :active for iOS reliability */
+}
+.option-button.selected {
+  background: rgba(210, 145, 0, 1) !important;
+  border-color: rgba(210, 145, 0, 1) !important;
+  transform: scale(0.97);
+}
+
+
 html,body{ height:100%; }
 body{
   margin:0;
@@ -41,7 +58,7 @@ body{
 /* ---- MOBILE BODY: block layout so the page can scroll naturally ---- */
 @media (max-width: 899px) {
   html, body { height: auto; min-height: 100%; }
-  body { display: block; padding: 0; }
+  body { display: block; padding: 0; background-size: cover; background-attachment: fixed; }
 }
 
 .phone-shell{
@@ -422,7 +439,7 @@ h3,
 /* Redesigned utilities and fun background styles */
 .fixed-bg-monsters{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
 .fixed-bg-monsters img.monster-watermark{ position:absolute; z-index:0; opacity:0.6; pointer-events:none; filter:grayscale(1); user-select:none; }
-.monster-red-gradient { background: linear-gradient(135deg, #F5AD0F 0%, #F5AD0F 100%); }
+.monster-red-gradient { background: #F5AD0F; }
 .glass-effect { backdrop-filter: blur(8px); background-color: transparent; }
 .pulse-glow:hover { box-shadow: 0 0 25px rgba(188,1,0,0.35); }
 
@@ -482,6 +499,10 @@ header.fixed.top-0 img[alt="Monster Curry"] {
 
 /* Card radius & shadow stronger */
 .monster-red-gradient{ border-radius:28px; box-shadow: 0 30px 80px rgba(188,1,0,0.18); max-width:720px; width:100%; box-sizing:border-box; margin:0 auto; }
+
+@media (max-width: 899px) {
+  .monster-red-gradient { max-width: 100%; border-radius: 20px; }
+}
 
 /* Make hero image visible on medium screens */
 @media (min-width:768px){ .w-full.lg\:w-5\/12.hidden.lg\:block{ display:block !important; } }
@@ -579,7 +600,6 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   .frame{padding:var(--space-md);}
 }
 @media (max-width:599px){
-  .stage{ padding: 8px; }
   .frame{ padding: 10px; }
 }
 .star-rating {
@@ -647,6 +667,7 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   .monster-red-gradient {
     padding: 28px 24px;
     border-radius: 24px;
+    max-width: 100%;
   }
 
   /* Text colours to match desktop */
@@ -753,9 +774,15 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 
   /* Outer frame colour matches desktop */
   .intro-frame {
-    background: #f5ac0f7f !important;
+    background: transparent !important;
     border-radius: 0;
-    padding: 16px;
+    padding: 0;
+  }
+
+  .stage {
+    padding: 0;
+    overflow-x: hidden;
+    min-height: calc(100vh - var(--header-height));
   }
 
   /* ---- TEXT: force white + correct font to match desktop ---- */
@@ -842,6 +869,7 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     font-size: 1.05rem;
     border-radius: 12px;
     padding: 14px 16px;
+    max-width: 100%;
   }
 
   .option-button {
@@ -860,17 +888,20 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     border-radius: 12px;
   }
 
-  #back-button {
-    width: auto !important;
-    min-width: 0;
-    display: inline-flex;
-    min-height: 44px;
-  }
+/* Stacking Context Fixes for Navigation Interactions */
+#back-button, 
+#home-button {
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+/* Optional safety fallback to ensure background blurs never swallow click interactions */
+.stage > .absolute {
+  pointer-events: none !important;
+}
 
   /* Footer */
-
-  /* Stage: no side padding so cards go edge-to-edge */
-  .stage { padding: 8px; overflow-x: hidden; }
 
   /* Frames: prevent horizontal bleed */
   .frame { width: 100%; box-sizing: border-box; overflow-x: hidden; }
