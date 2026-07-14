@@ -127,24 +127,38 @@
 			display: none; /* shown on desktop via media query below */
 			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 			gap: 2px;
+			width: 72px;
+			min-height: 68px;
 			background: rgba(0,0,0,0.55);
 			color: #fff;
 			border: 1px solid rgba(255,255,255,0.25);
 			border-right: none;
 			border-radius: 14px 0 0 14px;
-			padding: 14px 10px;
+			padding: 10px 8px;
 			cursor: pointer;
-			transition: background 0.2s, padding-right 0.2s;
+			transition: background 0.2s;
 		}
 		.ar-edge-tab:hover {
 			background: rgba(0,0,0,0.75);
-			padding-right: 16px;
+		}
+		.battle-edge-tab {
+			top: calc(50% + 88px);
+			display: flex;
+		}
+		@media (min-width: 900px) {
+			.battle-edge-tab {
+				top: calc(50% + 82px);
+			}
 		}
 		.ar-edge-tab-label {
+			width: 100%;
+			text-align: center;
 			font-size: 0.7rem;
 			font-weight: 800;
 			letter-spacing: 0.05em;
+			line-height: 1;
 		}
 
 		/* ---- AR entry points: mobile swipe hint ---- */
@@ -274,6 +288,10 @@
 					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
 					<span class="ar-edge-tab-label">AR</span>
 				</button>
+				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-intro" type="button" aria-label="Join the storefront battle">
+					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
+					<span class="ar-edge-tab-label">BATTLE</span>
+				</button>
 				<div class="swipe-hint" id="swipe-hint-intro" aria-hidden="true">
 					<span class="swipe-hint-arrow">‹</span>
 					<span class="swipe-hint-text">Swipe for AR</span>
@@ -353,6 +371,10 @@
 					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
 					<span class="ar-edge-tab-label">AR</span>
 				</button>
+				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-result" type="button" aria-label="Join the storefront battle">
+					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
+					<span class="ar-edge-tab-label">BATTLE</span>
+				</button>
 				<div class="swipe-hint" id="swipe-hint-result" aria-hidden="true">
 					<span class="swipe-hint-arrow">‹</span>
 					<span class="swipe-hint-text">Swipe for AR</span>
@@ -419,6 +441,74 @@
 						<button class="ar-teaser-back-link" id="ar-teaser-back-button" type="button">Back</button>
 					</div>
 				</div>
+			</article>
+
+			<article class="frame battle-frame hidden" id="battle-screen" style="display:none">
+				<div class="frame-body">
+					<div class="battle-app-shell">
+						<div class="battle-panel battle-code-panel" id="battle-code-panel">
+							<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-4">Storefront Battle</span>
+							<h2>Enter the big-screen code</h2>
+							<p>Look at the storefront display, then type the game code shown there to join the live battle.</p>
+							<div class="battle-manual-join">
+								<label for="battle-manual-code">Game code</label>
+								<div>
+									<input id="battle-manual-code" autocomplete="off" inputmode="text" placeholder="STOREFRONT 1">
+									<button id="battle-manual-join-button" type="button">Join</button>
+								</div>
+							</div>
+							<p class="battle-status-text" id="battle-code-status">Enter the game code shown on the big screen.</p>
+						</div>
+
+						<div class="battle-panel hidden" id="battle-lobby-panel">
+							<h2>Waiting for other players to join</h2>
+							<p id="battle-lobby-message">You can start alone, or wait for another player to enter the code.</p>
+							<div class="battle-lobby-slots" id="battle-lobby-slots"></div>
+							<button class="action-button battle-primary-button" id="battle-start-solo-button" type="button">Start Single Player</button>
+						</div>
+
+						<div class="battle-panel hidden" id="battle-character-panel">
+							<h2>Choose Your Curry Personality Character!</h2>
+							<div class="battle-character-grid" id="battle-character-grid"></div>
+							<div class="battle-selected-character hidden" id="battle-selected-character">
+								<img id="battle-selected-character-art" alt="">
+								<h3 id="battle-selected-character-name">Character</h3>
+								<p id="battle-selected-character-title">Title</p>
+								<p id="battle-selected-character-stats">HP 0 / Attack 0</p>
+								<p id="battle-selected-character-moves">Moves</p>
+								<button class="action-button battle-primary-button" id="battle-confirm-character-button" type="button">Confirm</button>
+							</div>
+						</div>
+
+						<div class="battle-panel hidden" id="battle-move-panel">
+							<div class="battle-move-header">
+								<div>
+									<span id="battle-mode-label">Solo Mode</span>
+									<h2 id="battle-move-title">Choose Your Move!</h2>
+								</div>
+								<strong id="battle-turn-label">Turn 1</strong>
+							</div>
+							<div class="battle-team-status" id="battle-team-status"></div>
+							<div class="battle-monster-status">
+								<span id="battle-monster-name">Monster</span>
+								<div class="battle-hp-track"><div id="battle-monster-hp-bar"></div></div>
+								<strong id="battle-monster-hp-text">0 / 0</strong>
+							</div>
+							<div class="battle-move-grid" id="battle-move-grid"></div>
+							<div class="battle-effects-box">
+								<h3>Effects</h3>
+								<p id="battle-effects-text">Pick your next action.</p>
+							</div>
+						</div>
+
+						<div class="battle-panel hidden" id="battle-gameover-panel">
+							<h2 id="battle-gameover-title">Battle complete</h2>
+							<p id="battle-gameover-message">Thanks for playing.</p>
+							<button class="action-button battle-primary-button" id="battle-play-again-button" type="button">Play again</button>
+						</div>
+					</div>
+				</div>
+				<button class="action-button relative z-30" id="battle-back-button" type="button">Back</button>
 			</article>
 		</section>
 	</main>

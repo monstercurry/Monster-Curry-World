@@ -919,3 +919,301 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   }
 
 }
+
+/* Storefront battle controller, integrated into the existing app shell */
+.battle-frame {
+  background: linear-gradient(135deg, #1a1d23, #350000) !important;
+  color: #fff;
+}
+
+.battle-app-shell {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.battle-panel {
+  display: grid;
+  gap: 16px;
+  padding: clamp(16px, 3vw, 24px);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 24px;
+  background: rgba(0,0,0,0.28);
+  color: #fff;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.18);
+}
+
+.battle-panel h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 7vw, 2.8rem);
+  line-height: 1.03;
+}
+
+.battle-panel h3,
+.battle-panel p {
+  margin: 0;
+}
+
+.battle-panel p {
+  color: rgba(255,255,255,0.78);
+  line-height: 1.45;
+}
+
+.battle-primary-button {
+  background: #fff !important;
+  color: #bc0100 !important;
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  justify-self: center;
+}
+
+.battle-manual-join {
+  display: grid;
+  gap: 8px;
+}
+
+.battle-manual-join label {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.battle-manual-join > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.battle-manual-join input {
+  min-height: 48px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  outline: 0;
+}
+
+.battle-manual-join button {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: #f5ad0f;
+  color: #111;
+  font-weight: 900;
+}
+
+.battle-status-text {
+  min-height: 22px;
+  color: #f5ad0f !important;
+  font-weight: 800;
+}
+
+.battle-lobby-slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.battle-lobby-slot {
+  display: grid;
+  gap: 4px;
+  min-height: 84px;
+  padding: 12px;
+  border: 2px dashed rgba(255,255,255,0.32);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+}
+
+.battle-lobby-slot.filled {
+  border-style: solid;
+  border-color: #f5ad0f;
+}
+
+.battle-lobby-slot span,
+.battle-move-header span {
+  color: #f5ad0f;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.battle-lobby-slot strong {
+  align-self: end;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.battle-character-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.battle-character-card {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  min-height: 190px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  text-align: left;
+}
+
+.battle-character-card:hover,
+.battle-character-card:focus-visible {
+  outline: 3px solid #f5ad0f;
+}
+
+.battle-character-card img {
+  justify-self: center;
+  width: 100%;
+  height: 106px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.28));
+}
+
+.battle-character-card span,
+.battle-character-card small {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.18;
+}
+
+.battle-character-card strong {
+  font-size: 0.98rem;
+}
+
+.battle-selected-character {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.1);
+  text-align: center;
+}
+
+.battle-selected-character img {
+  width: min(230px, 78vw);
+  height: 190px;
+  object-fit: contain;
+}
+
+.battle-move-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.battle-move-header strong {
+  color: #f5ad0f;
+}
+
+.battle-team-status {
+  display: grid;
+  gap: 10px;
+}
+
+.battle-fighter-strip {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+}
+
+.battle-fighter-strip.self {
+  border-color: #f5ad0f;
+}
+
+.battle-fighter-strip img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.battle-fighter-strip span,
+.battle-fighter-strip small {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.battle-monster-status,
+.battle-effects-box {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.1);
+}
+
+.battle-hp-track {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.24);
+}
+
+.battle-hp-track > div {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #32d27b, #f5ad0f, #ed1d24);
+  transition: width 260ms ease;
+}
+
+.battle-move-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.battle-move-button {
+  display: grid;
+  gap: 5px;
+  min-height: 62px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  background: #fff;
+  color: #111;
+  text-align: center;
+  font-weight: 900;
+}
+
+.battle-move-button span {
+  color: rgba(0,0,0,0.66);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.battle-move-button:disabled {
+  cursor: wait;
+  opacity: 0.56;
+}
+
+#battle-back-button {
+  background: rgba(255,255,255,0.92);
+  color: #111;
+}
+
+@media (max-width: 520px) {
+  .battle-character-grid,
+  .battle-lobby-slots {
+    grid-template-columns: 1fr 1fr;
+  }
+}
