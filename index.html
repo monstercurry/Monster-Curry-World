@@ -145,7 +145,6 @@
 		}
 		.battle-edge-tab {
 			top: calc(50% + 88px);
-			display: flex;
 		}
 		@media (min-width: 900px) {
 			.battle-edge-tab {
@@ -177,6 +176,7 @@
 			animation: swipe-hint-pulse 2.2s ease-in-out infinite;
 		}
 		.swipe-hint-back { right: auto; left: 6px; }
+		.swipe-hint-battle { right: auto; left: 6px; }
 		.swipe-hint-arrow { font-size: 1.4rem; line-height: 1; font-weight: 800; }
 		.swipe-hint-text { font-size: 0.65rem; font-weight: 700; writing-mode: vertical-rl; text-orientation: mixed; }
 		.swipe-hint-back .swipe-hint-text { writing-mode: vertical-rl; }
@@ -296,6 +296,10 @@
 					<span class="swipe-hint-arrow">‹</span>
 					<span class="swipe-hint-text">Swipe for AR</span>
 				</div>
+				<div class="swipe-hint swipe-hint-battle" aria-hidden="true">
+					<span class="swipe-hint-text">Swipe for Battle</span>
+					<span class="swipe-hint-arrow">›</span>
+				</div>
 				<div class="frame-body">
 					<div class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
 						<div class="flex flex-col lg:flex-row gap-stack-lg items-center">
@@ -378,6 +382,10 @@
 				<div class="swipe-hint" id="swipe-hint-result" aria-hidden="true">
 					<span class="swipe-hint-arrow">‹</span>
 					<span class="swipe-hint-text">Swipe for AR</span>
+				</div>
+				<div class="swipe-hint swipe-hint-battle" aria-hidden="true">
+					<span class="swipe-hint-text">Swipe for Battle</span>
+					<span class="swipe-hint-arrow">›</span>
 				</div>
 				<div class="frame-body">
 					<div class="result-card even-space glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">
@@ -469,7 +477,6 @@
 
 						<div class="battle-panel hidden" id="battle-character-panel">
 							<h2>Choose Your Curry Personality Character!</h2>
-							<div class="battle-character-grid" id="battle-character-grid"></div>
 							<div class="battle-selected-character hidden" id="battle-selected-character">
 								<img id="battle-selected-character-art" alt="">
 								<h3 id="battle-selected-character-name">Character</h3>
@@ -478,6 +485,7 @@
 								<p id="battle-selected-character-moves">Moves</p>
 								<button class="action-button battle-primary-button" id="battle-confirm-character-button" type="button">Confirm</button>
 							</div>
+							<div class="battle-character-grid" id="battle-character-grid"></div>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-move-panel">
