@@ -160,9 +160,9 @@
 			line-height: 1;
 		}
 
-		/* ---- AR entry points: mobile swipe hint ---- */
+		/* ---- AR entry points: swipe hint (shown on every device) ---- */
 		.swipe-hint {
-			display: none; /* shown on mobile via media query below */
+			display: none; /* overridden to flex below, kept as fallback default */
 			position: absolute;
 			top: 50%;
 			right: 6px;
@@ -179,21 +179,24 @@
 		.swipe-hint-text { font-size: 0.65rem; font-weight: 700; writing-mode: vertical-rl; text-orientation: mixed; }
 		.swipe-hint-nav {
 			position: fixed;
-			top: calc(var(--header-height) + 12px);
+			top: calc(var(--header-height) + 14px);
 			right: auto;
 			left: 50%;
 			transform: translateX(-50%);
 			flex-direction: row;
-			gap: 8px;
+			gap: 12px;
 			width: max-content;
 			max-width: calc(100% - 32px);
-			padding: 7px 12px;
+			padding: 12px 22px;
 			border-radius: 999px;
 			background: rgba(0,0,0,0.42);
 			white-space: nowrap;
 		}
+		.swipe-hint-nav .swipe-hint-arrow {
+			font-size: 1.8rem;
+		}
 		.swipe-hint-nav .swipe-hint-text {
-			font-size: 0.72rem;
+			font-size: 1rem;
 			writing-mode: horizontal-tb;
 		}
 
@@ -202,12 +205,12 @@
 			50% { opacity: 1; }
 		}
 
-		@media (min-width: 900px) {
-			.ar-edge-tab { display: flex; }
-		}
-		@media (max-width: 899px), (hover: none), (pointer: coarse) {
-			.swipe-hint { display: flex; }
-		}
+		/* AR/Battle edge-tab buttons are retired on every breakpoint — the
+		   swipe hint below is now the single, consistent way to reach
+		   AR/Battle whether the visitor is on mobile touch or desktop
+		   (pointer events already support click-drag, so the same swipe
+		   gesture works with a mouse). */
+		.swipe-hint { display: flex; }
 
 		/* ---- AR teaser screen ---- */
 		.ar-teaser-frame {

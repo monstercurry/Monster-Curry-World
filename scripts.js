@@ -1,19 +1,14 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-	getFirestore,
-	collection,
-	addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import {
-	getDatabase,
-	get,
-	onValue,
-	ref,
-	serverTimestamp,
-	update
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-
-/* ---------------- FIREBASE ---------------- */
+/* ---------------- FIREBASE (loaded dynamically, not statically) ----------------
+   Firebase's SDK is fetched from gstatic.com. Ad blockers and browser tracking
+   protection (Opera GX's built-in blocker, Chrome extensions like uBlock Origin,
+   etc.) frequently block gstatic.com/firebasejs requests. A blocked *static*
+   import at the top of an ES module fails the ENTIRE module before a single
+   line of it runs — meaning every button on the page (Start Quiz, Back, Home,
+   star ratings, AR/Battle nav) silently had no click handler attached whenever
+   Firebase was blocked, which is exactly what browsers/extensions with
+   tracking protection do. Loading Firebase dynamically means the rest of the
+   app always initializes even if Firebase never loads; only feedback
+   submission and storefront battle multiplayer sync degrade gracefully. */
 const firebaseConfig = {
 	apiKey: "AIzaSyC1lCGw5eI3oFxw9_FKxBp86k1cMPGWbic",
 	authDomain: "monstercurryfeedback.firebaseapp.com",
@@ -22,9 +17,6 @@ const firebaseConfig = {
 	messagingSenderId: "881609695456",
 	appId: "1:881609695456:web:b84a60ed669112d937b085"
 };
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
 const storefrontFirebaseConfig = {
 	apiKey: "AIzaSyBq5lzgJAY4H_7py32FCSHTnxuwvU-1Ixk",
@@ -35,8 +27,39 @@ const storefrontFirebaseConfig = {
 	messagingSenderId: "805711728537",
 	appId: "1:805711728537:web:9aace7f18cd32020e78d08"
 };
-const storefrontApp = initializeApp(storefrontFirebaseConfig, "storefrontBattle");
-const storefrontDb = getDatabase(storefrontApp);
+
+let db = null;
+let storefrontDb = null;
+let collection, addDoc, get, onValue, ref, serverTimestamp, update;
+let firebaseAvailable = false;
+
+// Fire-and-forget: the rest of this file does NOT wait on this promise, so a
+// blocked/slow/failed Firebase load never delays or breaks UI initialization.
+const firebaseReady = (async () => {
+	try {
+		const [appMod, firestoreMod, databaseMod] = await Promise.all([
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"),
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js")
+		]);
+		({ collection, addDoc } = firestoreMod);
+		({ get, onValue, ref, serverTimestamp, update } = databaseMod);
+
+		const app = appMod.initializeApp(firebaseConfig);
+		db = firestoreMod.getFirestore(app);
+
+		const storefrontApp = appMod.initializeApp(storefrontFirebaseConfig, "storefrontBattle");
+		storefrontDb = databaseMod.getDatabase(storefrontApp);
+
+		firebaseAvailable = true;
+	} catch (err) {
+		console.warn("Firebase failed to load (likely blocked by an ad/tracker blocker). Feedback submission and storefront battle sync are unavailable this session, but the quiz itself still works.", err);
+		firebaseAvailable = false;
+	}
+	return firebaseAvailable;
+})();
+
+
 
 /* ---------------- QUIZ DATA ---------------- */
 // Scoring: each option awards points to specific personalities.
@@ -809,6 +832,12 @@ async function connectBattleGame(gameId) {
 		return;
 	}
 
+	await firebaseReady;
+	if (!firebaseAvailable) {
+		battleEls.codeStatus.textContent = "Battle mode couldn't connect (a browser or ad blocker may be blocking it). Try disabling content blockers for this site.";
+		return;
+	}
+
 	const nextSessionRef = ref(storefrontDb, `sessions/${cleanGameId}`);
 	const snapshot = await get(nextSessionRef);
 	const state = snapshot.val();
@@ -1102,11 +1131,37 @@ if (arTeaserBackButton) {
 		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
 		if (!introVisible && !resultVisible) return;
 
+		// If the press starts on a button/link/input/etc., don't take pointer
+		// capture — capturing the pointer on .stage causes the browser to
+		// retarget the resulting "click" event to .stage instead of the
+		// control the user actually pressed, which silently breaks buttons
+		// like Start Quiz, Home, and "Check out other personalities" that
+		// live inside .stage on the intro/result screens.
+		if (event.target.closest("button, a, input, textarea, select, label, [role='button']")) return;
+
 		swipeStartX = event.clientX;
 		swipeStartY = event.clientY;
 		swipeActive = true;
 		stageEl.setPointerCapture?.(event.pointerId);
 	});
+
+	// .stage uses touch-action:pan-y so normal vertical scrolling still works,
+	// but that also means a single-finger swipe with any vertical wobble
+	// (completely normal for a real human swipe) can get misread by the
+	// browser as an attempt to scroll the page. When that happens the browser
+	// takes over and fires pointercancel before pointerup, so the gesture
+	// never completes — which is why it previously seemed to require two
+	// fingers (two-finger touches aren't treated as a pan gesture, so they
+	// never got hijacked). Once a single-finger drag clearly looks
+	// horizontal, preventDefault() tells the browser this one's ours.
+	stageEl.addEventListener("pointermove", (event) => {
+		if (!swipeActive || !event.isPrimary) return;
+		const deltaX = event.clientX - swipeStartX;
+		const deltaY = event.clientY - swipeStartY;
+		if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+			event.preventDefault();
+		}
+	}, { passive: false });
 
 	stageEl.addEventListener("pointerup", (event) => {
 		if (!swipeActive || !event.isPrimary) return;
@@ -1160,6 +1215,14 @@ submitBtn.onclick = async () => {
 
 	submitBtn.disabled = true;
 	submitBtn.textContent = "Sending…";
+
+	await firebaseReady;
+	if (!firebaseAvailable) {
+		feedbackMessage.textContent = "Couldn't send feedback (a browser or ad blocker may be blocking it). Please try again later.";
+		submitBtn.disabled = false;
+		submitBtn.textContent = "Submit Feedback";
+		return;
+	}
 
 	try {
 		await addDoc(collection(db, "feedback"), {
