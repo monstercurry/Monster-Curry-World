@@ -71,7 +71,7 @@ body{
   padding-top:var(--header-height); /* space for fixed topbar */
 }
 
-.stage{ padding:16px; display:block; position:relative; overflow:hidden; }
+.stage{ padding:16px; display:block; position:relative; overflow:hidden; touch-action:pan-y; }
 
 .frame{
   background: transparent;

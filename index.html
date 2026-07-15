@@ -176,10 +176,28 @@
 			animation: swipe-hint-pulse 2.2s ease-in-out infinite;
 		}
 		.swipe-hint-back { right: auto; left: 6px; }
-		.swipe-hint-battle { right: auto; left: 6px; }
 		.swipe-hint-arrow { font-size: 1.4rem; line-height: 1; font-weight: 800; }
 		.swipe-hint-text { font-size: 0.65rem; font-weight: 700; writing-mode: vertical-rl; text-orientation: mixed; }
 		.swipe-hint-back .swipe-hint-text { writing-mode: vertical-rl; }
+		.swipe-hint-nav {
+			position: fixed;
+			top: calc(var(--header-height) + 12px);
+			right: auto;
+			left: 50%;
+			transform: translateX(-50%);
+			flex-direction: row;
+			gap: 8px;
+			width: max-content;
+			max-width: calc(100% - 32px);
+			padding: 7px 12px;
+			border-radius: 999px;
+			background: rgba(0,0,0,0.42);
+			white-space: nowrap;
+		}
+		.swipe-hint-nav .swipe-hint-text {
+			font-size: 0.72rem;
+			writing-mode: horizontal-tb;
+		}
 
 		@keyframes swipe-hint-pulse {
 			0%, 100% { opacity: 0.45; }
@@ -189,7 +207,7 @@
 		@media (min-width: 900px) {
 			.ar-edge-tab { display: flex; }
 		}
-		@media (max-width: 899px) {
+		@media (max-width: 899px), (hover: none), (pointer: coarse) {
 			.swipe-hint { display: flex; }
 		}
 
@@ -292,13 +310,10 @@
 					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
 					<span class="ar-edge-tab-label">BATTLE</span>
 				</button>
-				<div class="swipe-hint" id="swipe-hint-intro" aria-hidden="true">
-					<span class="swipe-hint-arrow">‹</span>
-					<span class="swipe-hint-text">Swipe for AR</span>
-				</div>
-				<div class="swipe-hint swipe-hint-battle" aria-hidden="true">
-					<span class="swipe-hint-text">Swipe for Battle</span>
-					<span class="swipe-hint-arrow">›</span>
+				<div class="swipe-hint swipe-hint-nav" id="swipe-hint-intro" aria-hidden="true">
+					<span class="swipe-hint-arrow">←</span>
+					<span class="swipe-hint-text">Swipe middle: AR · Battle</span>
+					<span class="swipe-hint-arrow">→</span>
 				</div>
 				<div class="frame-body">
 					<div class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
@@ -379,13 +394,10 @@
 					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
 					<span class="ar-edge-tab-label">BATTLE</span>
 				</button>
-				<div class="swipe-hint" id="swipe-hint-result" aria-hidden="true">
-					<span class="swipe-hint-arrow">‹</span>
-					<span class="swipe-hint-text">Swipe for AR</span>
-				</div>
-				<div class="swipe-hint swipe-hint-battle" aria-hidden="true">
-					<span class="swipe-hint-text">Swipe for Battle</span>
-					<span class="swipe-hint-arrow">›</span>
+				<div class="swipe-hint swipe-hint-nav" id="swipe-hint-result" aria-hidden="true">
+					<span class="swipe-hint-arrow">←</span>
+					<span class="swipe-hint-text">Swipe middle: AR · Battle</span>
+					<span class="swipe-hint-arrow">→</span>
 				</div>
 				<div class="frame-body">
 					<div class="result-card even-space glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">

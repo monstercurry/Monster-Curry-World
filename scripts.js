@@ -1080,8 +1080,8 @@ if (arTeaserBackButton) {
 	arTeaserBackButton.onclick = () => closeArTeaser();
 }
 
-/* ---------------- MOBILE SWIPE NAVIGATION ---------------- */
-// Swipe left on the intro/result screens opens AR; swipe right opens Battle.
+/* ---------------- SWIPE NAVIGATION ---------------- */
+// Swipe left across the main content opens AR; swipe right opens Battle.
 // Swiping right on the AR teaser returns to whichever screen opened it.
 // Swipe is intentionally NOT active on the quiz screen, so it never
 // conflicts with tapping answer options.
@@ -1089,15 +1089,21 @@ if (arTeaserBackButton) {
 	const stageEl = document.querySelector(".stage");
 	if (!stageEl) return;
 
-	const SWIPE_THRESHOLD = 60;   // minimum horizontal px to count as a swipe
-	const MAX_VERTICAL_DRIFT = 60; // ignore mostly-vertical gestures (scrolling)
+	const SWIPE_THRESHOLD = 48;
+	const HORIZONTAL_DOMINANCE = 1.15;
 
 	let swipeStartX = 0;
 	let swipeStartY = 0;
 	let swipeActive = false;
 
 	stageEl.addEventListener("pointerdown", (event) => {
-		if (!window.matchMedia("(max-width: 899px)").matches || !event.isPrimary) return;
+		if (!event.isPrimary) return;
+
+		const introVisible = introScreen && !introScreen.classList.contains("hidden");
+		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
+		const teaserVisible = arTeaserScreen && !arTeaserScreen.classList.contains("hidden");
+		if (!introVisible && !resultVisible && !teaserVisible) return;
+
 		swipeStartX = event.clientX;
 		swipeStartY = event.clientY;
 		swipeActive = true;
@@ -1109,8 +1115,10 @@ if (arTeaserBackButton) {
 		swipeActive = false;
 		const deltaX = event.clientX - swipeStartX;
 		const deltaY = event.clientY - swipeStartY;
+		const horizontalDistance = Math.abs(deltaX);
+		const verticalDistance = Math.abs(deltaY);
 
-		if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaY) > MAX_VERTICAL_DRIFT) return;
+		if (horizontalDistance < SWIPE_THRESHOLD || horizontalDistance < verticalDistance * HORIZONTAL_DOMINANCE) return;
 
 		const introVisible  = introScreen && !introScreen.classList.contains("hidden");
 		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
