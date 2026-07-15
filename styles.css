@@ -275,6 +275,26 @@ h3,
 
 .hidden{ display:none !important; }
 
+/* Stacking Context Fixes for Navigation Interactions — applies at ALL
+   viewport widths. .stage > .absolute (the decorative blur divs on the
+   intro screen) are position:absolute with z-index:auto, which paints
+   above static-positioned .frame content per CSS stacking rules
+   (positioned + z-index:auto beats static, regardless of DOM order).
+   Without this, those invisible blobs silently intercept clicks on
+   every button in the frame (Start Quiz, options, Home, AR launch, etc).
+   This used to be scoped inside the mobile-only media query, which is
+   why desktop/tablet buttons were unclickable. */
+#back-button,
+#home-button {
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+.stage > .absolute {
+  pointer-events: none !important;
+}
+
 /* slightly smaller screens adjustment */
 @media (max-width:360px){
   h1{ font-size:1.6rem; }
@@ -887,19 +907,6 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     font-size: 1rem;
     border-radius: 12px;
   }
-
-/* Stacking Context Fixes for Navigation Interactions */
-#back-button, 
-#home-button {
-  position: relative !important;
-  z-index: 50 !important;
-  pointer-events: auto !important;
-}
-
-/* Optional safety fallback to ensure background blurs never swallow click interactions */
-.stage > .absolute {
-  pointer-events: none !important;
-}
 
   /* Footer */
 

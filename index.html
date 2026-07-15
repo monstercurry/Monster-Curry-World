@@ -23,7 +23,7 @@
 			}
 		}
 	</script>
-	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="styles.css?v=20260715" />
 	<style>
 		/* iOS tap highlight fix — prevents grey/blue flash on selected options */
 		* {
@@ -297,8 +297,8 @@
 
 	<main class="phone-shell">
 		<section class="stage" aria-live="polite">
-			<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]"></div>
-			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]"></div>
+			<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" style="pointer-events:none;" aria-hidden="true"></div>
+			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]" style="pointer-events:none;" aria-hidden="true"></div>
 			<article class="frame intro-frame" id="intro-screen">
 				<button class="ar-edge-tab" id="ar-edge-tab-intro" type="button" aria-label="Meet the characters in AR">
 					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
@@ -643,6 +643,6 @@
 		document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 	});
 	</script>
-	<script type="module" src="scripts.js"></script>
+	<script type="module" src="scripts.js?v=20260715"></script>
 </body>
 </html>
