@@ -1076,7 +1076,7 @@ if (battleEdgeTabResult) battleEdgeTabResult.onclick = () => openBattleScreen("r
 // From the teaser screen: launch the standalone AR camera experience
 if (launchArButton) {
 	launchArButton.onclick = () => {
-		window.location.href = "ar.html";
+		window.location.href = "AR.html";
 	};
 }
 
