@@ -10,7 +10,6 @@ import {
 	onValue,
 	ref,
 	serverTimestamp,
-	set,
 	update
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
@@ -383,9 +382,9 @@ const BATTLE_CHARACTERS = [
 
 const BATTLE_LEVELS = {
 	solo: [
-		{ name: "Level 1: Curry Scout", maxHp: 820, atk: 70, moves: ["monster-claw", "curry-splash"] },
-		{ name: "Level 2: Sauce Brute", maxHp: 1050, atk: 78, moves: ["monster-claw", "curry-splash", "monster-guard"] },
-		{ name: "Level 3: Spice Crusher", maxHp: 1320, atk: 86, moves: ["pot-slam", "spice-roar", "monster-guard"] },
+		{ name: "Level 1: Curry Scout", maxHp: 500, atk: 70, moves: ["monster-claw", "curry-splash"] },
+		{ name: "Level 2: Sauce Brute", maxHp: 700, atk: 78, moves: ["monster-claw", "curry-splash"] },
+		{ name: "Level 3: Spice Crusher", maxHp: 900, atk: 86, moves: ["pot-slam", "spice-roar"] },
 		{ name: "Level 4: Monster Curry Titan", maxHp: 1580, atk: 94, moves: ["pot-slam", "curry-splash", "mega-stomp"] },
 		{ name: "Level 5: Final Curry Monster", maxHp: 1900, atk: 104, moves: ["mega-stomp", "spice-roar", "monster-guard"] }
 	],
@@ -457,8 +456,8 @@ function closeBattleScreen() {
 
 function sanitizeBattleGameId(value) {
 	if (!value) return null;
-	const clean = String(value).trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-").slice(0, 48);
-	return clean || null;
+	const clean = String(value).trim();
+	return /^\d{4}$/.test(clean) ? clean : null;
 }
 
 function getBattleGameIdFromValue(value) {
@@ -535,29 +534,6 @@ function buildBattleMonster(mode = "solo", levelIndex = 0) {
 	};
 }
 
-function createBattleAttractSession(gameId) {
-	return {
-		gameId,
-		joinUrl: null,
-		status: "attract",
-		mode: null,
-		lobby: {},
-		activePlayerIds: [],
-		playerOrder: [],
-		players: {},
-		monster: null,
-		levelIndex: 0,
-		turn: 0,
-		pendingMoves: {},
-		activeMoves: {},
-		roundResult: null,
-		winner: null,
-		log: ["Enter the big-screen game code on the Monster Curry website to join."],
-		createdAt: serverTimestamp(),
-		lastActionAt: serverTimestamp()
-	};
-}
-
 function battleHpPercent(fighter) {
 	if (!fighter?.maxHp) return 0;
 	return Math.max(0, Math.min(100, Math.round((Number(fighter.hp || 0) / Number(fighter.maxHp)) * 100)));
@@ -614,13 +590,13 @@ function renderBattleCharacters() {
 			<strong>${character.name}</strong>
 			<small>HP ${character.maxHp} / ATK ${character.atk}</small>
 		`;
-		button.addEventListener("click", () => selectBattleCharacter(character.id));
+		button.addEventListener("click", () => selectBattleCharacter(character.id, true));
 		battleEls.characterGrid.appendChild(button);
 	});
 	battleEls.characterGrid.dataset.ready = "true";
 }
 
-function selectBattleCharacter(characterId) {
+function selectBattleCharacter(characterId, revealSelection = false) {
 	battleSelectedCharacterId = characterId;
 	const character = BATTLE_CHARACTERS.find(c => c.id === characterId);
 	if (!character || !battleEls.selectedCharacter) return;
@@ -631,6 +607,11 @@ function selectBattleCharacter(characterId) {
 	battleEls.selectedCharacterTitle.textContent = character.title;
 	battleEls.selectedCharacterStats.textContent = `HP ${character.maxHp} / Attack ${character.atk}`;
 	battleEls.selectedCharacterMoves.textContent = character.moves.map(moveId => BATTLE_MOVES[moveId]?.name || moveId).join(", ");
+	if (revealSelection && window.matchMedia("(max-width: 899px)").matches) {
+		requestAnimationFrame(() => {
+			battleEls.selectedCharacter.scrollIntoView({ behavior: "smooth", block: "center" });
+		});
+	}
 }
 
 function renderBattleLobby(state) {
@@ -745,8 +726,13 @@ function renderBattleState(state) {
 		showBattlePanel("code");
 		return;
 	}
-	if (!state || state.status === "attract" || state.status === "lobby") {
-		renderBattleLobby(state || {});
+	if (!state || state.status === "closed") {
+		showBattlePanel("code");
+		battleEls.codeStatus.textContent = "That code has expired. Enter the new code shown on the big screen.";
+		return;
+	}
+	if (state.status === "attract" || state.status === "lobby") {
+		renderBattleLobby(state);
 		return;
 	}
 	if (state.status === "character-select") {
@@ -774,16 +760,18 @@ function findBattleOpenSlot(state) {
 	return [0, 1].find(slot => !usedSlots.has(slot));
 }
 
-async function ensureBattleSession() {
+async function getBattleSession() {
 	const snapshot = await get(battleSessionRef);
-	if (snapshot.exists()) return snapshot.val();
-	const session = createBattleAttractSession(battleGameId);
-	await set(battleSessionRef, session);
-	return session;
+	return snapshot.exists() ? snapshot.val() : null;
 }
 
-async function joinBattleLobby() {
-	const state = await ensureBattleSession();
+async function joinBattleLobby(initialState = null) {
+	const state = initialState || await getBattleSession();
+	if (!state || ["closed", "game-over"].includes(state.status)) {
+		showBattlePanel("code");
+		battleEls.codeStatus.textContent = "That code is no longer active. Enter the new code shown on the big screen.";
+		return;
+	}
 	if (["battle", "resolving", "level-complete"].includes(state.status)) {
 		renderBattleState(state);
 		return;
@@ -817,12 +805,22 @@ async function joinBattleLobby() {
 async function connectBattleGame(gameId) {
 	const cleanGameId = sanitizeBattleGameId(gameId);
 	if (!cleanGameId) {
-		battleEls.codeStatus.textContent = "Enter a valid game code.";
+		battleEls.codeStatus.textContent = "Enter the four-digit code shown on the big screen.";
 		return;
 	}
+
+	const nextSessionRef = ref(storefrontDb, `sessions/${cleanGameId}`);
+	const snapshot = await get(nextSessionRef);
+	const state = snapshot.val();
+	if (!state || ["closed", "game-over"].includes(state.status)) {
+		showBattlePanel("code");
+		battleEls.codeStatus.textContent = "That code is not active. Check the big screen and try again.";
+		return;
+	}
+
 	battleGameId = cleanGameId;
 	battlePlayerId = getBattlePlayerId(battleGameId);
-	battleSessionRef = ref(storefrontDb, `sessions/${battleGameId}`);
+	battleSessionRef = nextSessionRef;
 	window.localStorage.setItem("storefront-last-game", battleGameId);
 	if (battleUnsubscribe) battleUnsubscribe();
 	battleUnsubscribe = onValue(battleSessionRef, snapshot => {
@@ -832,7 +830,7 @@ async function connectBattleGame(gameId) {
 		showBattlePanel("code");
 		battleEls.codeStatus.textContent = "Firebase connection failed.";
 	});
-	await joinBattleLobby();
+	await joinBattleLobby(state);
 }
 
 async function startBattleSolo() {
@@ -923,10 +921,19 @@ async function submitBattleMove(moveId) {
 	});
 }
 
-async function playBattleAgain() {
-	if (!battleSessionRef || !battleGameId) return;
-	await set(battleSessionRef, createBattleAttractSession(battleGameId));
-	await joinBattleLobby();
+function playBattleAgain() {
+	if (battleUnsubscribe) {
+		battleUnsubscribe();
+		battleUnsubscribe = null;
+	}
+	battleGameId = null;
+	battlePlayerId = null;
+	battleSessionRef = null;
+	battleState = null;
+	battleSelectedCharacterId = null;
+	battleEls.manualCode.value = "";
+	showBattlePanel("code");
+	battleEls.codeStatus.textContent = "Look at the big screen and enter its new four-digit code.";
 }
 
 function joinBattleFromManualInput() {
@@ -1074,8 +1081,8 @@ if (arTeaserBackButton) {
 }
 
 /* ---------------- MOBILE SWIPE NAVIGATION ---------------- */
-// Swipe left on the intro/result screens opens the AR teaser.
-// Swipe right on the AR teaser screen returns to whichever screen opened it.
+// Swipe left on the intro/result screens opens AR; swipe right opens Battle.
+// Swiping right on the AR teaser returns to whichever screen opened it.
 // Swipe is intentionally NOT active on the quiz screen, so it never
 // conflicts with tapping answer options.
 (function setupSwipeNav() {
@@ -1085,21 +1092,23 @@ if (arTeaserBackButton) {
 	const SWIPE_THRESHOLD = 60;   // minimum horizontal px to count as a swipe
 	const MAX_VERTICAL_DRIFT = 60; // ignore mostly-vertical gestures (scrolling)
 
-	let touchStartX = 0;
-	let touchStartY = 0;
+	let swipeStartX = 0;
+	let swipeStartY = 0;
+	let swipeActive = false;
 
-	stageEl.addEventListener("touchstart", (e) => {
-		if (!e.touches || e.touches.length === 0) return;
-		touchStartX = e.touches[0].clientX;
-		touchStartY = e.touches[0].clientY;
-	}, { passive: true });
+	stageEl.addEventListener("pointerdown", (event) => {
+		if (!window.matchMedia("(max-width: 899px)").matches || !event.isPrimary) return;
+		swipeStartX = event.clientX;
+		swipeStartY = event.clientY;
+		swipeActive = true;
+		stageEl.setPointerCapture?.(event.pointerId);
+	});
 
-	stageEl.addEventListener("touchend", (e) => {
-		if (!e.changedTouches || e.changedTouches.length === 0) return;
-		const touchEndX = e.changedTouches[0].clientX;
-		const touchEndY = e.changedTouches[0].clientY;
-		const deltaX = touchEndX - touchStartX;
-		const deltaY = touchEndY - touchStartY;
+	stageEl.addEventListener("pointerup", (event) => {
+		if (!swipeActive || !event.isPrimary) return;
+		swipeActive = false;
+		const deltaX = event.clientX - swipeStartX;
+		const deltaY = event.clientY - swipeStartY;
 
 		if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaY) > MAX_VERTICAL_DRIFT) return;
 
@@ -1108,13 +1117,17 @@ if (arTeaserBackButton) {
 		const teaserVisible = arTeaserScreen && !arTeaserScreen.classList.contains("hidden");
 
 		if (deltaX < 0 && (introVisible || resultVisible)) {
-			// Swiped left from intro or result -> open AR teaser
 			openArTeaser(introVisible ? "intro" : "result");
+		} else if (deltaX > 0 && (introVisible || resultVisible)) {
+			openBattleScreen(introVisible ? "intro" : "result");
 		} else if (deltaX > 0 && teaserVisible) {
-			// Swiped right from AR teaser -> go back
 			closeArTeaser();
 		}
-	}, { passive: true });
+	});
+
+	stageEl.addEventListener("pointercancel", () => {
+		swipeActive = false;
+	});
 })();
 
 /* ---------------- FEEDBACK ---------------- */

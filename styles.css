@@ -1211,6 +1211,35 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   color: #111;
 }
 
+@media (max-width: 899px) {
+  .stage {
+    touch-action: pan-y;
+  }
+
+  .battle-frame {
+    min-height: calc(100svh - var(--header-height) - 32px);
+  }
+
+  .battle-frame .frame-body {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .battle-app-shell {
+    margin-block: auto;
+  }
+
+  .battle-panel {
+    width: 100%;
+  }
+
+  .battle-selected-character {
+    scroll-margin-block: 20vh;
+  }
+}
+
 @media (max-width: 520px) {
   .battle-character-grid,
   .battle-lobby-slots {
