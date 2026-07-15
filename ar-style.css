@@ -1,0 +1,230 @@
+/* ==========================================================
+   AR.html page styles
+   Split out of AR.html so markup, styles, and script each live
+   in their own file. Loaded via <link rel="stylesheet"> in
+   AR.html's <head>, after styles.css and the tailwind config.
+   ========================================================== */
+
+/* iOS tap highlight fix, matching index.html */
+* { -webkit-tap-highlight-color: transparent; }
+
+#scene-container {
+	position: fixed;
+	top: var(--header-height, 64px);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1;
+}
+
+#scene-container > video,
+#scene-container > canvas {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: cover;
+}
+
+a-scene canvas.a-canvas {
+	background: transparent !important;
+}
+
+* { box-sizing: border-box; }
+html, body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	background: #0b0b0b;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	overflow: hidden;
+}
+
+a-scene {
+	position: fixed;
+	top: var(--header-height, 64px);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1;
+}
+
+/* ---------- Overlay UI (sits above the camera/AR canvas, below the header) ---------- */
+.ar-overlay {
+	position: fixed;
+	top: var(--header-height, 64px);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
+}
+
+.ar-topbar {
+	position: relative;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	pointer-events: auto;
+}
+
+.ar-badge {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: rgba(0,0,0,0.55);
+	backdrop-filter: blur(6px);
+	border: 1px solid rgba(255,255,255,0.15);
+	border-radius: 999px;
+	padding: 12px 24px;
+	color: #fff;
+	font-weight: 900;
+	font-size: 1.15rem;
+	max-width: 80vw;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: opacity 0.25s ease;
+}
+
+.ar-badge.idle { opacity: 0.6; }
+
+.ar-close {
+	width: 40px;
+	height: 40px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: rgba(0,0,0,0.55);
+	border: 1px solid rgba(255,255,255,0.15);
+	color: #fff;
+	font-size: 1.1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.ar-hint {
+	align-self: center;
+	text-align: center;
+	background: rgba(0,0,0,0.55);
+	backdrop-filter: blur(6px);
+	border: 1px solid rgba(255,255,255,0.15);
+	border-radius: 18px;
+	padding: 14px 20px;
+	color: #fff;
+	max-width: 320px;
+	pointer-events: auto;
+	transition: opacity 0.3s ease;
+}
+
+.ar-hint p {
+	margin: 0;
+	font-size: 0.9rem;
+	line-height: 1.4;
+}
+
+.ar-hint.hidden { opacity: 0; }
+
+/* ---------- Pre-start gate (camera permission needs a tap) ---------- */
+#start-gate {
+	position: fixed;
+	top: var(--header-height, 64px);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 100;
+	background: linear-gradient(180deg, #1a0000 0%, #350000 100%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 32px;
+	color: #fff;
+}
+
+#start-gate img.logo {
+	width: 110px;
+	height: 110px;
+	object-fit: contain;
+	margin-bottom: 20px;
+	border-radius: 24px;
+	background: rgba(255,255,255,0.08);
+	padding: 12px;
+}
+
+#start-gate h1 {
+	font-size: 1.3rem;
+	margin: 0 0 8px;
+}
+
+#start-gate p {
+	font-size: 0.9rem;
+	opacity: 0.75;
+	max-width: 320px;
+	margin: 0 0 24px;
+	line-height: 1.5;
+}
+
+/* Small strip previewing the 8 characters the camera can recognize */
+.character-strip {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 28px;
+	max-width: 340px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.character-strip img {
+	width: 44px;
+	height: 44px;
+	object-fit: contain;
+	border-radius: 10px;
+	background: rgba(255,255,255,0.1);
+	padding: 4px;
+}
+
+#start-button {
+	background: #fff;
+	color: #bc0100;
+	border: none;
+	border-radius: 999px;
+	padding: 14px 32px;
+	font-weight: 800;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
+#error-state {
+	display: none;
+	position: fixed;
+	top: var(--header-height, 64px);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 100;
+	background: #1a0000;
+	color: #fff;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 32px;
+}
+
+#error-state p {
+	opacity: 0.75;
+	max-width: 280px;
+}
