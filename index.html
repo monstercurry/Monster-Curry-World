@@ -461,7 +461,7 @@
 							<div class="battle-manual-join">
 								<label for="battle-manual-code">Game code</label>
 								<div>
-									<input id="battle-manual-code" autocomplete="off" inputmode="text" placeholder="STOREFRONT 1">
+									<input id="battle-manual-code" autocomplete="one-time-code" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="1234">
 									<button id="battle-manual-join-button" type="button">Join</button>
 								</div>
 							</div>
@@ -512,7 +512,7 @@
 						<div class="battle-panel hidden" id="battle-gameover-panel">
 							<h2 id="battle-gameover-title">Battle complete</h2>
 							<p id="battle-gameover-message">Thanks for playing.</p>
-							<button class="action-button battle-primary-button" id="battle-play-again-button" type="button">Play again</button>
+							<button class="action-button battle-primary-button" id="battle-play-again-button" type="button">Enter new code</button>
 						</div>
 					</div>
 				</div>
