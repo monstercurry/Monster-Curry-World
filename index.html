@@ -175,10 +175,8 @@
 			pointer-events: none;
 			animation: swipe-hint-pulse 2.2s ease-in-out infinite;
 		}
-		.swipe-hint-back { right: auto; left: 6px; }
 		.swipe-hint-arrow { font-size: 1.4rem; line-height: 1; font-weight: 800; }
 		.swipe-hint-text { font-size: 0.65rem; font-weight: 700; writing-mode: vertical-rl; text-orientation: mixed; }
-		.swipe-hint-back .swipe-hint-text { writing-mode: vertical-rl; }
 		.swipe-hint-nav {
 			position: fixed;
 			top: calc(var(--header-height) + 12px);
@@ -443,10 +441,6 @@
 			</article>
 
 			<article class="frame ar-teaser-frame hidden" id="ar-teaser-screen" style="display:none">
-				<div class="swipe-hint swipe-hint-back" id="swipe-hint-back" aria-hidden="true">
-					<span class="swipe-hint-text">Swipe to go back</span>
-					<span class="swipe-hint-arrow">›</span>
-				</div>
 				<div class="frame-body">
 					<div class="ar-teaser-card">
 						<span class="material-symbols-outlined ar-teaser-icon" style="font-size:48px;">view_in_ar</span>

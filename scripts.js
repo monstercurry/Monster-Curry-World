@@ -329,8 +329,8 @@ const battleEls = {
 let currentQuestion = 0;
 const answers = Array(questions.length).fill(null);
 
-// Remembers which screen to return to when leaving the AR teaser
-// (via swipe-back or the "Back" link), so it works from either intro or result.
+// Remembers which screen to return to when leaving the AR teaser via its Back
+// button, so it works from either intro or result.
 let screenBeforeArTeaser = "intro";
 let screenBeforeBattle = "intro";
 
@@ -1075,16 +1075,15 @@ if (battleEls.backButton) {
 	battleEls.backButton.onclick = () => closeBattleScreen();
 }
 
-// Explicit back link (in addition to swipe-back on mobile)
+// Explicit back button for the AR teaser
 if (arTeaserBackButton) {
 	arTeaserBackButton.onclick = () => closeArTeaser();
 }
 
 /* ---------------- SWIPE NAVIGATION ---------------- */
 // Swipe left across the main content opens AR; swipe right opens Battle.
-// Swiping right on the AR teaser returns to whichever screen opened it.
-// Swipe is intentionally NOT active on the quiz screen, so it never
-// conflicts with tapping answer options.
+// Swipe is intentionally NOT active on the quiz or AR teaser screens, so it
+// never conflicts with tapping answer options or the AR teaser's Back button.
 (function setupSwipeNav() {
 	const stageEl = document.querySelector(".stage");
 	if (!stageEl) return;
@@ -1101,8 +1100,7 @@ if (arTeaserBackButton) {
 
 		const introVisible = introScreen && !introScreen.classList.contains("hidden");
 		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
-		const teaserVisible = arTeaserScreen && !arTeaserScreen.classList.contains("hidden");
-		if (!introVisible && !resultVisible && !teaserVisible) return;
+		if (!introVisible && !resultVisible) return;
 
 		swipeStartX = event.clientX;
 		swipeStartY = event.clientY;
@@ -1122,14 +1120,11 @@ if (arTeaserBackButton) {
 
 		const introVisible  = introScreen && !introScreen.classList.contains("hidden");
 		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
-		const teaserVisible = arTeaserScreen && !arTeaserScreen.classList.contains("hidden");
 
 		if (deltaX < 0 && (introVisible || resultVisible)) {
 			openArTeaser(introVisible ? "intro" : "result");
 		} else if (deltaX > 0 && (introVisible || resultVisible)) {
 			openBattleScreen(introVisible ? "intro" : "result");
-		} else if (deltaX > 0 && teaserVisible) {
-			closeArTeaser();
 		}
 	});
 
