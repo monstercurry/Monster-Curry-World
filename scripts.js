@@ -405,18 +405,18 @@ const BATTLE_CHARACTERS = [
 
 const BATTLE_LEVELS = {
 	solo: [
-		{ name: "Level 1: Curry Scout", maxHp: 500, atk: 70, moves: ["monster-claw", "curry-splash"] },
-		{ name: "Level 2: Sauce Brute", maxHp: 700, atk: 78, moves: ["monster-claw", "curry-splash"] },
-		{ name: "Level 3: Spice Crusher", maxHp: 900, atk: 86, moves: ["pot-slam", "spice-roar"] },
-		{ name: "Level 4: Monster Curry Titan", maxHp: 1580, atk: 94, moves: ["pot-slam", "curry-splash", "mega-stomp"] },
-		{ name: "Level 5: Final Curry Monster", maxHp: 1900, atk: 104, moves: ["mega-stomp", "spice-roar", "monster-guard"] }
+		{ name: "Curry Goblin", maxHp: 500, atk: 70, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash"] },
+		{ name: "Root Curry Brute", maxHp: 700, atk: 78, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare"] },
+		{ name: "Sporeback Brute", maxHp: 900, atk: 86, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
+		{ name: "Rotten Goblin", maxHp: 1180, atk: 90, color: "#718147", accent: "#b9b68b", asset: "./assets/enemies/rotten-goblin.webp", moves: ["filthy-swipe", "noxious-stench", "sludge-guard"] },
+		{ name: "Blaze Fiend", maxHp: 1580, atk: 94, color: "#e84c0f", accent: "#ffd44d", asset: "./assets/enemies/blaze-fiend.webp", moves: ["flame-claw", "ember-crush", "wildfire-roar"] }
 	],
 	multiplayer: [
-		{ name: "Level 1: Curry Scout Duo", maxHp: 1400, atk: 82, moves: ["monster-claw", "curry-splash", "spice-roar"] },
-		{ name: "Level 2: Sauce Brute Duo", maxHp: 1780, atk: 92, moves: ["monster-claw", "pot-slam", "monster-guard"] },
-		{ name: "Level 3: Spice Crusher Duo", maxHp: 2180, atk: 102, moves: ["pot-slam", "spice-roar", "monster-guard"] },
-		{ name: "Level 4: Monster Curry Titan Duo", maxHp: 2650, atk: 112, moves: ["pot-slam", "curry-splash", "mega-stomp"] },
-		{ name: "Level 5: Final Curry Monster Duo", maxHp: 3200, atk: 124, moves: ["mega-stomp", "spice-roar", "monster-guard"] }
+		{ name: "Curry Goblin", maxHp: 1400, atk: 82, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash", "curry-cloud"] },
+		{ name: "Root Curry Brute", maxHp: 1780, atk: 92, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare", "root-guard"] },
+		{ name: "Sporeback Brute", maxHp: 2180, atk: 102, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
+		{ name: "Rotten Goblin", maxHp: 2420, atk: 107, color: "#718147", accent: "#b9b68b", asset: "./assets/enemies/rotten-goblin.webp", moves: ["filthy-swipe", "noxious-stench", "sludge-guard"] },
+		{ name: "Blaze Fiend", maxHp: 2650, atk: 112, color: "#e84c0f", accent: "#ffd44d", asset: "./assets/enemies/blaze-fiend.webp", moves: ["flame-claw", "ember-crush", "wildfire-roar"] }
 	]
 };
 
@@ -549,9 +549,9 @@ function buildBattleMonster(mode = "solo", levelIndex = 0) {
 		hp: level.maxHp,
 		atk: level.atk,
 		shield: 0,
-		color: "#1d6e58",
-		accent: "#f5ad0f",
-		asset: "./assets/monster-curry-beast.svg",
+		color: level.color || "#1d6e58",
+		accent: level.accent || "#f5ad0f",
+		asset: level.asset || "./assets/monster-curry-beast.svg",
 		moves: level.moves,
 		effects: battleEffects()
 	};
@@ -737,9 +737,10 @@ function renderBattleMoveState(state) {
 function renderBattleGameOver(state) {
 	showBattlePanel("gameOver");
 	const playersWon = state.winner === "players";
+	const totalLevels = (BATTLE_LEVELS[state.mode] || BATTLE_LEVELS.solo).length;
 	battleEls.gameOverTitle.textContent = playersWon ? "You won!" : "You lost";
 	battleEls.gameOverMessage.textContent = playersWon
-		? "Your curry party cleared all five levels."
+		? `Your curry party cleared all ${totalLevels} levels.`
 		: "The monster won. Try a different character combination.";
 }
 
