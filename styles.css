@@ -1262,3 +1262,22 @@ h1{font-size:clamp(2rem,5vw,3rem);}
     grid-template-columns: 1fr 1fr;
   }
 }
+/* ---- Intro-card copy contrast fix ----
+   These two lines previously used text-white/90 and text-white/70 (plus
+   further-reduced 0.9/0.8 opacity overrides in the tablet/mobile media
+   queries above), which read poorly against the solid orange card
+   background. Bumped to full-opacity white with a soft dark text-shadow
+   for legibility, and a slightly heavier weight on the lead line so it
+   reads as a proper sub-headline. Placed at the end of the file, and
+   scoped to dedicated classes, so it reliably wins over the earlier
+   opacity rules at every breakpoint without touching the "Join 12,000+"
+   line (which also carries the shared .font-body-sm class). */
+.monster-red-gradient .intro-lead-text {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.45);
+}
+.monster-red-gradient .intro-body-text {
+  color: #ffffff !important;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.4);
+}

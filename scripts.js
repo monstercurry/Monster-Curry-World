@@ -1189,6 +1189,89 @@ if (arTeaserBackButton) {
 	});
 })();
 
+/* ---------------- SHARE ---------------- */
+(function setupShare() {
+	const shareBtn      = document.getElementById("share-website-btn");
+	const shareModal     = document.getElementById("share-modal");
+	const shareLinkInput = document.getElementById("share-link-input");
+	const copyLinkBtn    = document.getElementById("copy-share-link");
+	const closeShareBtn  = document.getElementById("close-share-modal");
+	const socialRow      = document.getElementById("share-social-row");
+	if (!shareBtn || !shareModal) return;
+
+	// Always share the quiz landing page, even if the person shares from
+	// somewhere deeper in the app (e.g. AR.html down the line).
+	function getShareUrl() {
+		return window.location.origin + window.location.pathname.replace(/[^/]*$/, "index.html");
+	}
+
+	function getShareText() {
+		const name = (resultName?.textContent || "").replace(/\p{Emoji_Presentation}\s*/gu, "").trim();
+		return name
+			? `I got "${name}" on the Monster Curry Personality Quiz! Find out your flavour personality:`
+			: "Find out your Monster Curry flavour personality:";
+	}
+
+	function buildSocialLinks(url, text) {
+		const encodedUrl  = encodeURIComponent(url);
+		const encodedText = encodeURIComponent(text);
+		return [
+			{ label: "Facebook", icon: "👍", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+			{ label: "WhatsApp",  icon: "💬", href: `https://wa.me/?text=${encodedText}%20${encodedUrl}` },
+			{ label: "X",         icon: "𝕏",  href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}` },
+			{ label: "Email",     icon: "✉️", href: `mailto:?subject=${encodeURIComponent("Try the Monster Curry Personality Quiz")}&body=${encodedText}%20${encodedUrl}` }
+		];
+	}
+
+	function openShareModal(url, text) {
+		shareLinkInput.value = url;
+		socialRow.innerHTML = buildSocialLinks(url, text)
+			.map(s => `<a href="${s.href}" target="_blank" rel="noopener" aria-label="Share on ${s.label}">${s.icon}</a>`)
+			.join("");
+		shareModal.classList.add("open");
+		document.body.style.overflow = "hidden";
+	}
+
+	function closeShareModal() {
+		shareModal.classList.remove("open");
+		document.body.style.overflow = "";
+	}
+
+	shareBtn.addEventListener("click", async () => {
+		const url = getShareUrl();
+		const text = getShareText();
+
+		if (navigator.share) {
+			try {
+				await navigator.share({ title: "Monster Curry Personality Quiz", text, url });
+				return;
+			} catch (err) {
+				// User cancelled the native share sheet, or it failed — fall
+				// back to the in-page modal rather than doing nothing.
+				if (err?.name === "AbortError") return;
+			}
+		}
+		openShareModal(url, text);
+	});
+
+	if (copyLinkBtn) {
+		copyLinkBtn.addEventListener("click", async () => {
+			try {
+				await navigator.clipboard.writeText(shareLinkInput.value);
+				copyLinkBtn.textContent = "Copied!";
+			} catch (err) {
+				shareLinkInput.select();
+				copyLinkBtn.textContent = "Select & copy";
+			}
+			setTimeout(() => { copyLinkBtn.textContent = "Copy"; }, 1800);
+		});
+	}
+
+	if (closeShareBtn) closeShareBtn.addEventListener("click", closeShareModal);
+	shareModal.addEventListener("click", (e) => { if (e.target === shareModal) closeShareModal(); });
+	document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeShareModal(); });
+})();
+
 /* ---------------- FEEDBACK ---------------- */
 let selectedRating = 0;
 
