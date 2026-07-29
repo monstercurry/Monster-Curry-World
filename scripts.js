@@ -420,6 +420,11 @@ const BATTLE_LEVELS = {
 	]
 };
 
+// Set by setupShare() below. renderResult() calls shareGate.present() so the
+// share popup appears the instant the quiz finishes, and the result screen
+// only becomes visible once the person dismisses (or completes) that popup.
+let shareGate = null;
+
 let battleGameId = null;
 let battlePlayerId = null;
 let battleSessionRef = null;
@@ -1038,12 +1043,20 @@ function getPersonality() {
 function renderResult() {
 	const p = getPersonality();
 	updateQuizLogoProgress(questions.length);
+	// Populate the result content now (so the share text below can reference
+	// the personality name), but don't reveal the result screen yet — the
+	// share popup gates that.
 	resultName.textContent        = p.name;
 	resultBackground.textContent  = p.title + " — " + p.background;
 	resultDescription.textContent = p.description;
 	const img = document.getElementById("result-illustration-img");
 	if (img) { img.src = p.image; img.alt = p.name; }
-	showScreen("result");
+
+	if (shareGate) {
+		shareGate.present(() => showScreen("result"));
+	} else {
+		showScreen("result");
+	}
 }
 
 /* ---------------- EVENTS ---------------- */
@@ -1120,10 +1133,23 @@ if (arTeaserBackButton) {
 
 	const SWIPE_THRESHOLD = 48;
 	const HORIZONTAL_DOMINANCE = 1.15;
+	// How far the pointer has to move before we commit to "this gesture is
+	// vertical" vs "this gesture is horizontal". Kept small so the decision
+	// (and the touch-action swap below) happens almost immediately.
+	const DIRECTION_LOCK_DISTANCE = 6;
 
 	let swipeStartX = 0;
 	let swipeStartY = 0;
+	let swipeLastY = 0;
 	let swipeActive = false;
+	let swipeIsTouch = false;
+	let swipeDirection = null; // "horizontal" | "vertical" | null (undecided)
+
+	function releaseTouchAction() {
+		// Clearing the inline override falls back to the stylesheet's
+		// touch-action:pan-y, restoring normal native scrolling.
+		stageEl.style.touchAction = "";
+	}
 
 	stageEl.addEventListener("pointerdown", (event) => {
 		if (!event.isPrimary) return;
@@ -1142,36 +1168,63 @@ if (arTeaserBackButton) {
 
 		swipeStartX = event.clientX;
 		swipeStartY = event.clientY;
+		swipeLastY = event.clientY;
 		swipeActive = true;
+		swipeDirection = null;
+		swipeIsTouch = event.pointerType === "touch";
+
+		// .stage normally uses touch-action:pan-y so normal vertical
+		// scrolling still works. The problem: on Android, Chrome is allowed
+		// to start a native pan-y scroll on the compositor thread the moment
+		// it sees any touch movement that looks even slightly vertical —
+		// and it can do this *before* our JS runs, so calling
+		// preventDefault() in pointermove (even immediately) can arrive too
+		// late to stop it. iOS Safari doesn't commit that aggressively, so
+		// the old "wait until the drag clearly looks horizontal, then
+		// preventDefault()" approach worked there but not on Android — which
+		// is why it looked like Android needed two fingers (multi-touch was
+		// never eligible for that native fast path, so it never raced us).
+		// Fix: for touch pointers, take the browser out of the decision
+		// entirely by setting touch-action:none for the duration of the
+		// gesture, and manually replicate vertical scrolling ourselves in
+		// pointermove below.
+		if (swipeIsTouch) {
+			stageEl.style.touchAction = "none";
+		}
 		stageEl.setPointerCapture?.(event.pointerId);
 	});
 
-	// .stage uses touch-action:pan-y so normal vertical scrolling still works,
-	// but that also means a single-finger swipe with any vertical wobble
-	// (completely normal for a real human swipe) can get misread by the
-	// browser as an attempt to scroll the page. When that happens the browser
-	// takes over and fires pointercancel before pointerup, so the gesture
-	// never completes — which is why it previously seemed to require two
-	// fingers (two-finger touches aren't treated as a pan gesture, so they
-	// never got hijacked). Once a single-finger drag clearly looks
-	// horizontal, preventDefault() tells the browser this one's ours.
 	stageEl.addEventListener("pointermove", (event) => {
 		if (!swipeActive || !event.isPrimary) return;
 		const deltaX = event.clientX - swipeStartX;
 		const deltaY = event.clientY - swipeStartY;
-		if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+
+		if (!swipeDirection && (Math.abs(deltaX) > DIRECTION_LOCK_DISTANCE || Math.abs(deltaY) > DIRECTION_LOCK_DISTANCE)) {
+			swipeDirection = Math.abs(deltaX) > Math.abs(deltaY) * HORIZONTAL_DOMINANCE ? "horizontal" : "vertical";
+		}
+
+		if (swipeIsTouch && swipeDirection === "vertical") {
+			// touch-action is "none" right now, so the browser won't scroll
+			// on its own — do it ourselves so vertical scrolling still feels
+			// native during a gesture that turned out not to be a swipe.
+			const stepY = event.clientY - swipeLastY;
+			window.scrollBy(0, -stepY);
+		} else {
 			event.preventDefault();
 		}
+		swipeLastY = event.clientY;
 	}, { passive: false });
 
 	stageEl.addEventListener("pointerup", (event) => {
 		if (!swipeActive || !event.isPrimary) return;
 		swipeActive = false;
+		if (swipeIsTouch) releaseTouchAction();
 		const deltaX = event.clientX - swipeStartX;
 		const deltaY = event.clientY - swipeStartY;
 		const horizontalDistance = Math.abs(deltaX);
 		const verticalDistance = Math.abs(deltaY);
 
+		if (swipeDirection === "vertical") return;
 		if (horizontalDistance < SWIPE_THRESHOLD || horizontalDistance < verticalDistance * HORIZONTAL_DOMINANCE) return;
 
 		const introVisible  = introScreen && !introScreen.classList.contains("hidden");
@@ -1186,18 +1239,21 @@ if (arTeaserBackButton) {
 
 	stageEl.addEventListener("pointercancel", () => {
 		swipeActive = false;
+		if (swipeIsTouch) releaseTouchAction();
 	});
 })();
 
-/* ---------------- SHARE ---------------- */
+/* ---------------- SHARE (pre-result gate) ---------------- */
 (function setupShare() {
-	const shareBtn      = document.getElementById("share-website-btn");
 	const shareModal     = document.getElementById("share-modal");
 	const shareLinkInput = document.getElementById("share-link-input");
 	const copyLinkBtn    = document.getElementById("copy-share-link");
 	const closeShareBtn  = document.getElementById("close-share-modal");
-	const socialRow      = document.getElementById("share-social-row");
-	if (!shareBtn || !shareModal) return;
+	if (!shareModal) return;
+
+	// Called once the popup is dismissed (any path: close button, backdrop
+	// click, Escape, or the native share sheet finishing/cancelling).
+	let onDismiss = null;
 
 	// Always share the quiz landing page, even if the person shares from
 	// somewhere deeper in the app (e.g. AR.html down the line).
@@ -1208,51 +1264,44 @@ if (arTeaserBackButton) {
 	function getShareText() {
 		const name = (resultName?.textContent || "").replace(/\p{Emoji_Presentation}\s*/gu, "").trim();
 		return name
-			? `I got "${name}" on the Monster Curry Personality Quiz! Find out your flavour personality:`
+			? `I just found out I'm "${name}" on the Monster Curry Personality Quiz! Find out your flavour personality:`
 			: "Find out your Monster Curry flavour personality:";
 	}
 
-	function buildSocialLinks(url, text) {
-		const encodedUrl  = encodeURIComponent(url);
-		const encodedText = encodeURIComponent(text);
-		return [
-			{ label: "Facebook", icon: "👍", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
-			{ label: "WhatsApp",  icon: "💬", href: `https://wa.me/?text=${encodedText}%20${encodedUrl}` },
-			{ label: "X",         icon: "𝕏",  href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}` },
-			{ label: "Email",     icon: "✉️", href: `mailto:?subject=${encodeURIComponent("Try the Monster Curry Personality Quiz")}&body=${encodedText}%20${encodedUrl}` }
-		];
-	}
-
-	function openShareModal(url, text) {
+	function openModal(url) {
 		shareLinkInput.value = url;
-		socialRow.innerHTML = buildSocialLinks(url, text)
-			.map(s => `<a href="${s.href}" target="_blank" rel="noopener" aria-label="Share on ${s.label}">${s.icon}</a>`)
-			.join("");
 		shareModal.classList.add("open");
 		document.body.style.overflow = "hidden";
 	}
 
-	function closeShareModal() {
+	function closeModal() {
 		shareModal.classList.remove("open");
 		document.body.style.overflow = "";
+		const cb = onDismiss;
+		onDismiss = null;
+		if (cb) cb();
 	}
 
-	shareBtn.addEventListener("click", async () => {
+	// Entry point used by renderResult(): show the share UI, then invoke
+	// onDone once the person has dismissed it (with or without sharing).
+	async function present(onDone) {
+		onDismiss = onDone;
 		const url = getShareUrl();
 		const text = getShareText();
 
 		if (navigator.share) {
 			try {
 				await navigator.share({ title: "Monster Curry Personality Quiz", text, url });
+				closeModal();
 				return;
 			} catch (err) {
 				// User cancelled the native share sheet, or it failed — fall
 				// back to the in-page modal rather than doing nothing.
-				if (err?.name === "AbortError") return;
+				if (err?.name === "AbortError") { closeModal(); return; }
 			}
 		}
-		openShareModal(url, text);
-	});
+		openModal(url);
+	}
 
 	if (copyLinkBtn) {
 		copyLinkBtn.addEventListener("click", async () => {
@@ -1267,9 +1316,13 @@ if (arTeaserBackButton) {
 		});
 	}
 
-	if (closeShareBtn) closeShareBtn.addEventListener("click", closeShareModal);
-	shareModal.addEventListener("click", (e) => { if (e.target === shareModal) closeShareModal(); });
-	document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeShareModal(); });
+	if (closeShareBtn) closeShareBtn.addEventListener("click", closeModal);
+	shareModal.addEventListener("click", (e) => { if (e.target === shareModal) closeModal(); });
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape" && shareModal.classList.contains("open")) closeModal();
+	});
+
+	shareGate = { present };
 })();
 
 /* ---------------- FEEDBACK ---------------- */
