@@ -18,7 +18,21 @@
   --space-md: clamp(1rem, 2vw, 1.5rem);
   --space-lg: clamp(1.5rem, 3vw, 2rem);
   --space-xl: clamp(2rem, 4vw, 3rem);
-  --font-heading: Rockwell, "Rockwell Extra Bold", "Book Antiqua", Palatino, serif;
+  --font-heading: "Rockwell Extra Bold", Rockwell, "Book Antiqua", Palatino, serif;
+}
+
+/* Self-hosted Rockwell Extra Bold — the previous heading font stack relied
+   on Rockwell/Book Antiqua/Palatino being pre-installed on the visitor's OS
+   (Windows/macOS only), so most Android/Linux/fresh-Windows visitors fell
+   through to the browser's generic serif and never saw Rockwell at all.
+   Embedding the licensed .woff2 here makes the font consistent everywhere. */
+@font-face {
+  font-family: "Rockwell Extra Bold";
+  src: url("assets/fonts/Rockwell-ExtraBold.woff2") format("woff2"),
+       url("assets/fonts/Rockwell_Extra_Bold_Regular.ttf") format("truetype");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
 }
 
 * { box-sizing: border-box; }
