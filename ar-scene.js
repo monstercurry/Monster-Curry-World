@@ -3,13 +3,16 @@
 MONSTER CURRY AR SCENE
 ==========================================================
 
-TEST VERSION:
-WEBM ONLY
+All 8 standees are compiled together inside:
 
-This test deliberately removes the MP4/HEVC source.
+    images/targets.mind
 
-The goal is to check whether modern iOS Safari can render
-the same transparent WebM files that already work on Android.
+
+IMPORTANT:
+
+The targetIndex must match the order used when compiling
+the images inside the MindAR compiler.
+
 
 TARGET ORDER
 
@@ -26,6 +29,7 @@ TARGET ORDER
 */
 
 
+
 // ==========================================================
 // CHARACTER CONFIGURATION
 // ==========================================================
@@ -39,8 +43,14 @@ const CHARACTERS = [
 
         poster: "images/Katsu-Chan.png",
 
+        videoMp4: "images/Katsu-Chan.mp4",
         videoWebm: "images/Katsu-Chan.webm",
 
+        // Per-character position override.
+        // Leave as null to use the shared CHARACTER_POSITION below.
+        // Set to "x y z" (same format as CHARACTER_POSITION) to
+        // nudge just this character if it looks off-center on
+        // its specific standee/video.
         position: null
     },
 
@@ -52,6 +62,7 @@ const CHARACTERS = [
 
         poster: "images/Monstora_Sharemi.png",
 
+        videoMp4: "images/Monstora-Sharemi.mp4",
         videoWebm: "images/Monstora-Sharemi.webm",
 
         position: null
@@ -65,6 +76,7 @@ const CHARACTERS = [
 
         poster: "images/Giga_Nomu.png",
 
+        videoMp4: "images/Giga-Nomu.mp4",
         videoWebm: "images/Giga-Nomu.webm",
 
         position: null
@@ -78,6 +90,7 @@ const CHARACTERS = [
 
         poster: "images/Tamago_Puffy.png",
 
+        videoMp4: "images/Tamago-Puffy.mp4",
         videoWebm: "images/Tamago-Puffy.webm",
 
         position: null
@@ -91,6 +104,7 @@ const CHARACTERS = [
 
         poster: "images/Cheezu_Mellow.png",
 
+        videoMp4: "images/Cheezu-Mellow.mp4",
         videoWebm: "images/Cheezu-Mellow.webm",
 
         position: null
@@ -104,6 +118,7 @@ const CHARACTERS = [
 
         poster: "images/Ramy_Noodleton.png",
 
+        videoMp4: "images/Ramy-Noodleton.mp4",
         videoWebm: "images/Ramy-Noodleton.webm",
 
         position: null
@@ -117,6 +132,7 @@ const CHARACTERS = [
 
         poster: "images/Hot_Sizz.png",
 
+        videoMp4: "images/Hot-Sizz.mp4",
         videoWebm: "images/Hot-Sizz.webm",
 
         position: null
@@ -130,6 +146,7 @@ const CHARACTERS = [
 
         poster: "images/Teppa_Spark.png",
 
+        videoMp4: "images/Teppa-Spark.mp4",
         videoWebm: "images/Teppa-Spark.webm",
 
         position: null
@@ -150,26 +167,52 @@ const TARGETS_MIND_SRC = "images/targets.mind";
 // ==========================================================
 // GLOBAL CHARACTER TRANSFORM
 //
-// UNCHANGED FROM YOUR CURRENT WORKING SETUP
+// THESE VALUES APPLY TO ALL 8 CHARACTERS.
+//
+// Adjust these if you want every AR character to:
+// - move
+// - resize
+// - rotate
+//
 // ==========================================================
+
+
+// Base plane size
 
 const CHARACTER_WIDTH = 0.48;
 
 const CHARACTER_HEIGHT = 0.48;
 
 
+// Keep scale at 1 so positioning is easier to understand
+
 const CHARACTER_SCALE = "1 1 1";
 
 
+// X   Y    Z
+//
+// X:
+// negative = left
+// positive = right
+//
+// Y:
+// negative = down
+// positive = up
+//
+// Z:
+// small positive value places video slightly above target
+
 const CHARACTER_POSITION = "-0.02 -0.2 0.01";
 
+
+// X Y Z rotation
 
 const CHARACTER_ROTATION = "0 0 0";
 
 
 
 // ==========================================================
-// HTML ELEMENTS
+// GET HTML ELEMENTS
 // ==========================================================
 
 const startGate =
@@ -202,6 +245,28 @@ const closeArBtn =
 
 const characterStrip =
     document.getElementById("character-strip");
+
+
+
+// ==========================================================
+// iOS SAFARI DETECTION
+//
+// Used ONLY to run an iOS-specific video "priming" step.
+// Does not change anything about the Android code path.
+// ==========================================================
+
+function isIOSSafari() {
+
+    const ua = navigator.userAgent;
+
+    const isIOSDevice =
+        /iPad|iPhone|iPod/.test(ua) ||
+        // iPadOS 13+ reports as "Mac" but has touch support
+        (ua.includes("Mac") && "ontouchend" in document);
+
+    return isIOSDevice;
+
+}
 
 
 
@@ -250,11 +315,13 @@ startButton.onclick = () => {
 
     console.log("Starting Monster Curry AR...");
 
-    console.log("WEBM-ONLY iOS TEST");
 
+    // Hide start page
 
     startGate.style.display = "none";
 
+
+    // Create AR scene
 
     initARScene();
 
@@ -263,21 +330,14 @@ startButton.onclick = () => {
 
 
 // ==========================================================
-// INITIALISE AR
+// INITIALISE AR SCENE
 // ==========================================================
 
 function initARScene() {
 
 
-
     // ======================================================
     // CREATE VIDEO ASSETS
-    //
-    // IMPORTANT:
-    //
-    // WEBM ONLY FOR THIS TEST.
-    //
-    // There is NO MP4 source in this version.
     // ======================================================
 
     const assetTags = CHARACTERS
@@ -304,10 +364,47 @@ function initARScene() {
 
                 >
 
+
+                    <!--
+                        iOS Safari can use HEVC MP4
+                        with transparency.
+
+                        NOTE: intentionally NOT specifying a codecs=
+                        string here. A bare "hvc1" (without profile/
+                        level, e.g. hvc1.1.6.L93.B0) can fail Safari's
+                        canPlayType() check, causing Safari to silently
+                        skip this <source> and fall through to the
+                        webm source below -- which Safari can't play
+                        at all, leaving the video with nothing valid
+                        to load. Letting Safari sniff the container
+                        itself is more reliable.
+
+                        This has ZERO effect on Android: Chrome/Android
+                        doesn't support hvc1 either way and always
+                        falls through to the webm source below.
+                    -->
+
                     <source
-                        src="${character.videoWebm}"
-                        type="video/webm"
+
+                        src="${character.videoMp4}"
+
+                        type="video/mp4"
+
                     >
+
+
+                    <!--
+                        Android / Chrome should use WebM.
+                    -->
+
+                    <source
+
+                        src="${character.videoWebm}"
+
+                        type="video/webm"
+
+                    >
+
 
                 </video>
 
@@ -383,9 +480,7 @@ function initARScene() {
 
 
     // ======================================================
-    // BUILD A-FRAME + MINDAR SCENE
-    //
-    // THIS PART IS UNCHANGED.
+    // BUILD A-FRAME / MINDAR SCENE
     // ======================================================
 
     sceneContainer.innerHTML = `
@@ -422,6 +517,8 @@ function initARScene() {
         >
 
 
+            <!-- ================= ASSETS ================= -->
+
             <a-assets>
 
                 ${assetTags}
@@ -429,6 +526,8 @@ function initARScene() {
             </a-assets>
 
 
+
+            <!-- ================= AR CAMERA ================= -->
 
             <a-camera
 
@@ -444,6 +543,8 @@ function initARScene() {
 
 
 
+            <!-- ================= TARGETS ================= -->
+
             ${anchorTags}
 
 
@@ -454,7 +555,67 @@ function initARScene() {
 
 
     // ======================================================
-    // GET GENERATED SCENE
+    // iOS SAFARI: PRIME ALL VIDEOS
+    //
+    // iOS Safari can refuse .play() on a video element that
+    // was never explicitly started inside the original user
+    // -gesture call stack. Our real .play() calls happen later,
+    // async, inside the MindAR "targetFound" event -- which
+    // iOS does not treat as gesture-authorized.
+    //
+    // Fix: immediately load() + play() + pause() every video
+    // right here, still inside the synchronous startButton
+    // click handler. This "unlocks" each element for iOS so
+    // the later programmatic play() in targetFound works.
+    //
+    // Gated to iOS only -- Android's working path is untouched.
+    // ======================================================
+
+    if (isIOSSafari()) {
+
+        CHARACTERS.forEach(character => {
+
+            const videoEl =
+                document.getElementById(`loop-${character.id}`);
+
+            if (!videoEl) return;
+
+            // Set as JS properties too, not just HTML attributes --
+            // Safari's autoplay policy checks the live properties.
+            videoEl.muted = true;
+            videoEl.playsInline = true;
+
+            // Force Safari to (re)parse the <source> children.
+            // Sources injected via innerHTML aren't always picked
+            // up automatically without an explicit load().
+            videoEl.load();
+
+            const primePlay = videoEl.play();
+
+            if (primePlay !== undefined) {
+
+                primePlay
+                    .then(() => {
+                        videoEl.pause();
+                        videoEl.currentTime = 0;
+                    })
+                    .catch(error => {
+                        console.warn(
+                            `iOS priming play failed for ${character.name}:`,
+                            error
+                        );
+                    });
+
+            }
+
+        });
+
+    }
+
+
+
+    // ======================================================
+    // GET GENERATED A-FRAME SCENE
     // ======================================================
 
     const sceneEl =
@@ -463,7 +624,7 @@ function initARScene() {
 
 
     // ======================================================
-    // A-FRAME LOADED
+    // DEBUG — A-FRAME SCENE LOADED
     // ======================================================
 
     sceneEl.addEventListener(
@@ -480,7 +641,7 @@ function initARScene() {
 
 
     // ======================================================
-    // MINDAR READY
+    // DEBUG — MINDAR CAMERA READY
     // ======================================================
 
     sceneEl.addEventListener(
@@ -498,26 +659,6 @@ function initARScene() {
 
             characterBadge.classList.add(
                 "idle"
-            );
-
-
-            // ----------------------------------------------
-            // DEBUG VIDEO SUPPORT
-            // ----------------------------------------------
-
-            const testVideo =
-                document.createElement("video");
-
-
-            console.log(
-                "Safari WebM support:",
-                testVideo.canPlayType("video/webm")
-            );
-
-
-            console.log(
-                "Safari VP9 WebM support:",
-                testVideo.canPlayType('video/webm; codecs="vp9"')
             );
 
         }
@@ -552,11 +693,15 @@ function initARScene() {
 
 
     // ======================================================
-    // TARGET EVENTS
+    // TARGET FOUND / LOST EVENTS
     // ======================================================
 
     CHARACTERS.forEach(character => {
 
+
+        // --------------------------------------------------
+        // GET TARGET
+        // --------------------------------------------------
 
         const anchorEl =
 
@@ -566,6 +711,11 @@ function initARScene() {
 
             );
 
+
+
+        // --------------------------------------------------
+        // GET VIDEO
+        // --------------------------------------------------
 
         const videoEl =
 
@@ -577,77 +727,9 @@ function initARScene() {
 
 
 
-        // ==================================================
-        // VIDEO DEBUG EVENTS
-        // ==================================================
-
-        videoEl.addEventListener(
-            "loadedmetadata",
-            () => {
-
-                console.log(
-                    `${character.name} metadata loaded`
-                );
-
-
-                console.log(
-                    `${character.name} size:`,
-                    videoEl.videoWidth,
-                    "x",
-                    videoEl.videoHeight
-                );
-
-
-                console.log(
-                    `${character.name} duration:`,
-                    videoEl.duration
-                );
-
-            }
-        );
-
-
-        videoEl.addEventListener(
-            "canplay",
-            () => {
-
-                console.log(
-                    `${character.name} can play`
-                );
-
-            }
-        );
-
-
-        videoEl.addEventListener(
-            "playing",
-            () => {
-
-                console.log(
-                    `${character.name} IS PLAYING`
-                );
-
-            }
-        );
-
-
-        videoEl.addEventListener(
-            "error",
-            () => {
-
-                console.error(
-                    `${character.name} VIDEO ERROR`,
-                    videoEl.error
-                );
-
-            }
-        );
-
-
-
-        // ==================================================
+        // --------------------------------------------------
         // TARGET FOUND
-        // ==================================================
+        // --------------------------------------------------
 
         anchorEl.addEventListener(
 
@@ -657,108 +739,70 @@ function initARScene() {
 
 
                 console.log(
+
                     "Target found:",
+
                     character.name
+
                 );
 
-
-                console.log(
-                    "Video readyState:",
-                    videoEl.readyState
-                );
-
-
-                console.log(
-                    "Video networkState:",
-                    videoEl.networkState
-                );
-
-
-                console.log(
-                    "Video currentSrc:",
-                    videoEl.currentSrc
-                );
 
 
                 characterBadge.textContent =
+
                     character.name;
 
 
+
                 characterBadge.classList.remove(
+
                     "idle"
+
                 );
+
 
 
                 scanHint.classList.add(
+
                     "hidden"
+
                 );
 
 
-                // Ensure iOS properties are set directly too.
 
-                videoEl.muted = true;
+                // Restart animation
 
-                videoEl.playsInline = true;
-
-
-                // Restart animation.
-
-                try {
-
-                    videoEl.currentTime = 0;
-
-                }
-
-                catch (error) {
-
-                    console.warn(
-                        "Could not reset video:",
-                        error
-                    );
-
-                }
+                videoEl.currentTime = 0;
 
 
 
-                const playPromise =
-                    videoEl.play();
+                videoEl
 
+                    .play()
 
-                if (playPromise !== undefined) {
+                    .then(() => {
 
-                    playPromise
+                        console.log(
 
-                        .then(() => {
+                            "Playing video:",
 
-                            console.log(
-                                "Playing video:",
-                                character.name
-                            );
+                            character.name
 
+                        );
 
-                            console.log(
-                                "Current source:",
-                                videoEl.currentSrc
-                            );
+                    })
 
+                    .catch(error => {
 
-                            console.log(
-                                "Current time:",
-                                videoEl.currentTime
-                            );
+                        console.warn(
 
-                        })
+                            `Could not play ${character.name}:`,
 
-                        .catch(error => {
+                            error
 
-                            console.error(
-                                `Could not play ${character.name}:`,
-                                error
-                            );
+                        );
 
-                        });
-
-                }
+                    });
 
             }
 
@@ -766,9 +810,9 @@ function initARScene() {
 
 
 
-        // ==================================================
+        // --------------------------------------------------
         // TARGET LOST
-        // ==================================================
+        // --------------------------------------------------
 
         anchorEl.addEventListener(
 
@@ -778,25 +822,37 @@ function initARScene() {
 
 
                 console.log(
+
                     "Target lost:",
+
                     character.name
+
                 );
+
 
 
                 videoEl.pause();
 
 
+
                 characterBadge.textContent =
+
                     "Point at a standee...";
 
 
+
                 characterBadge.classList.add(
+
                     "idle"
+
                 );
 
 
+
                 scanHint.classList.remove(
+
                     "hidden"
+
                 );
 
             }

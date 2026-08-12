@@ -60,7 +60,16 @@
     <link rel="stylesheet" href="ar-style.css?v=20260812a" />
 
 
-    <!-- ================= WEB AR LIBRARIES ================= -->
+    <!--
+        ==========================================================
+        WEB AR LIBRARIES
+
+        A-Frame first.
+        MindAR second.
+
+        Using newer versions for better Android compatibility.
+        ==========================================================
+    -->
 
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
@@ -121,6 +130,8 @@
             to watch it come alive.
         </p>
 
+
+        <!-- Filled automatically by ar-scene.js -->
 
         <div
             class="character-strip"
@@ -203,7 +214,11 @@
 
 
 
-    <!-- ================= AR SCENE CONTAINER ================= -->
+    <!--
+        ==========================================================
+        AR SCENE CONTAINER
+        ==========================================================
+    -->
 
     <div id="scene-container"></div>
 
@@ -211,8 +226,7 @@
 
     <!-- ================= AR LOGIC ================= -->
 
-    <!-- Changed version number so Safari does not use cached JS -->
-    <script src="ar-scene.js?v=20260812-ios-webm-test1" defer></script>
+    <script src="ar-scene.js?v=20260812b" defer></script>
 
 
 </body>
