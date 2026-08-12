@@ -46,6 +46,13 @@ const CHARACTERS = [
         videoMp4: "images/Katsu-Chan.mp4",
         videoWebm: "images/Katsu-Chan.webm",
 
+        // iOS-only: plain H.264 video composited onto a solid
+        // key color (see CHROMA KEY section below). Safari can't
+        // carry alpha through to a WebGL texture, so iOS uses this
+        // + the chromakey shader instead of the transparent webm.
+        videoIOSKeyed: "images/Katsu-Chan-Safari.mp4",
+        keyColor: "#00FFFF",
+
         // Per-character position override.
         // Leave as null to use the shared CHARACTER_POSITION below.
         // Set to "x y z" (same format as CHARACTER_POSITION) to
@@ -65,6 +72,9 @@ const CHARACTERS = [
         videoMp4: "images/Monstora-Sharemi.mp4",
         videoWebm: "images/Monstora-Sharemi.webm",
 
+        videoIOSKeyed: "images/Monstora-Sharemi-Safari.mp4",
+        keyColor: "#8000FF",
+
         position: null
     },
 
@@ -78,6 +88,9 @@ const CHARACTERS = [
 
         videoMp4: "images/Giga-Nomu.mp4",
         videoWebm: "images/Giga-Nomu.webm",
+
+        videoIOSKeyed: "images/Giga-Nomu-Safari.mp4",
+        keyColor: "#00FFFF",
 
         position: null
     },
@@ -93,6 +106,9 @@ const CHARACTERS = [
         videoMp4: "images/Tamago-Puffy.mp4",
         videoWebm: "images/Tamago-Puffy.webm",
 
+        videoIOSKeyed: "images/Tamago-Puffy-Safari.mp4",
+        keyColor: "#00FFFF",
+
         position: null
     },
 
@@ -106,6 +122,9 @@ const CHARACTERS = [
 
         videoMp4: "images/Cheezu-Mellow.mp4",
         videoWebm: "images/Cheezu-Mellow.webm",
+
+        videoIOSKeyed: "images/Cheezu-Mellow-Safari.mp4",
+        keyColor: "#0000FF",
 
         position: null
     },
@@ -121,6 +140,9 @@ const CHARACTERS = [
         videoMp4: "images/Ramy-Noodleton.mp4",
         videoWebm: "images/Ramy-Noodleton.webm",
 
+        videoIOSKeyed: "images/Ramy-Noodleton-Safari.mp4",
+        keyColor: "#00FFFF",
+
         position: null
     },
 
@@ -135,6 +157,9 @@ const CHARACTERS = [
         videoMp4: "images/Hot-Sizz.mp4",
         videoWebm: "images/Hot-Sizz.webm",
 
+        videoIOSKeyed: "images/Hot-Sizz-Safari.mp4",
+        keyColor: "#0000FF",
+
         position: null
     },
 
@@ -148,6 +173,9 @@ const CHARACTERS = [
 
         videoMp4: "images/Teppa-Spark.mp4",
         videoWebm: "images/Teppa-Spark.webm",
+
+        videoIOSKeyed: "images/Teppa-Spark-Safari.mp4",
+        keyColor: "#00FF00",
 
         position: null
     }
@@ -251,7 +279,8 @@ const characterStrip =
 // ==========================================================
 // iOS SAFARI DETECTION
 //
-// Used ONLY to run an iOS-specific video "priming" step.
+// Used to run an iOS-specific video "priming" step AND to pick
+// the chroma-key rendering path (see CHROMA KEY SHADER below).
 // Does not change anything about the Android code path.
 // ==========================================================
 
@@ -265,6 +294,120 @@ function isIOSSafari() {
         (ua.includes("Mac") && "ontouchend" in document);
 
     return isIOSDevice;
+
+}
+
+
+
+// ==========================================================
+// iOS CHROMA-KEY SHADER
+//
+// WHY THIS EXISTS:
+//
+// iOS Safari can play HEVC-with-alpha video natively in a
+// plain <video> tag, but when that same video frame is drawn
+// into a WebGL texture (exactly what MindAR/A-Frame does to
+// composite it into the camera view), Safari's video-to-texture
+// pipeline drops the alpha channel. The video renders, but any
+// transparency is lost.
+//
+// This does NOT affect Android: WebM (VP8/9) alpha is a
+// different mechanism that Chrome carries through into WebGL
+// textures correctly, so the existing "shader: flat; transparent:
+// true" material keeps working there completely untouched.
+//
+// THE FIX (iOS only):
+//
+// Instead of relying on any codec's alpha channel, the iOS
+// video source (character.videoIOSKeyed, e.g.
+// "images/Katsu-Chan-Safari.mp4") is a plain H.264 mp4 with
+// the character composited onto a solid, saturated "key color"
+// background (character.keyColor) instead of a transparent
+// background. Plain H.264 has no alpha-in-WebGL problem at all.
+//
+// This shader then discards pixels close to that key color at
+// render time (in UV/chroma space, like a traditional green-
+// screen key), so the result looks transparent again -- without
+// ever depending on the browser carrying real alpha through.
+//
+// similarity / smoothness can be tuned per scene if a
+// particular character's edges look too hard or too eaten-into.
+// ==========================================================
+
+if (window.AFRAME && !AFRAME.shaders.chromakey) {
+
+    AFRAME.registerShader("chromakey", {
+
+        schema: {
+            src: { type: "map", is: "uniform" },
+            keyColor: { type: "color", is: "uniform", default: "#00FF00" },
+
+            // How far (in chroma-space) a pixel must be from the
+            // key color before it's treated as fully opaque.
+            // Raise this if real character color is being eaten.
+            similarity: { type: "number", is: "uniform", default: 0.22 },
+
+            // Width of the soft falloff band between "keyed out"
+            // and "fully visible". Higher = softer/smoother edges,
+            // helpful for anti-aliased outlines and soft effects
+            // like glow or smoke. Lower = harder, crisper cutoff.
+            smoothness: { type: "number", is: "uniform", default: 0.12 },
+
+            // Desaturates near-key-color fringe pixels so leftover
+            // key-color "spill" on edges reads as neutral instead
+            // of a visible color halo.
+            spill: { type: "number", is: "uniform", default: 0.15 }
+        },
+
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+
+        fragmentShader: `
+            uniform sampler2D src;
+            uniform vec3 keyColor;
+            uniform float similarity;
+            uniform float smoothness;
+            uniform float spill;
+            varying vec2 vUv;
+
+            // RGB -> chroma (UV) plane, ignoring luma.
+            // This is what makes the key robust to the lighting/
+            // shading gradients baked into the composited video,
+            // instead of just diffing raw RGB values.
+            vec2 toChroma(vec3 rgb) {
+                return vec2(
+                    rgb.r * -0.169 + rgb.g * -0.331 + rgb.b *  0.5   + 0.5,
+                    rgb.r *  0.5   + rgb.g * -0.419 + rgb.b * -0.081 + 0.5
+                );
+            }
+
+            void main() {
+                vec4 texel = texture2D(src, vUv);
+
+                vec2 keyChroma = toChroma(keyColor);
+                vec2 texChroma = toChroma(texel.rgb);
+
+                float dist = distance(texChroma, keyChroma);
+
+                float alpha = smoothstep(similarity, similarity + smoothness, dist);
+
+                // Spill suppression: pixels near (but not exactly at)
+                // the key color get desaturated toward luma, so a thin
+                // fringe reads as neutral grey/dim rather than a color halo.
+                float spillAmount = 1.0 - smoothstep(similarity, similarity + spill, dist);
+                float luma = dot(texel.rgb, vec3(0.299, 0.587, 0.114));
+                vec3 despilled = mix(texel.rgb, vec3(luma), spillAmount * 0.6);
+
+                gl_FragColor = vec4(despilled, alpha * texel.a);
+            }
+        `
+
+    });
 
 }
 
@@ -338,11 +481,54 @@ function initARScene() {
 
     // ======================================================
     // CREATE VIDEO ASSETS
+    //
+    // iOS gets a completely separate branch: a single plain
+    // H.264 mp4 composited onto a solid key color, decoded by
+    // the chromakey shader instead of relying on alpha.
+    //
+    // Android's markup below is EXACTLY what it was before --
+    // untouched.
     // ======================================================
+
+    const onIOS = isIOSSafari();
 
     const assetTags = CHARACTERS
 
         .map(character => {
+
+            if (onIOS) {
+
+                return `
+
+                    <video
+
+                        id="loop-${character.id}"
+
+                        preload="auto"
+
+                        loop
+
+                        muted
+
+                        playsinline
+
+                        webkit-playsinline
+
+                    >
+
+                        <source
+
+                            src="${character.videoIOSKeyed}"
+
+                            type="video/mp4"
+
+                        >
+
+                    </video>
+
+                `;
+
+            }
 
             return `
 
@@ -418,11 +604,31 @@ function initARScene() {
 
     // ======================================================
     // CREATE IMAGE TARGETS
+    //
+    // iOS branch uses the chromakey shader (see registration
+    // near the top of this file) with this character's assigned
+    // keyColor. Android's material below is EXACTLY what it was
+    // before -- untouched.
     // ======================================================
 
     const anchorTags = CHARACTERS
 
         .map(character => {
+
+            const material = onIOS
+
+                ? `
+                    shader: chromakey;
+                    src: #loop-${character.id};
+                    keyColor: ${character.keyColor};
+                    transparent: true;
+                `
+
+                : `
+                    shader: flat;
+                    src: #loop-${character.id};
+                    transparent: true;
+                `;
 
             return `
 
@@ -444,11 +650,7 @@ function initARScene() {
                         src="#loop-${character.id}"
 
 
-                        material="
-                            shader: flat;
-                            src: #loop-${character.id};
-                            transparent: true;
-                        "
+                        material="${material}"
 
 
                         width="${CHARACTER_WIDTH}"
