@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -10,9 +11,16 @@
 
     <title>Monster Curry — Meet Your Characters in AR</title>
 
-    <!-- Google Fonts -->
+
+    <!-- ================= GOOGLE FONTS ================= -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    />
 
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
@@ -24,7 +32,9 @@
         rel="stylesheet"
     />
 
-    <!-- Tailwind -->
+
+    <!-- ================= TAILWIND ================= -->
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <script id="tailwind-config">
@@ -43,47 +53,60 @@
         };
     </script>
 
-    <!-- Styles -->
+
+    <!-- ================= CSS ================= -->
+
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="ar-style.css" />
 
+
     <!--
         ==========================================================
-        WEBAR LIBRARIES
+        WEB AR LIBRARIES
 
-        1. A-Frame
-        2. MindAR Image Tracking
+        A-Frame first.
+        MindAR second.
 
-        Load order matters.
+        Using newer versions for better Android compatibility.
         ==========================================================
     -->
 
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
 </head>
 
+
 <body>
+
 
     <!-- ================= HEADER ================= -->
 
     <header
         class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm"
     >
+
         <div
             class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center"
         >
+
             <div
                 class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter"
             >
+
                 <img
                     src="images/Monster Curry Updated Logo_White Text 2.png"
                     alt="Monster Curry"
                     style="display: block;"
                 />
+
             </div>
+
         </div>
+
     </header>
+
 
 
     <!-- ================= START SCREEN ================= -->
@@ -96,18 +119,25 @@
             alt="Monster Curry"
         />
 
-        <h1>Meet the Monster Curry Characters</h1>
+
+        <h1>
+            Meet the Monster Curry Characters
+        </h1>
+
 
         <p>
             Turn on your camera, then point it at any standee
             to watch it come alive.
         </p>
 
-        <!-- Character preview images inserted by JS -->
+
+        <!-- Filled automatically by ar-scene.js -->
+
         <div
             class="character-strip"
             id="character-strip"
         ></div>
+
 
         <button
             id="start-button"
@@ -119,11 +149,15 @@
     </div>
 
 
+
     <!-- ================= CAMERA ERROR ================= -->
 
     <div id="error-state">
 
-        <h1>Camera unavailable</h1>
+        <h1>
+            Camera unavailable
+        </h1>
+
 
         <p>
             We couldn't access your camera.
@@ -134,11 +168,14 @@
     </div>
 
 
+
     <!-- ================= AR UI OVERLAY ================= -->
 
     <div class="ar-overlay">
 
+
         <div class="ar-topbar">
+
 
             <div
                 class="ar-badge idle"
@@ -146,6 +183,7 @@
             >
                 Point at a standee...
             </div>
+
 
             <div
                 class="ar-close"
@@ -155,40 +193,41 @@
                 ✕
             </div>
 
+
         </div>
+
 
 
         <div
             class="ar-hint"
             id="scan-hint"
         >
+
             <p>
                 Point your camera at any Monster Curry standee.
             </p>
+
         </div>
+
 
     </div>
 
 
+
     <!--
         ==========================================================
-        AR SCENE
-
-        IMPORTANT:
-
-        The actual <a-scene>, video assets and target entities
-        are generated inside ar-scene.js.
-
-        Do NOT put another <a-scene> here.
+        AR SCENE CONTAINER
         ==========================================================
     -->
 
     <div id="scene-container"></div>
 
 
+
     <!-- ================= AR LOGIC ================= -->
 
     <script src="ar-scene.js" defer></script>
+
 
 </body>
 

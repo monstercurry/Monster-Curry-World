@@ -3,14 +3,18 @@
 MONSTER CURRY AR SCENE
 ==========================================================
 
-All 8 image targets are stored inside:
+All 8 standees are compiled together inside:
 
     images/targets.mind
 
-The targetIndex MUST match the order the images were
-compiled in MindAR.
 
-Target order:
+IMPORTANT:
+
+The targetIndex must match the order used when compiling
+the images inside the MindAR compiler.
+
+
+TARGET ORDER
 
 0 = Katsu-Chan
 1 = Monstora Sharemi
@@ -20,8 +24,10 @@ Target order:
 5 = Ramy Noodleton
 6 = Hot Sizz
 7 = Teppa Spark
+
 ==========================================================
 */
+
 
 
 // ==========================================================
@@ -41,6 +47,7 @@ const CHARACTERS = [
         videoWebm: "images/Katsu-Chan.webm"
     },
 
+
     {
         id: "monstora",
         targetIndex: 1,
@@ -51,6 +58,7 @@ const CHARACTERS = [
         videoMp4: "images/Monstora-Sharemi.mp4",
         videoWebm: "images/Monstora-Sharemi.webm"
     },
+
 
     {
         id: "giga",
@@ -63,6 +71,7 @@ const CHARACTERS = [
         videoWebm: "images/Giga-Nomu.webm"
     },
 
+
     {
         id: "tamago",
         targetIndex: 3,
@@ -73,6 +82,7 @@ const CHARACTERS = [
         videoMp4: "images/Tamago-Puffy.mp4",
         videoWebm: "images/Tamago-Puffy.webm"
     },
+
 
     {
         id: "cheezu",
@@ -85,6 +95,7 @@ const CHARACTERS = [
         videoWebm: "images/Cheezu-Mellow.webm"
     },
 
+
     {
         id: "ramy",
         targetIndex: 5,
@@ -96,6 +107,7 @@ const CHARACTERS = [
         videoWebm: "images/Ramy-Noodleton.webm"
     },
 
+
     {
         id: "hotsizz",
         targetIndex: 6,
@@ -106,6 +118,7 @@ const CHARACTERS = [
         videoMp4: "images/Hot-Sizz.mp4",
         videoWebm: "images/Hot-Sizz.webm"
     },
+
 
     {
         id: "teppa",
@@ -121,6 +134,7 @@ const CHARACTERS = [
 ];
 
 
+
 // ==========================================================
 // MINDAR TARGET FILE
 // ==========================================================
@@ -128,68 +142,117 @@ const CHARACTERS = [
 const TARGETS_MIND_SRC = "images/targets.mind";
 
 
+
 // ==========================================================
-// GLOBAL AR CHARACTER TRANSFORM
+// GLOBAL CHARACTER TRANSFORM
+//
+// THESE VALUES APPLY TO ALL 8 CHARACTERS.
+//
+// Adjust these if you want every AR character to:
+// - move
+// - resize
+// - rotate
+//
 // ==========================================================
 
+
+// Base plane size
+
 const CHARACTER_WIDTH = 0.48;
+
 const CHARACTER_HEIGHT = 0.48;
+
+
+// Keep scale at 1 so positioning is easier to understand
 
 const CHARACTER_SCALE = "1 1 1";
 
+
+// X   Y    Z
+//
+// X:
+// negative = left
+// positive = right
+//
+// Y:
+// negative = down
+// positive = up
+//
+// Z:
+// small positive value places video slightly above target
+
 const CHARACTER_POSITION = "0 0.3 0.01";
+
+
+// X Y Z rotation
+
 const CHARACTER_ROTATION = "0 0 0";
 
+
+
 // ==========================================================
-// HTML ELEMENTS
+// GET HTML ELEMENTS
 // ==========================================================
 
 const startGate =
     document.getElementById("start-gate");
 
+
 const startButton =
     document.getElementById("start-button");
+
 
 const errorScreen =
     document.getElementById("error-state");
 
+
 const sceneContainer =
     document.getElementById("scene-container");
+
 
 const characterBadge =
     document.getElementById("character-badge");
 
+
 const scanHint =
     document.getElementById("scan-hint");
 
+
 const closeArBtn =
     document.getElementById("close-ar");
+
 
 const characterStrip =
     document.getElementById("character-strip");
 
 
+
 // ==========================================================
-// START SCREEN CHARACTER PREVIEW
+// CHARACTER PREVIEW STRIP
 // ==========================================================
 
 characterStrip.innerHTML = CHARACTERS
+
     .map(character => {
 
         return `
+
             <img
                 src="${character.poster}"
                 alt="${character.name}"
                 loading="lazy"
             >
+
         `;
 
     })
+
     .join("");
 
 
+
 // ==========================================================
-// EXIT AR
+// CLOSE AR
 // ==========================================================
 
 closeArBtn.onclick = () => {
@@ -199,29 +262,40 @@ closeArBtn.onclick = () => {
 };
 
 
+
 // ==========================================================
-// START CAMERA
+// START AR
 // ==========================================================
 
 startButton.onclick = () => {
 
+
+    console.log("Starting Monster Curry AR...");
+
+
+    // Hide start page
+
     startGate.style.display = "none";
+
+
+    // Create AR scene
 
     initARScene();
 
 };
 
 
+
 // ==========================================================
-// INITIALISE AR
+// INITIALISE AR SCENE
 // ==========================================================
 
 function initARScene() {
 
 
-    // ------------------------------------------------------
+    // ======================================================
     // CREATE VIDEO ASSETS
-    // ------------------------------------------------------
+    // ======================================================
 
     const assetTags = CHARACTERS
 
@@ -230,28 +304,50 @@ function initARScene() {
             return `
 
                 <video
+
                     id="loop-${character.id}"
 
                     preload="auto"
 
                     loop
+
                     muted
 
                     playsinline
+
                     webkit-playsinline
 
                     crossorigin="anonymous"
+
                 >
 
-                    <source
-                        src="${character.videoMp4}"
-                        type='video/mp4; codecs="hvc1"'
-                    >
+
+                    <!--
+                        iOS Safari can use HEVC MP4
+                        with transparency.
+                    -->
 
                     <source
-                        src="${character.videoWebm}"
-                        type="video/webm"
+
+                        src="${character.videoMp4}"
+
+                        type='video/mp4; codecs="hvc1"'
+
                     >
+
+
+                    <!--
+                        Android / Chrome should use WebM.
+                    -->
+
+                    <source
+
+                        src="${character.videoWebm}"
+
+                        type="video/webm"
+
+                    >
+
 
                 </video>
 
@@ -262,17 +358,10 @@ function initARScene() {
         .join("");
 
 
-    // ------------------------------------------------------
-    // CREATE TARGETS
-    //
-    // Every character uses the SAME:
-    //
-    // width
-    // height
-    // scale
-    // position
-    // rotation
-    // ------------------------------------------------------
+
+    // ======================================================
+    // CREATE IMAGE TARGETS
+    // ======================================================
 
     const anchorTags = CHARACTERS
 
@@ -282,7 +371,9 @@ function initARScene() {
 
                 <a-entity
 
-                    mindar-image-target="targetIndex: ${character.targetIndex}"
+                    mindar-image-target="
+                        targetIndex: ${character.targetIndex}
+                    "
 
                     data-character-id="${character.id}"
 
@@ -290,9 +381,11 @@ function initARScene() {
 
                 >
 
+
                     <a-video
 
                         src="#loop-${character.id}"
+
 
                         material="
                             shader: flat;
@@ -300,19 +393,24 @@ function initARScene() {
                             transparent: true;
                         "
 
+
                         width="${CHARACTER_WIDTH}"
 
                         height="${CHARACTER_HEIGHT}"
 
+
                         scale="${CHARACTER_SCALE}"
 
+
                         position="${CHARACTER_POSITION}"
+
 
                         rotation="${CHARACTER_ROTATION}"
 
                     >
 
                     </a-video>
+
 
                 </a-entity>
 
@@ -323,13 +421,15 @@ function initARScene() {
         .join("");
 
 
-    // ------------------------------------------------------
-    // CREATE THE ACTUAL A-FRAME + MINDAR SCENE
-    // ------------------------------------------------------
+
+    // ======================================================
+    // BUILD A-FRAME / MINDAR SCENE
+    // ======================================================
 
     sceneContainer.innerHTML = `
 
         <a-scene
+
 
             mindar-image="
                 imageTargetSrc: ${TARGETS_MIND_SRC};
@@ -338,24 +438,29 @@ function initARScene() {
                 uiLoading: no;
             "
 
+
             color-space="sRGB"
+
 
             renderer="
                 colorManagement: true;
                 physicallyCorrectLights: true;
-                alpha: true;
             "
 
-            vr-mode-ui="enabled: false"
 
-            device-orientation-permission-ui="enabled: false"
+            vr-mode-ui="
+                enabled: false
+            "
 
-            embedded
+
+            device-orientation-permission-ui="
+                enabled: false
+            "
 
         >
 
 
-            <!-- ================= VIDEO ASSETS ================= -->
+            <!-- ================= ASSETS ================= -->
 
             <a-assets>
 
@@ -364,20 +469,24 @@ function initARScene() {
             </a-assets>
 
 
+
             <!-- ================= AR CAMERA ================= -->
 
             <a-camera
 
                 position="0 0 0"
 
-                look-controls="enabled: false"
+                look-controls="
+                    enabled: false
+                "
 
             >
 
             </a-camera>
 
 
-            <!-- ================= IMAGE TARGETS ================= -->
+
+            <!-- ================= TARGETS ================= -->
 
             ${anchorTags}
 
@@ -387,145 +496,70 @@ function initARScene() {
     `;
 
 
+
     // ======================================================
-    // GET GENERATED SCENE
+    // GET GENERATED A-FRAME SCENE
     // ======================================================
 
     const sceneEl =
         sceneContainer.querySelector("a-scene");
 
 
+
     // ======================================================
-    // TRANSPARENT A-FRAME BACKGROUND
+    // DEBUG — A-FRAME SCENE LOADED
     // ======================================================
 
-    sceneEl.addEventListener("loaded", () => {
+    sceneEl.addEventListener(
+        "loaded",
+        () => {
 
-        if (sceneEl.renderer) {
-
-            sceneEl.renderer.setClearColor(
-                0x000000,
-                0
+            console.log(
+                "A-Frame scene loaded"
             );
 
         }
+    );
 
-    });
 
 
     // ======================================================
-    // TARGET FOUND / TARGET LOST
+    // DEBUG — MINDAR CAMERA READY
     // ======================================================
 
-    CHARACTERS.forEach(character => {
+    sceneEl.addEventListener(
+        "arReady",
+        () => {
 
-
-        const anchorEl =
-            sceneContainer.querySelector(
-                `[data-character-id="${character.id}"]`
+            console.log(
+                "MindAR camera ready"
             );
 
 
-        const videoEl =
-            document.getElementById(
-                `loop-${character.id}`
+            characterBadge.textContent =
+                "Point at a standee...";
+
+
+            characterBadge.classList.add(
+                "idle"
             );
 
+        }
+    );
 
-        // --------------------------------------------------
-        // TARGET FOUND
-        // --------------------------------------------------
-
-        anchorEl.addEventListener(
-            "targetFound",
-            () => {
-
-                console.log(
-                    "Target found:",
-                    character.name
-                );
-
-
-                characterBadge.textContent =
-                    character.name;
-
-
-                characterBadge.classList.remove(
-                    "idle"
-                );
-
-
-                scanHint.classList.add(
-                    "hidden"
-                );
-
-
-                // Restart animation from beginning
-
-                videoEl.currentTime = 0;
-
-
-                videoEl
-                    .play()
-                    .catch(error => {
-
-                        console.warn(
-                            `Could not play ${character.name}:`,
-                            error
-                        );
-
-                    });
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // TARGET LOST
-        // --------------------------------------------------
-
-        anchorEl.addEventListener(
-            "targetLost",
-            () => {
-
-                console.log(
-                    "Target lost:",
-                    character.name
-                );
-
-
-                videoEl.pause();
-
-
-                characterBadge.textContent =
-                    "Point at a standee...";
-
-
-                characterBadge.classList.add(
-                    "idle"
-                );
-
-
-                scanHint.classList.remove(
-                    "hidden"
-                );
-
-            }
-        );
-
-    });
 
 
     // ======================================================
-    // AR ERROR
+    // MINDAR ERROR
     // ======================================================
 
     sceneEl.addEventListener(
         "arError",
         error => {
 
+
             console.error(
-                "MindAR error:",
+                "MindAR AR ERROR:",
                 error
             );
 
@@ -533,9 +567,182 @@ function initARScene() {
             sceneContainer.innerHTML = "";
 
 
-            errorScreen.style.display = "flex";
+            errorScreen.style.display =
+                "flex";
 
         }
     );
+
+
+
+    // ======================================================
+    // TARGET FOUND / LOST EVENTS
+    // ======================================================
+
+    CHARACTERS.forEach(character => {
+
+
+        // --------------------------------------------------
+        // GET TARGET
+        // --------------------------------------------------
+
+        const anchorEl =
+
+            sceneContainer.querySelector(
+
+                `[data-character-id="${character.id}"]`
+
+            );
+
+
+
+        // --------------------------------------------------
+        // GET VIDEO
+        // --------------------------------------------------
+
+        const videoEl =
+
+            document.getElementById(
+
+                `loop-${character.id}`
+
+            );
+
+
+
+        // --------------------------------------------------
+        // TARGET FOUND
+        // --------------------------------------------------
+
+        anchorEl.addEventListener(
+
+            "targetFound",
+
+            () => {
+
+
+                console.log(
+
+                    "Target found:",
+
+                    character.name
+
+                );
+
+
+
+                characterBadge.textContent =
+
+                    character.name;
+
+
+
+                characterBadge.classList.remove(
+
+                    "idle"
+
+                );
+
+
+
+                scanHint.classList.add(
+
+                    "hidden"
+
+                );
+
+
+
+                // Restart animation
+
+                videoEl.currentTime = 0;
+
+
+
+                videoEl
+
+                    .play()
+
+                    .then(() => {
+
+                        console.log(
+
+                            "Playing video:",
+
+                            character.name
+
+                        );
+
+                    })
+
+                    .catch(error => {
+
+                        console.warn(
+
+                            `Could not play ${character.name}:`,
+
+                            error
+
+                        );
+
+                    });
+
+            }
+
+        );
+
+
+
+        // --------------------------------------------------
+        // TARGET LOST
+        // --------------------------------------------------
+
+        anchorEl.addEventListener(
+
+            "targetLost",
+
+            () => {
+
+
+                console.log(
+
+                    "Target lost:",
+
+                    character.name
+
+                );
+
+
+
+                videoEl.pause();
+
+
+
+                characterBadge.textContent =
+
+                    "Point at a standee...";
+
+
+
+                characterBadge.classList.add(
+
+                    "idle"
+
+                );
+
+
+
+                scanHint.classList.remove(
+
+                    "hidden"
+
+                );
+
+            }
+
+        );
+
+
+    });
 
 }
