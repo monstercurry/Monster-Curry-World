@@ -158,9 +158,9 @@ const TARGETS_MIND_SRC = "images/targets.mind";
 
 // Base plane size
 
-const CHARACTER_WIDTH = 0.48;
+const CHARACTER_WIDTH = 0.45;
 
-const CHARACTER_HEIGHT = 0.48;
+const CHARACTER_HEIGHT = 0.45;
 
 
 // Keep scale at 1 so positioning is easier to understand
@@ -181,7 +181,7 @@ const CHARACTER_SCALE = "1 1 1";
 // Z:
 // small positive value places video slightly above target
 
-const CHARACTER_POSITION = "0 -0.05 0.01";
+const CHARACTER_POSITION = "0 -0.1 0.01";
 
 
 // X Y Z rotation
