@@ -130,21 +130,14 @@ const TARGETS_MIND_SRC = "images/targets.mind";
 
 // ==========================================================
 // GLOBAL AR CHARACTER TRANSFORM
-//
-// These values apply to ALL 8 characters.
-// Change them here if you want to move or resize every
-// character together.
 // ==========================================================
 
-const CHARACTER_WIDTH = 1;
-const CHARACTER_HEIGHT = 1;
+const CHARACTER_WIDTH = 0.48;
+const CHARACTER_HEIGHT = 0.48;
 
-const CHARACTER_SCALE = "0.48 0.48 0.48";
+const CHARACTER_SCALE = "1 1 1";
 
-const CHARACTER_POSITION = "0 0.3 0.01";
-
-const CHARACTER_ROTATION = "0 0 0";
-
+const CHARACTER_POSITION = "0 0.1 0.01";
 
 // ==========================================================
 // HTML ELEMENTS
