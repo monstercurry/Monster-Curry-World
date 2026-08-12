@@ -44,7 +44,14 @@ const CHARACTERS = [
         poster: "images/Katsu-Chan.png",
 
         videoMp4: "images/Katsu-Chan.mp4",
-        videoWebm: "images/Katsu-Chan.webm"
+        videoWebm: "images/Katsu-Chan.webm",
+
+        // Per-character position override.
+        // Leave as null to use the shared CHARACTER_POSITION below.
+        // Set to "x y z" (same format as CHARACTER_POSITION) to
+        // nudge just this character if it looks off-center on
+        // its specific standee/video.
+        position: null
     },
 
 
@@ -56,7 +63,9 @@ const CHARACTERS = [
         poster: "images/Monstora_Sharemi.png",
 
         videoMp4: "images/Monstora-Sharemi.mp4",
-        videoWebm: "images/Monstora-Sharemi.webm"
+        videoWebm: "images/Monstora-Sharemi.webm",
+
+        position: null
     },
 
 
@@ -68,7 +77,9 @@ const CHARACTERS = [
         poster: "images/Giga_Nomu.png",
 
         videoMp4: "images/Giga-Nomu.mp4",
-        videoWebm: "images/Giga-Nomu.webm"
+        videoWebm: "images/Giga-Nomu.webm",
+
+        position: null
     },
 
 
@@ -80,7 +91,13 @@ const CHARACTERS = [
         poster: "images/Tamago_Puffy.png",
 
         videoMp4: "images/Tamago-Puffy.mp4",
-        videoWebm: "images/Tamago-Puffy.webm"
+        videoWebm: "images/Tamago-Puffy.webm",
+
+        // Tamago Puffy's sleeping pose sits high inside its own
+        // video frame, so it needed a downward nudge relative to
+        // the shared default. Starting estimate — check on device
+        // and adjust the y value (2nd number) further if needed.
+        position: "0 -0.18 0.01"
     },
 
 
@@ -92,7 +109,9 @@ const CHARACTERS = [
         poster: "images/Cheezu_Mellow.png",
 
         videoMp4: "images/Cheezu-Mellow.mp4",
-        videoWebm: "images/Cheezu-Mellow.webm"
+        videoWebm: "images/Cheezu-Mellow.webm",
+
+        position: null
     },
 
 
@@ -104,7 +123,9 @@ const CHARACTERS = [
         poster: "images/Ramy_Noodleton.png",
 
         videoMp4: "images/Ramy-Noodleton.mp4",
-        videoWebm: "images/Ramy-Noodleton.webm"
+        videoWebm: "images/Ramy-Noodleton.webm",
+
+        position: null
     },
 
 
@@ -116,7 +137,9 @@ const CHARACTERS = [
         poster: "images/Hot_Sizz.png",
 
         videoMp4: "images/Hot-Sizz.mp4",
-        videoWebm: "images/Hot-Sizz.webm"
+        videoWebm: "images/Hot-Sizz.webm",
+
+        position: null
     },
 
 
@@ -128,7 +151,9 @@ const CHARACTERS = [
         poster: "images/Teppa_Spark.png",
 
         videoMp4: "images/Teppa-Spark.mp4",
-        videoWebm: "images/Teppa-Spark.webm"
+        videoWebm: "images/Teppa-Spark.webm",
+
+        position: null
     }
 
 ];
@@ -402,7 +427,7 @@ function initARScene() {
                         scale="${CHARACTER_SCALE}"
 
 
-                        position="${CHARACTER_POSITION}"
+                        position="${character.position || CHARACTER_POSITION}"
 
 
                         rotation="${CHARACTER_ROTATION}"
