@@ -1,417 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Monster Curry — Meet Your Characters in AR</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Monster Curry — Meet Your Characters in AR</title>
 
-    <!-- Same head includes as index.html, so the top bar renders identically across the transition -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+	<!-- Same head includes as index.html, so the top bar renders identically across the transition -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
+		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+		rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    spacing: {
-                        "gutter": "24px",
-                        "stack-lg": "48px",
-                        "stack-md": "32px"
-                    }
-                }
-            }
-        }
-    </script>
+	<script id="tailwind-config">
+		tailwind.config = {
+			darkMode: "class",
+			theme: {
+				extend: {
+					spacing: {
+						"gutter": "24px",
+						"stack-lg": "48px",
+						"stack-md": "32px"
+					}
+				}
+			}
+		}
+	</script>
 
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="ar-style.css" />
+	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="ar-style.css" />
 
-    <!--
+	<!--
         ==========================================================
         WEBAR LIBRARIES — load order matters.
         1) A-Frame         = the 3D engine
         2) MindAR (image)  = camera access + image tracking
         ==========================================================
     -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+	<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 </head>
 
 <body>
 
-    <!-- ============ Persistent site header — identical markup to index.html ============ -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
-        <div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center">
-            <div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
-                <img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry" style="display:block;">
-            </div>
-        </div>
-    </header>
+	<!-- ============ Persistent site header — identical markup to index.html ============ -->
+	<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
+		<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center">
+			<div
+				class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
+				<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry"
+					style="display:block;">
+			</div>
+		</div>
+	</header>
 
-    <!-- ============ Pre-start gate: camera access needs a user tap ============ -->
-    <div id="start-gate">
-        <img class="logo" src="images/MC_Logo_Round_White.png" alt="Monster Curry" />
+	<!-- ============ Pre-start gate: camera access needs a user tap ============ -->
+	<div id="start-gate">
+		<img class="logo" src="images/MC_Logo_Round_White.png" alt="Monster Curry" />
 
-        <h1>Meet the Monster Curry Characters</h1>
+		<h1>Meet the Monster Curry Characters</h1>
 
-        <p>
-            Turn on your camera, then hover it over any standee
-            to watch it come alive.
-        </p>
+		<p>
+			Turn on your camera, then hover it over any standee
+			to watch it come alive.
+		</p>
 
-        <div class="character-strip" id="character-strip"></div>
+		<div class="character-strip" id="character-strip"></div>
 
-        <button id="start-button" type="button">
-            Turn On Camera
-        </button>
-    </div>
+		<button id="start-button" type="button">
+			Turn On Camera
+		</button>
+	</div>
 
-    <div id="error-state">
-        <h1>Camera unavailable</h1>
-        <p>
-            We couldn't access your camera. Please allow camera permissions and
-            reload, or try a different browser.
-        </p>
-    </div>
+	<div id="error-state">
+		<h1>Camera unavailable</h1>
+		<p>
+			We couldn't access your camera. Please allow camera permissions and
+			reload, or try a different browser.
+		</p>
+	</div>
 
-    <!-- ============ AR overlay UI ============ -->
-    <div class="ar-overlay">
+	<!-- ============ AR overlay UI ============ -->
+	<div class="ar-overlay">
 
-        <div class="ar-topbar">
+		<div class="ar-topbar">
 
-            <div class="ar-badge idle" id="character-badge">
-                Point at a standee...
-            </div>
+			<div class="ar-badge idle" id="character-badge">
+				Point at a standee...
+			</div>
 
-            <div class="ar-close" id="close-ar" aria-label="Exit AR">
-                ✕
-            </div>
+			<div class="ar-close" id="close-ar" aria-label="Exit AR">
+				✕
+			</div>
 
-        </div>
+		</div>
 
-        <div class="ar-hint" id="scan-hint">
-            <p>
-                Hover your camera over any Monster Curry standee.
-            </p>
-        </div>
+		<div class="ar-hint" id="scan-hint">
+			<p>
+				Hover your camera over any Monster Curry standee.
+			</p>
+		</div>
 
-    </div>
+	</div>
 
-    <!-- ============ AR scene container ============ -->
-    <div id="scene-container">
+	<!-- ============ AR scene container ============ -->
+	<div id="scene-container">
 
-        <a-scene
-            mindar-image="imageTargetSrc: images/targets.mind;"
-            color-space="sRGB"
-            renderer="colorManagement: true, physicallyCorrectLights"
-            vr-mode-ui="enabled: false"
-            device-orientation-permission-ui="enabled: false"
-        >
+		<a-scene mindar-image="imageTargetSrc: images/targets.mind;" color-space="sRGB"
+			renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+			device-orientation-permission-ui="enabled: false">
 
-            <a-assets>
+			<a-assets>
 
-                <!--
+				<!--
                     GLOBAL VIDEO CONFIGURATION
                     Controls size and position for ALL characters
                 -->
-                <a-mixin
-                    id="character-transform"
-                    width="1"
-                    height="1"
-                    scale="0.48 0.48 0.48"
-                    position="0 -0.05 0.01">
-                </a-mixin>
+				<a-mixin id="character-transform" width="1" height="1" scale="0.48 0.48 0.48" position="0 -0.25 0.02">
+				</a-mixin>
 
 
-                <!-- ================= VIDEO ASSETS ================= -->
+				<!-- ================= VIDEO ASSETS ================= -->
 
-                <video
-                    id="Katsu-Chan"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Katsu-Chan" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Katsu Chan.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Katsu Chan.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Katsu Chan.webm"
-                        type="video/webm">
+					<source src="images/Katsu-Chan.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Monstora-Sharemi"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Monstora-Sharemi" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Monstora Sharemi.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Monstora Sharemi.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Monstora Sharemi.webm"
-                        type="video/webm">
+					<source src="images/Monstora-Sharemi.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Giga-Nomu"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Giga-Nomu" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Giga Nomu.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Giga Nomu.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Giga Nomu.webm"
-                        type="video/webm">
+					<source src="images/Giga-Nomu.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Tamago-Puffy"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Tamago-Puffy" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Tamago Puffy.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Tamago Puffy.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Tamago Puffy.webm"
-                        type="video/webm">
+					<source src="images/Tamago-Puffy.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Cheezu-Mellow"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Cheezu-Mellow" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Cheezu Mellow.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Cheezu Mellow.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Cheezu Mellow.webm"
-                        type="video/webm">
+					<source src="images/Cheezu-Mellow.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Ramy-Noodleton"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Ramy-Noodleton" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Ramy Noodleton.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Ramy Noodleton.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Ramy Noodleton.webm"
-                        type="video/webm">
+					<source src="images/Ramy-Noodleton.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Hot-Sizz"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Hot-Sizz" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Hot Sizz.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Hot Sizz.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Hot Sizz.webm"
-                        type="video/webm">
+					<source src="images/Hot-Sizz.webm" type="video/webm">
 
-                </video>
+				</video>
 
 
-                <video
-                    id="Teppa-Spark"
-                    loop="true"
-                    muted="true"
-                    crossorigin="anonymous"
-                    playsinline
-                    autoplay>
+				<video id="Teppa-Spark" loop="true" muted="true" crossorigin="anonymous" playsinline autoplay>
 
-                    <source
-                        src="images/Teppa Spark.mp4"
-                        type='video/mp4; codecs="hvc1"'>
+					<source src="images/Teppa Spark.mp4" type='video/mp4; codecs="hvc1"'>
 
-                    <source
-                        src="images/Teppa Spark.webm"
-                        type="video/webm">
+					<source src="images/Teppa-Spark.webm" type="video/webm">
 
-                </video>
+				</video>
 
-            </a-assets>
+			</a-assets>
 
 
-            <!-- ================= AR CAMERA ================= -->
+			<!-- ================= AR CAMERA ================= -->
 
-            <a-camera
-                position="0 0 0"
-                look-controls="enabled: false">
-            </a-camera>
+			<a-camera position="0 0 0" look-controls="enabled: false">
+			</a-camera>
 
 
-            <!-- ================= IMAGE TARGETS ================= -->
+			<!-- ================= IMAGE TARGETS ================= -->
 
 
-            <!-- Target 0 — Katsu-Chan -->
-            <a-entity
-                mindar-image-target="targetIndex: 0"
-                play-on-target-found>
+			<!-- Target 0 — Katsu-Chan -->
+			<a-entity mindar-image-target="targetIndex: 0" play-on-target-found>
 
-                <a-video
-                    src="#Katsu-Chan"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Katsu-Chan; transparent: true;">
-                </a-video>
+				<a-video src="#Katsu-Chan" mixin="character-transform"
+					material="shader: flat; src: #Katsu-Chan; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 1 — Monstora Sharemi -->
-            <a-entity
-                mindar-image-target="targetIndex: 1"
-                play-on-target-found>
+			<!-- Target 1 — Monstora Sharemi -->
+			<a-entity mindar-image-target="targetIndex: 1" play-on-target-found>
 
-                <a-video
-                    src="#Monstora-Sharemi"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Monstora-Sharemi; transparent: true;">
-                </a-video>
+				<a-video src="#Monstora-Sharemi" mixin="character-transform"
+					material="shader: flat; src: #Monstora-Sharemi; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 2 — Giga Nomu -->
-            <a-entity
-                mindar-image-target="targetIndex: 2"
-                play-on-target-found>
+			<!-- Target 2 — Giga Nomu -->
+			<a-entity mindar-image-target="targetIndex: 2" play-on-target-found>
 
-                <a-video
-                    src="#Giga-Nomu"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Giga-Nomu; transparent: true;">
-                </a-video>
+				<a-video src="#Giga-Nomu" mixin="character-transform"
+					material="shader: flat; src: #Giga-Nomu; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 3 — Tamago Puffy -->
-            <a-entity
-                mindar-image-target="targetIndex: 3"
-                play-on-target-found>
+			<!-- Target 3 — Tamago Puffy -->
+			<a-entity mindar-image-target="targetIndex: 3" play-on-target-found>
 
-                <a-video
-                    src="#Tamago-Puffy"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Tamago-Puffy; transparent: true;">
-                </a-video>
+				<a-video src="#Tamago-Puffy" mixin="character-transform"
+					material="shader: flat; src: #Tamago-Puffy; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 4 — Cheezu Mellow -->
-            <a-entity
-                mindar-image-target="targetIndex: 4"
-                play-on-target-found>
+			<!-- Target 4 — Cheezu Mellow -->
+			<a-entity mindar-image-target="targetIndex: 4" play-on-target-found>
 
-                <a-video
-                    src="#Cheezu-Mellow"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Cheezu-Mellow; transparent: true;">
-                </a-video>
+				<a-video src="#Cheezu-Mellow" mixin="character-transform"
+					material="shader: flat; src: #Cheezu-Mellow; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 5 — Ramy Noodleton -->
-            <a-entity
-                mindar-image-target="targetIndex: 5"
-                play-on-target-found>
+			<!-- Target 5 — Ramy Noodleton -->
+			<a-entity mindar-image-target="targetIndex: 5" play-on-target-found>
 
-                <a-video
-                    src="#Ramy-Noodleton"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Ramy-Noodleton; transparent: true;">
-                </a-video>
+				<a-video src="#Ramy-Noodleton" mixin="character-transform"
+					material="shader: flat; src: #Ramy-Noodleton; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 6 — Hot Sizz -->
-            <a-entity
-                mindar-image-target="targetIndex: 6"
-                play-on-target-found>
+			<!-- Target 6 — Hot Sizz -->
+			<a-entity mindar-image-target="targetIndex: 6" play-on-target-found>
 
-                <a-video
-                    src="#Hot-Sizz"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Hot-Sizz; transparent: true;">
-                </a-video>
+				<a-video src="#Hot-Sizz" mixin="character-transform"
+					material="shader: flat; src: #Hot-Sizz; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
 
-            <!-- Target 7 — Teppa Spark -->
-            <a-entity
-                mindar-image-target="targetIndex: 7"
-                play-on-target-found>
+			<!-- Target 7 — Teppa Spark -->
+			<a-entity mindar-image-target="targetIndex: 7" play-on-target-found>
 
-                <a-video
-                    src="#Teppa-Spark"
-                    mixin="character-transform"
-                    material="shader: flat; src: #Teppa-Spark; transparent: true;">
-                </a-video>
+				<a-video src="#Teppa-Spark" mixin="character-transform"
+					material="shader: flat; src: #Teppa-Spark; transparent: true;">
+				</a-video>
 
-            </a-entity>
+			</a-entity>
 
-        </a-scene>
+		</a-scene>
 
-    </div>
+	</div>
 
 
-    <script src="ar-scene.js" defer></script>
+	<script src="ar-scene.js" defer></script>
 
 </body>
+
 </html>
