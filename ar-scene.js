@@ -93,11 +93,7 @@ const CHARACTERS = [
         videoMp4: "images/Tamago-Puffy.mp4",
         videoWebm: "images/Tamago-Puffy.webm",
 
-        // Tamago Puffy's sleeping pose sits high inside its own
-        // video frame, so it needed a downward nudge relative to
-        // the shared default. Starting estimate — check on device
-        // and adjust the y value (2nd number) further if needed.
-        position: "0 -0.18 0.01"
+        position: null
     },
 
 
