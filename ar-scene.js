@@ -181,7 +181,7 @@ const CHARACTER_SCALE = "1 1 1";
 // Z:
 // small positive value places video slightly above target
 
-const CHARACTER_POSITION = "-0.02 -0.1 0.01";
+const CHARACTER_POSITION = "0 0 0.01";
 
 
 // X Y Z rotation
