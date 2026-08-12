@@ -137,7 +137,8 @@ const CHARACTER_HEIGHT = 0.48;
 
 const CHARACTER_SCALE = "1 1 1";
 
-const CHARACTER_POSITION = "0 0.5 0.01";
+const CHARACTER_POSITION = "0 0.3 0.01";
+const CHARACTER_ROTATION = "0 0 0";
 
 // ==========================================================
 // HTML ELEMENTS
