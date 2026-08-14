@@ -330,6 +330,7 @@ const battleEls = {
 	selectedCharacterArt: document.getElementById("battle-selected-character-art"),
 	selectedCharacterName: document.getElementById("battle-selected-character-name"),
 	selectedCharacterTitle: document.getElementById("battle-selected-character-title"),
+	selectedCharacterPlaystyle: document.getElementById("battle-selected-character-playstyle"),
 	selectedCharacterStats: document.getElementById("battle-selected-character-stats"),
 	selectedCharacterMoves: document.getElementById("battle-selected-character-moves"),
 	confirmCharacterButton: document.getElementById("battle-confirm-character-button"),
@@ -393,14 +394,14 @@ const BATTLE_MOVES = {
 };
 
 const BATTLE_CHARACTERS = [
-	{ id: "katsu-chan", quizId: "katsu", name: "Katsu-Chan", title: "The Classic Comfort Hero", maxHp: 1100, atk: 90, image: "images/Katsu-Chan.png", screenAsset: "./assets/characters/katsu-chan.png", moves: ["crispy-slash", "heros-courage", "comfort-meal", "counter-guard"] },
-	{ id: "monstora-sharemi", quizId: "monstora", name: "Monstora Sharemi", title: "The Social Feast Buddy", maxHp: 900, atk: 70, image: "images/Monstora_Sharemi.png", screenAsset: "./assets/characters/monstora-sharemi.png", moves: ["vine-whip", "sharing-feast", "rally-together", "tangling-vines"] },
-	{ id: "giga-nomu", quizId: "giga", name: "Giga Nomu", title: "The Big Appetite Beast", maxHp: 1500, atk: 80, image: "images/Giga_Nomu.png", screenAsset: "./assets/characters/giga-nomu.png", moves: ["mega-chomp", "devour", "belly-shield", "hungry-challenge"] },
-	{ id: "tamago-puffy", quizId: "tamago", name: "Tamago Puffy", title: "The Soft & Cozy Dreamer", maxHp: 950, atk: 60, image: "images/Tamago_Puffy.png", screenAsset: "./assets/characters/tamago-puffy.png", moves: ["egg-toss", "fluffy-hug", "sunny-side-up", "sweet-dreams"] },
-	{ id: "cheezu-mellow", quizId: "cheezu", name: "Cheezu Mellow", title: "The Cheesy Comfort Lover", maxHp: 1200, atk: 80, image: "images/Cheezu_Mellow.png", screenAsset: "./assets/characters/cheezu-mellow.png", moves: ["cheese-wheel", "melted-cheese", "cover-up", "comfort-feast"] },
-	{ id: "ramy-noodleton", quizId: "ramy", name: "Ramy Noodleton", title: "The Chill Slurper", maxHp: 850, atk: 120, image: "images/Ramy_Noodleton.png", screenAsset: "./assets/characters/ramy-noodleton.png", moves: ["noodle-strike", "slurp-combo", "cold-broth", "finishing-slurp"] },
-	{ id: "hot-sizz", quizId: "hotsizz", name: "Hot Sizz", title: "The Hotplate Performer", maxHp: 850, atk: 140, image: "images/Hot_Sizz.png", screenAsset: "./assets/characters/hot-sizz.png", moves: ["sizzling-plate", "flame-burst", "heat-up", "grand-performance"] },
-	{ id: "teppa-spark", quizId: "teppa", name: "Teppa Spark", title: "The Precision Show Chef", maxHp: 1000, atk: 100, image: "images/Teppa_Spark.png", screenAsset: "./assets/characters/teppa-spark.png", moves: ["precision-skewer", "spark-plate", "focus-flambe", "final-showpiece"] }
+	{ id: "katsu-chan", quizId: "katsu", name: "Katsu-Chan", title: "The Classic Comfort Hero", playstyle: "Balanced all-rounder with an answer for every turn.", maxHp: 1100, atk: 90, image: "images/Katsu-Chan.png", screenAsset: "./assets/characters/katsu-chan.png", moves: ["crispy-slash", "heros-courage", "comfort-meal", "counter-guard"] },
+	{ id: "monstora-sharemi", quizId: "monstora", name: "Monstora Sharemi", title: "The Social Feast Buddy", playstyle: "Team support who heals, buffs, and weakens foes.", maxHp: 900, atk: 70, image: "images/Monstora_Sharemi.png", screenAsset: "./assets/characters/monstora-sharemi.png", moves: ["vine-whip", "sharing-feast", "rally-together", "tangling-vines"] },
+	{ id: "giga-nomu", quizId: "giga", name: "Giga Nomu", title: "The Big Appetite Beast", playstyle: "Tough tank who taunts, shields, and heals by attacking.", maxHp: 1500, atk: 80, image: "images/Giga_Nomu.png", screenAsset: "./assets/characters/giga-nomu.png", moves: ["mega-chomp", "devour", "belly-shield", "hungry-challenge"] },
+	{ id: "tamago-puffy", quizId: "tamago", name: "Tamago Puffy", title: "The Soft & Cozy Dreamer", playstyle: "Pure healer who cleanses and protects wounded allies.", maxHp: 950, atk: 60, image: "images/Tamago_Puffy.png", screenAsset: "./assets/characters/tamago-puffy.png", moves: ["egg-toss", "fluffy-hug", "sunny-side-up", "sweet-dreams"] },
+	{ id: "cheezu-mellow", quizId: "cheezu", name: "Cheezu Mellow", title: "The Cheesy Comfort Lover", playstyle: "Team guardian who shields, covers, and heals allies.", maxHp: 1200, atk: 80, image: "images/Cheezu_Mellow.png", screenAsset: "./assets/characters/cheezu-mellow.png", moves: ["cheese-wheel", "melted-cheese", "cover-up", "comfort-feast"] },
+	{ id: "ramy-noodleton", quizId: "ramy", name: "Ramy Noodleton", title: "The Chill Slurper", playstyle: "Combo finisher who punishes weakened monsters.", maxHp: 850, atk: 120, image: "images/Ramy_Noodleton.png", screenAsset: "./assets/characters/ramy-noodleton.png", moves: ["noodle-strike", "slurp-combo", "cold-broth", "finishing-slurp"] },
+	{ id: "hot-sizz", quizId: "hotsizz", name: "Hot Sizz", title: "The Hotplate Performer", playstyle: "Glass cannon with explosive damage but fragile defense.", maxHp: 850, atk: 140, image: "images/Hot_Sizz.png", screenAsset: "./assets/characters/hot-sizz.png", moves: ["sizzling-plate", "flame-burst", "heat-up", "grand-performance"] },
+	{ id: "teppa-spark", quizId: "teppa", name: "Teppa Spark", title: "The Precision Show Chef", playstyle: "Versatile tactician with damage, debuffs, and shields.", maxHp: 1000, atk: 100, image: "images/Teppa_Spark.png", screenAsset: "./assets/characters/teppa-spark.png", moves: ["precision-skewer", "spark-plate", "focus-flambe", "final-showpiece"] }
 ];
 
 const BATTLE_LEVELS = {
@@ -612,10 +613,13 @@ function renderBattleCharacters() {
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "battle-character-card";
+		button.dataset.characterId = character.id;
+		button.setAttribute("aria-pressed", String(character.id === battleSelectedCharacterId));
 		button.innerHTML = `
-			<img src="${character.image}" alt="${character.name}">
+			<img src="${character.image}" alt="" aria-hidden="true">
 			<span>${character.title}</span>
 			<strong>${character.name}</strong>
+			<span class="battle-character-playstyle">${character.playstyle}</span>
 			<small>HP ${character.maxHp} / ATK ${character.atk}</small>
 		`;
 		button.addEventListener("click", () => selectBattleCharacter(character.id, true));
@@ -633,8 +637,12 @@ function selectBattleCharacter(characterId, revealSelection = false) {
 	battleEls.selectedCharacterArt.alt = character.name;
 	battleEls.selectedCharacterName.textContent = character.name;
 	battleEls.selectedCharacterTitle.textContent = character.title;
+	battleEls.selectedCharacterPlaystyle.textContent = character.playstyle;
 	battleEls.selectedCharacterStats.textContent = `HP ${character.maxHp} / Attack ${character.atk}`;
 	battleEls.selectedCharacterMoves.textContent = character.moves.map(moveId => BATTLE_MOVES[moveId]?.name || moveId).join(", ");
+	battleEls.characterGrid?.querySelectorAll(".battle-character-card").forEach(card => {
+		card.setAttribute("aria-pressed", String(card.dataset.characterId === character.id));
+	});
 	if (revealSelection && window.matchMedia("(max-width: 899px)").matches) {
 		requestAnimationFrame(() => {
 			battleEls.selectedCharacter.scrollIntoView({ behavior: "smooth", block: "center" });

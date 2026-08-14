@@ -1086,9 +1086,10 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 
 .battle-character-card {
   display: grid;
+  align-content: start;
   justify-items: start;
   gap: 6px;
-  min-height: 190px;
+  min-height: 232px;
   padding: 10px;
   border: 1px solid rgba(255,255,255,0.16);
   border-radius: 16px;
@@ -1098,7 +1099,8 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 }
 
 .battle-character-card:hover,
-.battle-character-card:focus-visible {
+.battle-character-card:focus-visible,
+.battle-character-card[aria-pressed="true"] {
   outline: 3px solid #f5ad0f;
 }
 
@@ -1122,6 +1124,15 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   font-size: 0.98rem;
 }
 
+.battle-character-card .battle-character-playstyle,
+.battle-selected-character .battle-character-playstyle {
+  margin: 0;
+  color: #fff !important;
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
 .battle-selected-character {
   display: grid;
   justify-items: center;
@@ -1137,6 +1148,11 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   width: min(230px, 78vw);
   height: 190px;
   object-fit: contain;
+}
+
+.battle-selected-character .battle-character-playstyle {
+  max-width: 34rem;
+  font-size: 0.92rem;
 }
 
 .battle-move-header {
@@ -1274,6 +1290,12 @@ h1{font-size:clamp(2rem,5vw,3rem);}
   .battle-character-grid,
   .battle-lobby-slots {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .battle-character-grid {
+    grid-template-columns: 1fr;
   }
 }
 /* ---- Intro-card copy contrast fix ----
