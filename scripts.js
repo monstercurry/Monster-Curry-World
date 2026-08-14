@@ -308,6 +308,7 @@ const battleEdgeTabResult  = document.getElementById("battle-edge-tab-result");
 const launchArButton       = document.getElementById("launch-ar-button");
 const arTeaserBackButton   = document.getElementById("ar-teaser-back-button");
 const quizLogoFillWrapper  = document.getElementById("quiz-logo-fill-wrapper");
+const quizQuestionCount    = document.getElementById("quiz-question-count");
 const questionPrompt       = document.getElementById("question-prompt");
 const optionList           = document.getElementById("option-list");
 const resultName           = document.getElementById("result-name");
@@ -1000,16 +1001,25 @@ function updateQuizLogoProgress(answeredCount) {
 	quizLogoFillWrapper.style.maskImage = noMask;
 }
 
+function updateQuizQuestionCount(questionIndex) {
+	if (!quizQuestionCount) return;
+	const questionNumber = Math.max(1, Math.min(questions.length, Number(questionIndex) + 1));
+	quizQuestionCount.textContent = `${questionNumber}/${questions.length}`;
+	quizQuestionCount.setAttribute("aria-label", `Question ${questionNumber} of ${questions.length}`);
+}
+
 function resetQuiz() {
 	currentQuestion = 0;
 	answers.fill(null);
 	updateQuizLogoProgress(0);
+	updateQuizQuestionCount(0);
 }
 
 /* ---------------- QUIZ ---------------- */
 function renderQuestion() {
 	const q = questions[currentQuestion];
 	updateQuizLogoProgress(currentQuestion);
+	updateQuizQuestionCount(currentQuestion);
 	questionPrompt.textContent = q.prompt;
 	optionList.innerHTML = "";
 

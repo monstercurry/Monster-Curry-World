@@ -136,6 +136,39 @@ h3,
 .progress-fill{ height:100%; width:6%; background: rgba(255,255,255,0.6); transition:width .24s ease; }
 
 /* Water-fill logo progress icon */
+.quiz-progress-group{
+  position:relative;
+  display:block;
+  width:fit-content;
+  margin:0 auto 1rem;
+}
+
+.quiz-progress-visual{
+  flex:0 0 auto;
+  margin-bottom:0 !important;
+}
+
+.quiz-question-count{
+  position:absolute;
+  right:-.35rem;
+  bottom:-.35rem;
+  z-index:2;
+  min-width:0;
+  margin:0;
+  padding:.28rem .42rem;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:999px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 3px 9px rgba(0,0,0,.16);
+  color:#111;
+  font-family:var(--font-heading);
+  font-size:clamp(.68rem,1.5vw,.82rem);
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  line-height:1;
+  white-space:nowrap;
+}
+
 .logo-progress-icon{
   position: relative;
   aspect-ratio: 1 / 1;
