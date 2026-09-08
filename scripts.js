@@ -65,69 +65,69 @@ const firebaseReady = (async () => {
 // Scoring: each option awards points to specific personalities.
 // +3 = strong match, +1 = similar, -1 = opposite
 const P = {
-	katsu:    "katsu",
+	katsu: "katsu",
 	monstora: "monstora",
-	giga:     "giga",
-	tamago:   "tamago",
-	cheezu:   "cheezu",
-	ramy:     "ramy",
-	hotsizz:  "hotsizz",
-	teppa:    "teppa"
+	giga: "giga",
+	tamago: "tamago",
+	cheezu: "cheezu",
+	ramy: "ramy",
+	hotsizz: "hotsizz",
+	teppa: "teppa"
 };
 
 const questions = [
-{
+	{
 		prompt: "I always want extra toppings on my curry.",
 		options: [
-			{ text: "More toppings = better life",  scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Simple is enough",             scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Depends on mood",              scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Only exciting toppings",       scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
+			{ text: "More toppings = better life", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "Simple is enough", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "Depends on mood", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Only exciting toppings", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
 		]
 	},
 	{
 		prompt: "Spicy food makes meals more exciting.",
 		options: [
-			{ text: "Extra spicy please",    scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Extra spicy please", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "Medium spice is enough", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Mild only",             scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
-			{ text: "No spice at all",       scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
+			{ text: "Mild only", scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
+			{ text: "No spice at all", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
 		prompt: "I usually order the same safe menu item.",
 		options: [
 			{ text: "I stay loyal to favorites", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I love trying new dishes",  scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
-			{ text: "Depends on my mood",        scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Friends decide for me",     scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } }
+			{ text: "I love trying new dishes", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Depends on my mood", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Friends decide for me", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } }
 		]
 	},
 	{
 		prompt: "Food presentation matters as much as taste.",
 		options: [
-			{ text: "Looks are everything",    scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "Looks are everything", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Taste is more important", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Both matter",             scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "I want comfort food",     scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
+			{ text: "Both matter", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "I want comfort food", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } }
 		]
 	},
 	{
 		prompt: "I would try the giant Monster Challenge curry.",
 		options: [
-			{ text: "Definitely",               scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Maybe with friends",        scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Probably not",              scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
-			{ text: "Only if there's a reward",  scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } }
+			{ text: "Definitely", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "Maybe with friends", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Probably not", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
+			{ text: "Only if there's a reward", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } }
 		]
 	},
 	{
 		prompt: "Cheese makes every dish better.",
 		options: [
 			{ text: "Cheese solves everything", scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
-			{ text: "Sometimes yes",            scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Not necessary",            scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "I prefer strong flavors",  scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
+			{ text: "Sometimes yes", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "Not necessary", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "I prefer strong flavors", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
 		]
 	},
 	{
@@ -135,80 +135,80 @@ const questions = [
 		options: [
 			{ text: "Comfort food forever", scores: { [P.tamago]: 3, [P.katsu]: 1, [P.cheezu]: 1 } },
 			{ text: "Usually comfort food", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "I like both",          scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
-			{ text: "Adventure first",      scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
+			{ text: "I like both", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } },
+			{ text: "Adventure first", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } }
 		]
 	},
 	{
 		prompt: "I like sharing food with friends.",
 		options: [
 			{ text: "Sharing is caring", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Depends who",       scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
-			{ text: "Maybe one bite",    scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "My food is mine",   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Depends who", scores: { [P.cheezu]: 3, [P.monstora]: 1, [P.tamago]: 1 } },
+			{ text: "Maybe one bite", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
+			{ text: "My food is mine", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
 		prompt: "I prefer a balanced meal over a heavy meal.",
 		options: [
-			{ text: "Healthy and balanced",  scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
+			{ text: "Healthy and balanced", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
 			{ text: "Balance with some fun", scores: { [P.katsu]: 3, [P.tamago]: 1, [P.teppa]: 1, [P.hotsizz]: -1 } },
-			{ text: "Heavy meals are best",  scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
-			{ text: "Depends on hunger",     scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Heavy meals are best", scores: { [P.giga]: 3, [P.monstora]: 1, [P.hotsizz]: 1, [P.teppa]: -1 } },
+			{ text: "Depends on hunger", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
 		prompt: "I would post my Monster Curry meal on Instagram.",
 		options: [
-			{ text: "Of course",               scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
+			{ text: "Of course", scores: { [P.hotsizz]: 3, [P.giga]: 1, [P.ramy]: 1, [P.katsu]: -1 } },
 			{ text: "Only if it looks amazing", scores: { [P.teppa]: 3, [P.katsu]: 1, [P.ramy]: 1, [P.giga]: -1 } },
-			{ text: "Rarely",                  scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
-			{ text: "Never",                   scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
+			{ text: "Rarely", scores: { [P.monstora]: 3, [P.giga]: 1, [P.cheezu]: 1, [P.ramy]: -1 } },
+			{ text: "Never", scores: { [P.ramy]: 3, [P.teppa]: 1, [P.hotsizz]: 1, [P.monstora]: -1 } }
 		]
 	},
 	{
 		prompt: "Which Monster Curry menu item speaks to you most?",
 		options: [
-			{ text: "Classic Chicken Katsu Curry",              scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
-			{ text: "Monster Challenge (Extra Large)",           scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
-			{ text: "Cheese Curry with Extra Toppings",         scores: { cheezu: 3, monstora: 1, tamago: 1 } },
-			{ text: "Spicy Hotplate Sizzling Curry",            scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
+			{ text: "Classic Chicken Katsu Curry", scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Monster Challenge (Extra Large)", scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
+			{ text: "Cheese Curry with Extra Toppings", scores: { cheezu: 3, monstora: 1, tamago: 1 } },
+			{ text: "Spicy Hotplate Sizzling Curry", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
 		]
 	},
 	{
 		prompt: "How do you like your curry sauce?",
 		options: [
-			{ text: "Rich and thick — the more the better",     scores: { giga: 3, monstora: 1, cheezu: 1, teppa: -1 } },
-			{ text: "Smooth and balanced, not too heavy",       scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
-			{ text: "Fiery and bold with a strong kick",        scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
-			{ text: "Light and flavourful — just enough",       scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
+			{ text: "Rich and thick — the more the better", scores: { giga: 3, monstora: 1, cheezu: 1, teppa: -1 } },
+			{ text: "Smooth and balanced, not too heavy", scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Fiery and bold with a strong kick", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
+			{ text: "Light and flavourful — just enough", scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
 		]
 	},
 	{
 		prompt: "What would you add first as an extra topping?",
 		options: [
-			{ text: "Melted cheese — always",                   scores: { cheezu: 3, monstora: 1, tamago: 1 } },
-			{ text: "A perfectly fried egg",                    scores: { tamago: 3, katsu: 1, cheezu: 1 } },
-			{ text: "Extra crispy katsu",                       scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
-			{ text: "Extra chilli — make it hurt",              scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
+			{ text: "Melted cheese — always", scores: { cheezu: 3, monstora: 1, tamago: 1 } },
+			{ text: "A perfectly fried egg", scores: { tamago: 3, katsu: 1, cheezu: 1 } },
+			{ text: "Extra crispy katsu", scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Extra chilli — make it hurt", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } }
 		]
 	},
 	{
 		prompt: "You're eating at Monster Curry with friends. You:",
 		options: [
-			{ text: "Order the sharing Monster Combo platter",   scores: { monstora: 3, giga: 1, cheezu: 1, ramy: -1 } },
-			{ text: "Get your personal favourite and focus",     scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
+			{ text: "Order the sharing Monster Combo platter", scores: { monstora: 3, giga: 1, cheezu: 1, ramy: -1 } },
+			{ text: "Get your personal favourite and focus", scores: { katsu: 3, tamago: 1, teppa: 1, hotsizz: -1 } },
 			{ text: "Try something new from the specials board", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
-			{ text: "Let everyone order first, then decide",     scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
+			{ text: "Let everyone order first, then decide", scores: { ramy: 3, teppa: 1, hotsizz: 1, monstora: -1 } }
 		]
 	},
 	{
 		prompt: "Pick your ideal Monster Curry experience:",
 		options: [
 			{ text: "Teppanyaki-style — watching the chef cook live", scores: { teppa: 3, katsu: 1, ramy: 1, giga: -1 } },
-			{ text: "Sizzling hotplate arriving at the table",         scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
-			{ text: "Giant bowl challenge with the whole group",       scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
-			{ text: "Quiet solo meal with a comforting classic",       scores: { tamago: 3, katsu: 1, cheezu: 1 } }
+			{ text: "Sizzling hotplate arriving at the table", scores: { hotsizz: 3, giga: 1, ramy: 1, katsu: -1 } },
+			{ text: "Giant bowl challenge with the whole group", scores: { giga: 3, monstora: 1, hotsizz: 1, teppa: -1 } },
+			{ text: "Quiet solo meal with a comforting classic", scores: { tamago: 3, katsu: 1, cheezu: 1 } }
 		]
 	}
 ];
@@ -281,10 +281,10 @@ const personalities = [
 ];
 // Expose for the 'Check out other personalities' modal
 window.CHARACTERS = personalities;
-window.showResult = function(p) {
+window.showResult = function (p) {
 	updateQuizLogoProgress(questions.length);
-	resultName.textContent        = p.name;
-	resultBackground.textContent  = p.title + ' — ' + p.background;
+	resultName.textContent = p.name;
+	resultBackground.textContent = p.title + ' — ' + p.background;
 	resultDescription.textContent = p.description;
 	const img = document.getElementById('result-illustration-img');
 	if (img) { img.src = p.image; img.alt = p.name; }
@@ -292,28 +292,28 @@ window.showResult = function(p) {
 };
 
 /* ---------------- UI ELEMENTS ---------------- */
-const introScreen    = document.getElementById("intro-screen");
-const quizScreen      = document.getElementById("quiz-screen");
-const resultScreen    = document.getElementById("result-screen");
-const arTeaserScreen  = document.getElementById("ar-teaser-screen");
-const battleScreen    = document.getElementById("battle-screen");
+const introScreen = document.getElementById("intro-screen");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const arTeaserScreen = document.getElementById("ar-teaser-screen");
+const battleScreen = document.getElementById("battle-screen");
 
-const startButton          = document.getElementById("start-button");
-const backButton           = document.getElementById("back-button");
-const homeButton           = document.getElementById("home-button");
-const arEdgeTabIntro       = document.getElementById("ar-edge-tab-intro");
-const arEdgeTabResult      = document.getElementById("ar-edge-tab-result");
-const battleEdgeTabIntro   = document.getElementById("battle-edge-tab-intro");
-const battleEdgeTabResult  = document.getElementById("battle-edge-tab-result");
-const launchArButton       = document.getElementById("launch-ar-button");
-const arTeaserBackButton   = document.getElementById("ar-teaser-back-button");
-const quizLogoFillWrapper  = document.getElementById("quiz-logo-fill-wrapper");
-const quizQuestionCount    = document.getElementById("quiz-question-count");
-const questionPrompt       = document.getElementById("question-prompt");
-const optionList           = document.getElementById("option-list");
-const resultName           = document.getElementById("result-name");
-const resultBackground     = document.getElementById("result-background");
-const resultDescription    = document.getElementById("result-description");
+const startButton = document.getElementById("start-button");
+const backButton = document.getElementById("back-button");
+const homeButton = document.getElementById("home-button");
+const arEdgeTabIntro = document.getElementById("ar-edge-tab-intro");
+const arEdgeTabResult = document.getElementById("ar-edge-tab-result");
+const battleEdgeTabIntro = document.getElementById("battle-edge-tab-intro");
+const battleEdgeTabResult = document.getElementById("battle-edge-tab-result");
+const launchArButton = document.getElementById("launch-ar-button");
+const arTeaserBackButton = document.getElementById("ar-teaser-back-button");
+const quizLogoFillWrapper = document.getElementById("quiz-logo-fill-wrapper");
+const quizQuestionCount = document.getElementById("quiz-question-count");
+const questionPrompt = document.getElementById("question-prompt");
+const optionList = document.getElementById("option-list");
+const resultName = document.getElementById("result-name");
+const resultBackground = document.getElementById("result-background");
+const resultDescription = document.getElementById("result-description");
 const battleEls = {
 	codePanel: document.getElementById("battle-code-panel"),
 	lobbyPanel: document.getElementById("battle-lobby-panel"),
@@ -711,6 +711,10 @@ function renderBattleMoveButtons(state, self) {
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "battle-move-button";
+		const selectedMoveId = state.pendingMoves?.[battlePlayerId]?.moveId || state.activeMoves?.[battlePlayerId]?.moveId || null;
+		if (selectedMoveId === move.id) {
+			button.classList.add('chosen');
+		}
 		button.disabled = locked;
 		button.innerHTML = `<strong>${move.name}</strong><span>${move.description}</span>`;
 		button.addEventListener("click", () => submitBattleMove(move.id));
@@ -1096,8 +1100,8 @@ function renderResult() {
 	// Populate the result content now (so the share text below can reference
 	// the personality name), but don't reveal the result screen yet — the
 	// share popup gates that.
-	resultName.textContent        = p.name;
-	resultBackground.textContent  = p.title + " — " + p.background;
+	resultName.textContent = p.name;
+	resultBackground.textContent = p.title + " — " + p.background;
 	resultDescription.textContent = p.description;
 	const img = document.getElementById("result-illustration-img");
 	if (img) { img.src = p.image; img.alt = p.name; }
@@ -1132,9 +1136,9 @@ showScreen("intro");
 
 /* ---------------- AR TEASER ---------------- */
 // Desktop entry points: edge tab buttons on the intro and result screens
-if (arEdgeTabIntro)  arEdgeTabIntro.onclick  = () => openArTeaser("intro");
+if (arEdgeTabIntro) arEdgeTabIntro.onclick = () => openArTeaser("intro");
 if (arEdgeTabResult) arEdgeTabResult.onclick = () => openArTeaser("result");
-if (battleEdgeTabIntro)  battleEdgeTabIntro.onclick  = () => openBattleScreen("intro");
+if (battleEdgeTabIntro) battleEdgeTabIntro.onclick = () => openBattleScreen("intro");
 if (battleEdgeTabResult) battleEdgeTabResult.onclick = () => openBattleScreen("result");
 
 // From the teaser screen: launch the standalone AR camera experience
@@ -1280,7 +1284,7 @@ if (arTeaserBackButton) {
 		if (swipeDirection === "vertical") return;
 		if (horizontalDistance < SWIPE_THRESHOLD || horizontalDistance < verticalDistance * HORIZONTAL_DOMINANCE) return;
 
-		const introVisible  = introScreen && !introScreen.classList.contains("hidden");
+		const introVisible = introScreen && !introScreen.classList.contains("hidden");
 		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
 
 		if (deltaX < 0 && (introVisible || resultVisible)) {
@@ -1298,10 +1302,10 @@ if (arTeaserBackButton) {
 
 /* ---------------- SHARE (pre-result gate) ---------------- */
 (function setupShare() {
-	const shareModal     = document.getElementById("share-modal");
+	const shareModal = document.getElementById("share-modal");
 	const shareLinkInput = document.getElementById("share-link-input");
-	const copyLinkBtn    = document.getElementById("copy-share-link");
-	const closeShareBtn  = document.getElementById("close-share-modal");
+	const copyLinkBtn = document.getElementById("copy-share-link");
+	const closeShareBtn = document.getElementById("close-share-modal");
 	if (!shareModal) return;
 
 	// Called once the popup is dismissed (any path: close button, backdrop
@@ -1381,8 +1385,8 @@ if (arTeaserBackButton) {
 /* ---------------- FEEDBACK ---------------- */
 let selectedRating = 0;
 
-const stars           = document.querySelectorAll(".star");
-const submitBtn       = document.getElementById("submit-feedback");
+const stars = document.querySelectorAll(".star");
+const submitBtn = document.getElementById("submit-feedback");
 const feedbackMessage = document.getElementById("feedback-message");
 
 function resetFeedback() {
