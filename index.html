@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Curry Personality Test - Home (Fun Background)</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet" />
-	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
+		rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+		rel="stylesheet">
 	<link rel="preload" href="assets/fonts/Rockwell-ExtraBold.woff2" as="font" type="font/woff2" crossorigin>
 	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 	<script id="tailwind-config">
@@ -30,11 +34,16 @@
 		* {
 			-webkit-tap-highlight-color: transparent;
 		}
+
 		/* Ensure option buttons use explicit background so iOS respects it */
-		.option-btn, [class*="option"] button, #option-list button, #option-list label {
+		.option-btn,
+		[class*="option"] button,
+		#option-list button,
+		#option-list label {
 			-webkit-tap-highlight-color: transparent !important;
 			-webkit-appearance: none;
 		}
+
 		/* "Check out other personalities" button */
 		#check-personalities-btn {
 			display: inline-flex;
@@ -43,8 +52,8 @@
 			margin-top: 1.25rem;
 			padding: 0.75rem 1.5rem;
 			border-radius: 9999px;
-			border: 2px solid rgba(255,255,255,0.35);
-			background: rgba(255,255,255,0.12);
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			background: rgba(255, 255, 255, 0.12);
 			color: #fff;
 			font-weight: 700;
 			font-size: 0.875rem;
@@ -52,10 +61,12 @@
 			transition: background 0.2s, border-color 0.2s;
 			-webkit-tap-highlight-color: transparent;
 		}
+
 		#check-personalities-btn:hover {
-			background: rgba(255,255,255,0.22);
-			border-color: rgba(255,255,255,0.6);
+			background: rgba(255, 255, 255, 0.22);
+			border-color: rgba(255, 255, 255, 0.6);
 		}
+
 		@media (max-width: 599px) {
 			#check-personalities-btn {
 				margin-left: 0;
@@ -70,15 +81,19 @@
 			position: fixed;
 			inset: 0;
 			z-index: 210;
-			background: rgba(0,0,0,0.65);
+			background: rgba(0, 0, 0, 0.65);
 			backdrop-filter: blur(4px);
 			align-items: center;
 			justify-content: center;
 		}
-		#share-modal.open { display: flex; }
+
+		#share-modal.open {
+			display: flex;
+		}
+
 		.share-modal-card {
-			background: rgba(20,20,20,0.95);
-			border: 1px solid rgba(255,255,255,0.12);
+			background: rgba(20, 20, 20, 0.95);
+			border: 1px solid rgba(255, 255, 255, 0.12);
 			border-radius: 24px;
 			padding: 2rem;
 			width: min(90vw, 420px);
@@ -88,22 +103,30 @@
 			color: #fff;
 			text-align: center;
 		}
-		.share-modal-card h2 { font-size: 1.15rem; font-weight: 800; margin: 0; }
+
+		.share-modal-card h2 {
+			font-size: 1.15rem;
+			font-weight: 800;
+			margin: 0;
+		}
+
 		.share-link-row {
 			display: flex;
 			gap: 8px;
 		}
+
 		.share-link-row input {
 			flex: 1;
 			min-width: 0;
 			padding: 14px 14px;
 			border-radius: 12px;
-			border: 1px solid rgba(255,255,255,0.2);
-			background: rgba(255,255,255,0.92);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			background: rgba(255, 255, 255, 0.92);
 			color: #111;
 			font-size: 0.9rem;
 			font-weight: 600;
 		}
+
 		.share-link-row button {
 			padding: 10px 18px;
 			border-radius: 12px;
@@ -114,9 +137,10 @@
 			cursor: pointer;
 			white-space: nowrap;
 		}
+
 		#close-share-modal {
 			align-self: center;
-			background: rgba(255,255,255,0.1);
+			background: rgba(255, 255, 255, 0.1);
 			border: none;
 			border-radius: 999px;
 			padding: 8px 16px;
@@ -125,20 +149,23 @@
 			font-weight: 700;
 			cursor: pointer;
 		}
+
 		/* Personalities drawer/modal */
 		#personalities-modal {
 			display: none;
 			position: fixed;
 			inset: 0;
 			z-index: 200;
-			background: rgba(0,0,0,0.65);
+			background: rgba(0, 0, 0, 0.65);
 			backdrop-filter: blur(4px);
 			align-items: center;
 			justify-content: center;
 		}
+
 		#personalities-modal.open {
 			display: flex;
 		}
+
 		.personalities-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -147,9 +174,10 @@
 			overflow-y: auto;
 			padding: 0.5rem;
 		}
+
 		.personality-card {
-			background: rgba(255,255,255,0.08);
-			border: 1px solid rgba(255,255,255,0.15);
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.15);
 			border-radius: 16px;
 			padding: 1rem 0.75rem;
 			text-align: center;
@@ -157,10 +185,12 @@
 			transition: background 0.2s, transform 0.15s;
 			color: #fff;
 		}
+
 		.personality-card:hover {
-			background: rgba(255,255,255,0.18);
+			background: rgba(255, 255, 255, 0.18);
 			transform: translateY(-2px);
 		}
+
 		.personality-card img {
 			width: 64px;
 			height: 64px;
@@ -168,6 +198,7 @@
 			margin: 0 auto 0.5rem;
 			border-radius: 12px;
 		}
+
 		.personality-card p {
 			font-size: 0.8rem;
 			font-weight: 700;
@@ -180,11 +211,13 @@
 			overflow-y: auto;
 			padding: 0.5rem;
 		}
+
 		#personality-detail-back {
 			transition: background 0.2s;
 		}
+
 		#personality-detail-back:hover {
-			background: rgba(255,255,255,0.18);
+			background: rgba(255, 255, 255, 0.18);
 		}
 
 		/* ---- AR entry points: desktop edge tab ---- */
@@ -194,33 +227,38 @@
 			right: 0;
 			transform: translateY(-50%);
 			z-index: 40;
-			display: none; /* shown on desktop via media query below */
+			display: none;
+			/* shown on desktop via media query below */
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			gap: 2px;
 			width: 72px;
 			min-height: 68px;
-			background: rgba(0,0,0,0.55);
+			background: rgba(0, 0, 0, 0.55);
 			color: #fff;
-			border: 1px solid rgba(255,255,255,0.25);
+			border: 1px solid rgba(255, 255, 255, 0.25);
 			border-right: none;
 			border-radius: 14px 0 0 14px;
 			padding: 10px 8px;
 			cursor: pointer;
 			transition: background 0.2s;
 		}
+
 		.ar-edge-tab:hover {
-			background: rgba(0,0,0,0.75);
+			background: rgba(0, 0, 0, 0.75);
 		}
+
 		.battle-edge-tab {
 			top: calc(50% + 88px);
 		}
+
 		@media (min-width: 900px) {
 			.battle-edge-tab {
 				top: calc(50% + 82px);
 			}
 		}
+
 		.ar-edge-tab-label {
 			width: 100%;
 			text-align: center;
@@ -232,7 +270,8 @@
 
 		/* ---- AR entry points: swipe hint (shown on every device) ---- */
 		.swipe-hint {
-			display: none; /* overridden to flex below, kept as fallback default */
+			display: none;
+			/* overridden to flex below, kept as fallback default */
 			position: absolute;
 			top: 50%;
 			right: 6px;
@@ -241,12 +280,24 @@
 			flex-direction: column;
 			align-items: center;
 			gap: 2px;
-			color: rgba(255,255,255,0.85);
+			color: rgba(255, 255, 255, 0.85);
 			pointer-events: none;
 			animation: swipe-hint-pulse 2.2s ease-in-out infinite;
 		}
-		.swipe-hint-arrow { font-size: 1.4rem; line-height: 1; font-weight: 800; }
-		.swipe-hint-text { font-size: 0.65rem; font-weight: 700; writing-mode: vertical-rl; text-orientation: mixed; }
+
+		.swipe-hint-arrow {
+			font-size: 1.4rem;
+			line-height: 1;
+			font-weight: 800;
+		}
+
+		.swipe-hint-text {
+			font-size: 0.65rem;
+			font-weight: 700;
+			writing-mode: vertical-rl;
+			text-orientation: mixed;
+		}
+
 		.swipe-hint-nav {
 			position: fixed;
 			top: calc(var(--header-height) + 14px);
@@ -259,20 +310,29 @@
 			max-width: calc(100% - 32px);
 			padding: 12px 22px;
 			border-radius: 999px;
-			background: rgba(0,0,0,0.42);
+			background: rgba(0, 0, 0, 0.42);
 			white-space: nowrap;
 		}
+
 		.swipe-hint-nav .swipe-hint-arrow {
 			font-size: 1.8rem;
 		}
+
 		.swipe-hint-nav .swipe-hint-text {
 			font-size: 1rem;
 			writing-mode: horizontal-tb;
 		}
 
 		@keyframes swipe-hint-pulse {
-			0%, 100% { opacity: 0.45; }
-			50% { opacity: 1; }
+
+			0%,
+			100% {
+				opacity: 0.45;
+			}
+
+			50% {
+				opacity: 1;
+			}
 		}
 
 		/* AR/Battle edge-tab buttons are retired on every breakpoint — the
@@ -280,13 +340,16 @@
 		   AR/Battle whether the visitor is on mobile touch or desktop
 		   (pointer events already support click-drag, so the same swipe
 		   gesture works with a mouse). */
-		.swipe-hint { display: flex; }
+		.swipe-hint {
+			display: flex;
+		}
 
 		/* ---- AR teaser screen ---- */
 		.ar-teaser-frame {
 			background: linear-gradient(135deg, #1a1d23, #350000) !important;
 			min-height: 60vh;
 		}
+
 		.ar-teaser-card {
 			display: flex;
 			flex-direction: column;
@@ -297,18 +360,25 @@
 			margin: 0 auto;
 			padding: 8px;
 		}
-		.ar-teaser-icon { margin-bottom: 10px; opacity: 0.9; }
+
+		.ar-teaser-icon {
+			margin-bottom: 10px;
+			opacity: 0.9;
+		}
+
 		.ar-teaser-heading {
 			font-family: var(--font-heading);
 			font-size: 1.6rem;
 			margin: 4px 0 12px;
 		}
+
 		.ar-teaser-body {
 			font-size: 0.92rem;
 			line-height: 1.6;
-			color: rgba(255,255,255,0.75);
+			color: rgba(255, 255, 255, 0.75);
 			margin-bottom: 20px;
 		}
+
 		.ar-teaser-strip {
 			display: flex;
 			flex-wrap: wrap;
@@ -316,14 +386,16 @@
 			gap: 8px;
 			margin-bottom: 24px;
 		}
+
 		.ar-teaser-strip img {
 			width: 44px;
 			height: 44px;
 			object-fit: contain;
 			border-radius: 10px;
-			background: rgba(255,255,255,0.1);
+			background: rgba(255, 255, 255, 0.1);
 			padding: 4px;
 		}
+
 		.ar-launch-button {
 			background: #fff !important;
 			color: #bc0100 !important;
@@ -332,11 +404,12 @@
 			font-weight: 800 !important;
 			font-size: 0.95rem !important;
 		}
+
 		.ar-teaser-back-link {
 			margin-top: 16px;
 			background: none;
 			border: none;
-			color: rgba(255,255,255,0.6);
+			color: rgba(255, 255, 255, 0.6);
 			font-size: 0.85rem;
 			font-weight: 700;
 			cursor: pointer;
@@ -344,29 +417,39 @@
 		}
 	</style>
 </head>
+
 <body>
 	<div aria-hidden="true" class="fixed-bg-monsters">
-		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8" alt="" loading="lazy" decoding="async" />
-		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM" alt="" loading="lazy" decoding="async" />
+		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)"
+			src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8"
+			alt="" loading="lazy" decoding="async" />
+		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)"
+			src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM"
+			alt="" loading="lazy" decoding="async" />
 	</div>
-		<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
-			<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center">
-				<div class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
-					<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry" style="display:block;">
-				</div>
+	<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
+		<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center">
+			<div
+				class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
+				<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry"
+					style="display:block;">
 			</div>
-		</header>
+		</div>
+	</header>
 
 	<main class="phone-shell">
 		<section class="stage" aria-live="polite">
-			<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" style="pointer-events:none;" aria-hidden="true"></div>
-			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]" style="pointer-events:none;" aria-hidden="true"></div>
+			<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]"
+				style="pointer-events:none;" aria-hidden="true"></div>
+			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]"
+				style="pointer-events:none;" aria-hidden="true"></div>
 			<article class="frame intro-frame" id="intro-screen">
 				<button class="ar-edge-tab" id="ar-edge-tab-intro" type="button" aria-label="Meet the characters in AR">
 					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
 					<span class="ar-edge-tab-label">AR</span>
 				</button>
-				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-intro" type="button" aria-label="Join the storefront battle">
+				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-intro" type="button"
+					aria-label="Join the storefront battle">
 					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
 					<span class="ar-edge-tab-label">BATTLE</span>
 				</button>
@@ -376,35 +459,68 @@
 					<span class="swipe-hint-arrow">→</span>
 				</div>
 				<div class="frame-body">
-					<div class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+					<div
+						class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
 						<div class="flex flex-col lg:flex-row gap-stack-lg items-center">
 							<div class="w-full lg:w-5/12 hidden md:block">
 								<div class="relative group">
-									<div class="absolute -inset-4 bg-primary/20 rounded-[48px] blur-2xl group-hover:bg-primary/30 transition-all duration-500"></div>
-									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec" alt="Curry plate" fetchpriority="high" decoding="async">
+									<div
+										class="absolute -inset-4 bg-primary/20 rounded-[48px] blur-2xl group-hover:bg-primary/30 transition-all duration-500">
+									</div>
+									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700"
+										src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec"
+										alt="Curry plate" fetchpriority="high" decoding="async">
 								</div>
 							</div>
 							<div class="w-full lg:w-7/12">
-								<div class="monster-red-gradient rounded-[40px] p-stack-md md:p-stack-lg flex flex-col items-center text-center text-on-primary shadow-[0px_20px_60px_rgba(188,1,0,0.3)] transition-transform hover:scale-[1.01] duration-500 relative z-20">
+								<div
+									class="monster-red-gradient rounded-[40px] p-stack-md md:p-stack-lg flex flex-col items-center text-center text-on-primary shadow-[0px_20px_60px_rgba(188,1,0,0.3)] transition-transform hover:scale-[1.01] duration-500 relative z-20">
 									<div class="mb-stack-md">
-										<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-10">Flavour Quest</span>
-										<h1 class="font-headline-xl text-headline-xl md:text-headline-xl text-on-primary mt-4 leading-tight">Curry <br>Personality Test</h1>
+										<span
+											class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-10">Flavour
+											Quest</span>
+										<h1
+											class="font-headline-xl text-headline-xl md:text-headline-xl text-on-primary mt-4 leading-tight">
+											Curry <br>Personality Test</h1>
 									</div>
-									<p class="font-body-md text-body-md text-white/90 max-w-md mb-stack-sm intro-lead-text">Want to know more about your personality?</p>
-									<p class="font-body-sm text-body-sm text-white/70 max-w-sm mb-stack-lg leading-relaxed intro-body-text">Uncover the "monster" flavour profile that rules your tastebuds. Whether you're a fiery Spiced King or a smooth Savory Giant, your plate tells a story.</p>
+									<p
+										class="font-body-md text-body-md text-white/90 max-w-md mb-stack-sm intro-lead-text">
+										Want to know more about your personality?</p>
+									<p
+										class="font-body-sm text-body-sm text-white/70 max-w-sm mb-stack-lg leading-relaxed intro-body-text">
+										Uncover the "monster" flavour profile that rules your tastebuds. Whether you're
+										a fiery Spiced King or a smooth Savory Giant, your plate tells a story.</p>
 									<div class="w-full flex flex-col gap-base mt-stack-md">
-										<button id="start-button" class="w-full md:w-auto md:min-w-[200px] mx-auto bg-on-primary text-primary px-stack-lg py-4 rounded-xl font-label-bold text-label-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 pulse-glow">Start Quiz</button>
+										<button id="start-button"
+											class="w-full md:w-auto md:min-w-[200px] mx-auto bg-on-primary text-primary px-stack-lg py-4 rounded-xl font-label-bold text-label-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 pulse-glow">Start
+											Quiz</button>
 										<div class="mt-stack-md flex flex-col items-center gap-3 opacity-80">
-											<span class="font-body-sm text-body-sm text-white/80">Join 12,000+ Curry Monsters</span>
+											<span class="font-body-sm text-body-sm text-white/80">Join 12,000+ Curry
+												Monsters</span>
 											<div class="flex items-center gap-3">
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
-													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center"
+													aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary"
+														fill="currentColor" viewBox="0 0 24 24">
+														<path
+															d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+													</svg>
 												</div>
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
-													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center"
+													aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary"
+														fill="currentColor" viewBox="0 0 24 24">
+														<path
+															d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+													</svg>
 												</div>
-												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center" aria-hidden="true">
-													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+												<div class="w-8 h-8 rounded-full border-2 border-primary bg-surface-container-high flex items-center justify-center"
+													aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary"
+														fill="currentColor" viewBox="0 0 24 24">
+														<path
+															d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+													</svg>
 												</div>
 											</div>
 										</div>
@@ -419,19 +535,25 @@
 			<article class="frame quiz-frame hidden" id="quiz-screen" style="display:none">
 				<div class="frame-body">
 					<div class="relative z-10 w-full max-w-[680px] mx-auto">
-						<div class="question-box bg-outline-variant/40 rounded-[28px] p-6 md:p-8 shadow-2xl backdrop-blur-md border border-white/10">
+						<div
+							class="question-box bg-outline-variant/40 rounded-[28px] p-6 md:p-8 shadow-2xl backdrop-blur-md border border-white/10">
 
 							<div class="flex items-center justify-center flex-col text-center">
 								<div class="quiz-progress-group">
-									<div class="quiz-progress-visual w-36 h-36 md:w-48 md:h-48 rounded-[24px] overflow-hidden bg-white/90 p-4 shadow-xl border border-white/30 flex items-center justify-center" aria-hidden="true">
+									<div class="quiz-progress-visual w-36 h-36 md:w-48 md:h-48 rounded-[24px] overflow-hidden bg-white/90 p-4 shadow-xl border border-white/30 flex items-center justify-center"
+										aria-hidden="true">
 										<div class="logo-progress-icon">
-											<img src="images/MC_Logo_Round_Black_n_White.png" class="logo-progress-base" alt="">
-											<div class="logo-progress-fill" id="quiz-logo-fill-wrapper" style="height: 0%;">
-												<img src="images/MC_Logo_Round_White.png" class="logo-progress-color" alt="">
+											<img src="images/MC_Logo_Round_Black_n_White.png" class="logo-progress-base"
+												alt="">
+											<div class="logo-progress-fill" id="quiz-logo-fill-wrapper"
+												style="height: 0%;">
+												<img src="images/MC_Logo_Round_White.png" class="logo-progress-color"
+													alt="">
 											</div>
 										</div>
 									</div>
-									<span id="quiz-question-count" class="quiz-question-count" role="status" aria-live="polite" aria-atomic="true" aria-label="Question 1 of 15">1/15</span>
+									<span id="quiz-question-count" class="quiz-question-count" role="status"
+										aria-live="polite" aria-atomic="true" aria-label="Question 1 of 15">1/15</span>
 								</div>
 								<p class="question-heading question-prompt" id="question-prompt"></p>
 
@@ -441,7 +563,9 @@
 					</div>
 				</div>
 				<div class="w-full flex justify-center mt-4 relative z-30">
-					<button class="px-8 py-3 rounded-full bg-white text-on-surface font-label-bold text-label-bold shadow-md hover:shadow-xl hover:bg-surface-container-low transition-all duration-300 active:scale-95 flex items-center gap-2" id="back-button" type="button">
+					<button
+						class="px-8 py-3 rounded-full bg-white text-on-surface font-label-bold text-label-bold shadow-md hover:shadow-xl hover:bg-surface-container-low transition-all duration-300 active:scale-95 flex items-center gap-2"
+						id="back-button" type="button">
 						<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
 						Back
 					</button>
@@ -449,11 +573,13 @@
 			</article>
 
 			<article class="frame result-frame hidden" id="result-screen" style="display:none">
-				<button class="ar-edge-tab" id="ar-edge-tab-result" type="button" aria-label="Meet the characters in AR">
+				<button class="ar-edge-tab" id="ar-edge-tab-result" type="button"
+					aria-label="Meet the characters in AR">
 					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
 					<span class="ar-edge-tab-label">AR</span>
 				</button>
-				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-result" type="button" aria-label="Join the storefront battle">
+				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-result" type="button"
+					aria-label="Join the storefront battle">
 					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
 					<span class="ar-edge-tab-label">BATTLE</span>
 				</button>
@@ -463,36 +589,34 @@
 					<span class="swipe-hint-arrow">→</span>
 				</div>
 				<div class="frame-body">
-					<div class="result-card even-space glass-effect rounded-2xl p-6" style="width:100%;max-width:720px;margin:0 auto;text-align:center">
+					<div class="result-card even-space glass-effect rounded-2xl p-6"
+						style="width:100%;max-width:720px;margin:0 auto;text-align:center">
 						<div class="result-illustration" id="result-illustration">
-								<img id="result-illustration-img" src="" alt="" style="width:100%;height:100%;object-fit:contain;">
-							</div>
+							<img id="result-illustration-img" src="" alt=""
+								style="width:100%;height:100%;object-fit:contain;">
+						</div>
 						<h2 class="result-name" id="result-name">Personality name</h2>
 						<p class="result-background" id="result-background"></p>
 						<p class="result-description" id="result-description"></p>
 						<div class="feedback-section mt-8">
-  						  <h3 class="text-xl font-bold mb-4">Rate This Test</h3>
+							<h3 class="text-xl font-bold mb-4">Rate This Test</h3>
 
-  						  <div class="star-rating mb-4">
-   						     <span class="star" data-rating="1">★</span>
-  						      <span class="star" data-rating="2">★</span>
-   						     <span class="star" data-rating="3">★</span>
- 						       <span class="star" data-rating="4">★</span>
-  						      <span class="star" data-rating="5">★</span>
-   						 </div>
+							<div class="star-rating mb-4">
+								<span class="star" data-rating="1">★</span>
+								<span class="star" data-rating="2">★</span>
+								<span class="star" data-rating="3">★</span>
+								<span class="star" data-rating="4">★</span>
+								<span class="star" data-rating="5">★</span>
+							</div>
 
-  						  <textarea
-   						     id="feedback-comment"
-    						    placeholder="Tell us what you think..."
-   						     class="w-full p-3 rounded-lg text-black resize-none"
-   						     rows="4"
- 						   ></textarea>
+							<textarea id="feedback-comment" placeholder="Tell us what you think..."
+								class="w-full p-3 rounded-lg text-black resize-none" rows="4"></textarea>
 
-  						  <button id="submit-feedback" type="button">
-      						  Submit Feedback
-  						  </button>
+							<button id="submit-feedback" type="button">
+								Submit Feedback
+							</button>
 
-   						 <p id="feedback-message" class="mt-3 text-sm"></p>
+							<p id="feedback-message" class="mt-3 text-sm"></p>
 						</div>
 						<div style="margin-top:1.5rem;">
 							<button id="check-personalities-btn" type="button">
@@ -509,12 +633,16 @@
 				<div class="frame-body">
 					<div class="ar-teaser-card">
 						<span class="material-symbols-outlined ar-teaser-icon" style="font-size:48px;">view_in_ar</span>
-						<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-10">Flavour Quest AR</span>
+						<span
+							class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-10">Flavour
+							Quest AR</span>
 						<h2 class="ar-teaser-heading">Meet the Characters in AR</h2>
-						<p class="ar-teaser-body">Find a Monster Curry character standee on your table, then point your camera at the illustration to watch it come alive right on your screen.</p>
+						<p class="ar-teaser-body">Find a Monster Curry character standee on your table, then point your
+							camera at the illustration to watch it come alive right on your screen.</p>
 						<div class="ar-teaser-strip" id="ar-teaser-strip"></div>
 						<button class="action-button ar-launch-button" id="launch-ar-button" type="button">
-							<span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px;margin-right:6px;">photo_camera</span>
+							<span class="material-symbols-outlined"
+								style="font-size:18px;vertical-align:-4px;margin-right:6px;">photo_camera</span>
 							Turn On Camera
 						</button>
 						<button class="ar-teaser-back-link" id="ar-teaser-back-button" type="button">Back</button>
@@ -526,24 +654,31 @@
 				<div class="frame-body">
 					<div class="battle-app-shell">
 						<div class="battle-panel battle-code-panel" id="battle-code-panel">
-							<span class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-4">Storefront Battle</span>
+							<span
+								class="inline-block px-4 py-1 bg-white/20 rounded-full font-label-bold text-label-bold uppercase tracking-widest mb-4">Storefront
+								Battle</span>
 							<h2>Enter the big-screen code</h2>
-							<p>Look at the storefront display, then type the game code shown there to join the live battle.</p>
+							<p>Look at the storefront display, then type the game code shown there to join the live
+								battle.</p>
 							<div class="battle-manual-join">
 								<label for="battle-manual-code">Game code</label>
 								<div>
-									<input id="battle-manual-code" autocomplete="one-time-code" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="1234">
+									<input id="battle-manual-code" autocomplete="one-time-code" inputmode="numeric"
+										maxlength="4" pattern="[0-9]{4}" placeholder="1234">
 									<button id="battle-manual-join-button" type="button">Join</button>
 								</div>
 							</div>
-							<p class="battle-status-text" id="battle-code-status">Enter the game code shown on the big screen.</p>
+							<p class="battle-status-text" id="battle-code-status">Enter the game code shown on the big
+								screen.</p>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-lobby-panel">
 							<h2>Waiting for other players to join</h2>
-							<p id="battle-lobby-message">You can start alone, or wait for another player to enter the code.</p>
+							<p id="battle-lobby-message">You can start alone, or wait for another player to enter the
+								code.</p>
 							<div class="battle-lobby-slots" id="battle-lobby-slots"></div>
-							<button class="action-button battle-primary-button" id="battle-start-solo-button" type="button">Start Single Player</button>
+							<button class="action-button battle-primary-button" id="battle-start-solo-button"
+								type="button">Start Single Player</button>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-character-panel">
@@ -552,12 +687,21 @@
 								<img id="battle-selected-character-art" alt="">
 								<h3 id="battle-selected-character-name">Character</h3>
 								<p id="battle-selected-character-title">Title</p>
-								<p class="battle-character-playstyle" id="battle-selected-character-playstyle">Play style</p>
+								<p class="battle-character-playstyle" id="battle-selected-character-playstyle">Play
+									style</p>
 								<p id="battle-selected-character-stats">HP 0 / Attack 0</p>
 								<p id="battle-selected-character-moves">Moves</p>
-								<button class="action-button battle-primary-button" id="battle-confirm-character-button" type="button">Confirm</button>
+								<button class="action-button battle-primary-button" id="battle-confirm-character-button"
+									type="button">Confirm</button>
 							</div>
 							<div class="battle-character-grid" id="battle-character-grid"></div>
+						</div>
+
+						<div class="battle-panel hidden" id="battle-tutorial-panel">
+							<h2>Look Up At The Big Screen!</h2>
+							<p id="battle-tutorial-status">A quick tutorial is showing on the big screen.</p>
+							<button class="action-button battle-primary-button" id="battle-tutorial-gotit-button"
+								type="button">Got It!</button>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-move-panel">
@@ -571,7 +715,9 @@
 							<div class="battle-team-status" id="battle-team-status"></div>
 							<div class="battle-monster-status">
 								<span id="battle-monster-name">Monster</span>
-								<div class="battle-hp-track"><div id="battle-monster-hp-bar"></div></div>
+								<div class="battle-hp-track">
+									<div id="battle-monster-hp-bar"></div>
+								</div>
 								<strong id="battle-monster-hp-text">0 / 0</strong>
 							</div>
 							<div class="battle-move-grid" id="battle-move-grid"></div>
@@ -584,7 +730,8 @@
 						<div class="battle-panel hidden" id="battle-gameover-panel">
 							<h2 id="battle-gameover-title">Battle complete</h2>
 							<p id="battle-gameover-message">Thanks for playing.</p>
-							<button class="action-button battle-primary-button" id="battle-play-again-button" type="button">Enter new code</button>
+							<button class="action-button battle-primary-button" id="battle-play-again-button"
+								type="button">Enter new code</button>
 						</div>
 					</div>
 				</div>
@@ -597,7 +744,8 @@
 	<div id="share-modal" role="dialog" aria-modal="true" aria-label="Share this quiz">
 		<div class="share-modal-card">
 			<h2>Your Curry Personality is Ready! 🎉</h2>
-			<p style="margin:0;color:rgba(255,255,255,0.65);font-size:0.85rem;">Share the quiz with friends and family, then see your result.</p>
+			<p style="margin:0;color:rgba(255,255,255,0.65);font-size:0.85rem;">Share the quiz with friends and family,
+				then see your result.</p>
 			<div class="share-link-row">
 				<input id="share-link-input" type="text" readonly>
 				<button id="copy-share-link" type="button">Copy</button>
@@ -608,120 +756,134 @@
 
 	<!-- Personalities Modal -->
 	<div id="personalities-modal" role="dialog" aria-modal="true" aria-label="All Personalities">
-		<div style="background:rgba(20,20,20,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:2rem;width:min(90vw,640px);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;gap:1rem;">
+		<div
+			style="background:rgba(20,20,20,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:2rem;width:min(90vw,640px);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;gap:1rem;">
 			<div style="display:flex;justify-content:space-between;align-items:center;">
-				<h2 style="color:#fff;font-size:1.25rem;font-weight:800;" id="personalities-modal-title">All Personalities</h2>
-				<button id="close-personalities-modal" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="Close">✕</button>
+				<h2 style="color:#fff;font-size:1.25rem;font-weight:800;" id="personalities-modal-title">All
+					Personalities</h2>
+				<button id="close-personalities-modal"
+					style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+					aria-label="Close">✕</button>
 			</div>
 
 			<!-- Grid of all personalities -->
 			<div id="personalities-list-view">
-				<p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin:0 0 1rem;">Tap any personality to learn more about them.</p>
+				<p style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin:0 0 1rem;">Tap any personality to learn
+					more about them.</p>
 				<div class="personalities-grid" id="personalities-grid"></div>
 			</div>
 
 			<!-- Detail shown in-place within the same overlay when a card is tapped -->
 			<div id="personality-detail-view" style="display:none;">
-				<button id="personality-detail-back" type="button" style="background:rgba(255,255,255,0.1);border:none;border-radius:999px;padding:8px 14px;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:1rem;">← All personalities</button>
+				<button id="personality-detail-back" type="button"
+					style="background:rgba(255,255,255,0.1);border:none;border-radius:999px;padding:8px 14px;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:1rem;">←
+					All personalities</button>
 				<div style="display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;">
-					<img id="personality-detail-img" src="" alt="" style="width:140px;height:140px;object-fit:contain;border-radius:20px;background:rgba(255,255,255,0.08);padding:12px;margin-bottom:1rem;">
+					<img id="personality-detail-img" src="" alt=""
+						style="width:140px;height:140px;object-fit:contain;border-radius:20px;background:rgba(255,255,255,0.08);padding:12px;margin-bottom:1rem;">
 					<h3 id="personality-detail-name" style="font-size:1.3rem;font-weight:800;margin:0 0 4px;"></h3>
-					<p id="personality-detail-title" style="font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.75);margin:0 0 1rem;"></p>
-					<p id="personality-detail-background" style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0 0 0.75rem;max-width:44ch;"></p>
-					<p id="personality-detail-description" style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.9);margin:0;max-width:44ch;"></p>
+					<p id="personality-detail-title"
+						style="font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.75);margin:0 0 1rem;"></p>
+					<p id="personality-detail-background"
+						style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0 0 0.75rem;max-width:44ch;">
+					</p>
+					<p id="personality-detail-description"
+						style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.9);margin:0;max-width:44ch;">
+					</p>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<script>
-	// Populate the AR teaser strip with small previews of all 8 characters
-	window.addEventListener('load', function() {
-		var strip = document.getElementById('ar-teaser-strip');
-		if (!strip) return;
-		var chars = window.CHARACTERS || [];
-		strip.innerHTML = chars.map(function(c) {
-			var rawName = c.name || '';
-			var displayName = rawName.replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
-			return '<img src="' + (c.image || '') + '" alt="' + displayName + '" loading="lazy">';
-		}).join('');
-	});
-
-	// Personalities modal — window.load ensures scripts.js module has run
-	window.addEventListener('load', function() {
-		var openBtn     = document.getElementById('check-personalities-btn');
-		var modal       = document.getElementById('personalities-modal');
-		var closeBtn    = document.getElementById('close-personalities-modal');
-		var grid        = document.getElementById('personalities-grid');
-		var modalTitle  = document.getElementById('personalities-modal-title');
-		var listView    = document.getElementById('personalities-list-view');
-		var detailView  = document.getElementById('personality-detail-view');
-		var detailBack  = document.getElementById('personality-detail-back');
-		var detailImg   = document.getElementById('personality-detail-img');
-		var detailName  = document.getElementById('personality-detail-name');
-		var detailTitle = document.getElementById('personality-detail-title');
-		var detailBg    = document.getElementById('personality-detail-background');
-		var detailDesc  = document.getElementById('personality-detail-description');
-		if (!openBtn || !modal) return;
-
-		function stripEmoji(name) {
-			return (name || '').replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
-		}
-
-		function populateGrid() {
-			grid.innerHTML = '';
+		// Populate the AR teaser strip with small previews of all 8 characters
+		window.addEventListener('load', function () {
+			var strip = document.getElementById('ar-teaser-strip');
+			if (!strip) return;
 			var chars = window.CHARACTERS || [];
-			if (!chars.length) {
-				grid.innerHTML = '<p style="color:rgba(255,255,255,0.55);grid-column:1/-1;text-align:center;padding:2rem;">No personalities found.</p>';
-				return;
+			strip.innerHTML = chars.map(function (c) {
+				var rawName = c.name || '';
+				var displayName = rawName.replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
+				return '<img src="' + (c.image || '') + '" alt="' + displayName + '" loading="lazy">';
+			}).join('');
+		});
+
+		// Personalities modal — window.load ensures scripts.js module has run
+		window.addEventListener('load', function () {
+			var openBtn = document.getElementById('check-personalities-btn');
+			var modal = document.getElementById('personalities-modal');
+			var closeBtn = document.getElementById('close-personalities-modal');
+			var grid = document.getElementById('personalities-grid');
+			var modalTitle = document.getElementById('personalities-modal-title');
+			var listView = document.getElementById('personalities-list-view');
+			var detailView = document.getElementById('personality-detail-view');
+			var detailBack = document.getElementById('personality-detail-back');
+			var detailImg = document.getElementById('personality-detail-img');
+			var detailName = document.getElementById('personality-detail-name');
+			var detailTitle = document.getElementById('personality-detail-title');
+			var detailBg = document.getElementById('personality-detail-background');
+			var detailDesc = document.getElementById('personality-detail-description');
+			if (!openBtn || !modal) return;
+
+			function stripEmoji(name) {
+				return (name || '').replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
 			}
-			chars.forEach(function(c) {
-				var card = document.createElement('div');
-				card.className = 'personality-card';
-				var imgSrc = c.image || '';
+
+			function populateGrid() {
+				grid.innerHTML = '';
+				var chars = window.CHARACTERS || [];
+				if (!chars.length) {
+					grid.innerHTML = '<p style="color:rgba(255,255,255,0.55);grid-column:1/-1;text-align:center;padding:2rem;">No personalities found.</p>';
+					return;
+				}
+				chars.forEach(function (c) {
+					var card = document.createElement('div');
+					card.className = 'personality-card';
+					var imgSrc = c.image || '';
+					var displayName = stripEmoji(c.name || 'Unknown');
+					var subtitle = c.title || '';
+					card.innerHTML = imgSrc
+						? ('<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy">'
+							+ '<p style="font-size:0.82rem;font-weight:800;margin-bottom:2px;">' + displayName + '</p>'
+							+ (subtitle ? '<p style="font-size:0.72rem;opacity:0.7;line-height:1.2;">' + subtitle + '</p>' : ''))
+						: ('<div style="width:64px;height:64px;border-radius:12px;background:rgba(255,255,255,0.1);margin:0 auto 0.5rem;"></div>'
+							+ '<p>' + displayName + '</p>');
+					// Show the personality's details inline within this same overlay,
+					// rather than closing the modal and swapping out the result screen.
+					card.addEventListener('click', function () { showDetail(c); });
+					grid.appendChild(card);
+				});
+			}
+
+			function showDetail(c) {
 				var displayName = stripEmoji(c.name || 'Unknown');
-				var subtitle = c.title || '';
-				card.innerHTML = imgSrc
-					? ('<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy">'
-					  + '<p style="font-size:0.82rem;font-weight:800;margin-bottom:2px;">' + displayName + '</p>'
-					  + (subtitle ? '<p style="font-size:0.72rem;opacity:0.7;line-height:1.2;">' + subtitle + '</p>' : ''))
-					: ('<div style="width:64px;height:64px;border-radius:12px;background:rgba(255,255,255,0.1);margin:0 auto 0.5rem;"></div>'
-					  + '<p>' + displayName + '</p>');
-				// Show the personality's details inline within this same overlay,
-				// rather than closing the modal and swapping out the result screen.
-				card.addEventListener('click', function() { showDetail(c); });
-				grid.appendChild(card);
-			});
-		}
+				if (detailImg) { detailImg.src = c.image || ''; detailImg.alt = displayName; }
+				if (detailName) detailName.textContent = displayName;
+				if (detailTitle) detailTitle.textContent = c.title || '';
+				if (detailBg) detailBg.textContent = c.background || '';
+				if (detailDesc) detailDesc.textContent = c.description || '';
+				if (modalTitle) modalTitle.textContent = displayName;
+				listView.style.display = 'none';
+				detailView.style.display = 'block';
+			}
 
-		function showDetail(c) {
-			var displayName = stripEmoji(c.name || 'Unknown');
-			if (detailImg)   { detailImg.src = c.image || ''; detailImg.alt = displayName; }
-			if (detailName)  detailName.textContent = displayName;
-			if (detailTitle) detailTitle.textContent = c.title || '';
-			if (detailBg)    detailBg.textContent = c.background || '';
-			if (detailDesc)  detailDesc.textContent = c.description || '';
-			if (modalTitle)  modalTitle.textContent = displayName;
-			listView.style.display = 'none';
-			detailView.style.display = 'block';
-		}
+			function showList() {
+				detailView.style.display = 'none';
+				listView.style.display = 'block';
+				if (modalTitle) modalTitle.textContent = 'All Personalities';
+			}
 
-		function showList() {
-			detailView.style.display = 'none';
-			listView.style.display = 'block';
-			if (modalTitle) modalTitle.textContent = 'All Personalities';
-		}
+			function openModal() { populateGrid(); showList(); modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+			function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; showList(); }
 
-		function openModal()  { populateGrid(); showList(); modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
-		function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; showList(); }
-
-		openBtn.addEventListener('click', openModal);
-		closeBtn.addEventListener('click', closeModal);
-		if (detailBack) detailBack.addEventListener('click', showList);
-		modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
-		document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
-	});
+			openBtn.addEventListener('click', openModal);
+			closeBtn.addEventListener('click', closeModal);
+			if (detailBack) detailBack.addEventListener('click', showList);
+			modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+			document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+		});
 	</script>
 	<script type="module" src="scripts.js?v=20260814-quiz-count1"></script>
 </body>
+
 </html>

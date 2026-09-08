@@ -318,6 +318,7 @@ const battleEls = {
 	codePanel: document.getElementById("battle-code-panel"),
 	lobbyPanel: document.getElementById("battle-lobby-panel"),
 	characterPanel: document.getElementById("battle-character-panel"),
+	tutorialPanel: document.getElementById("battle-tutorial-panel"),
 	movePanel: document.getElementById("battle-move-panel"),
 	gameOverPanel: document.getElementById("battle-gameover-panel"),
 	codeStatus: document.getElementById("battle-code-status"),
@@ -335,6 +336,8 @@ const battleEls = {
 	selectedCharacterStats: document.getElementById("battle-selected-character-stats"),
 	selectedCharacterMoves: document.getElementById("battle-selected-character-moves"),
 	confirmCharacterButton: document.getElementById("battle-confirm-character-button"),
+	tutorialStatus: document.getElementById("battle-tutorial-status"),
+	tutorialGotItButton: document.getElementById("battle-tutorial-gotit-button"),
 	modeLabel: document.getElementById("battle-mode-label"),
 	turnLabel: document.getElementById("battle-turn-label"),
 	moveTitle: document.getElementById("battle-move-title"),
@@ -584,6 +587,7 @@ function showBattlePanel(name) {
 		code: battleEls.codePanel,
 		lobby: battleEls.lobbyPanel,
 		character: battleEls.characterPanel,
+		tutorial: battleEls.tutorialPanel,
 		move: battleEls.movePanel,
 		gameOver: battleEls.gameOverPanel
 	};
@@ -758,6 +762,20 @@ function renderBattleGameOver(state) {
 		: "The monster won. Try a different character combination.";
 }
 
+function renderBattleTutorial(state) {
+	showBattlePanel("tutorial");
+	const acks = state.tutorialAcks || {};
+	const selfAcked = Boolean(acks[battlePlayerId]);
+	const players = battleOrderedPlayers(state);
+	const waitingOn = players.filter(player => player.id !== battlePlayerId && !acks[player.id]);
+
+	battleEls.tutorialGotItButton.disabled = selfAcked;
+	battleEls.tutorialGotItButton.textContent = selfAcked ? "Waiting..." : "Got It!";
+	battleEls.tutorialStatus.textContent = selfAcked
+		? (waitingOn.length ? `Waiting for ${waitingOn.map(p => p.name).join(", ")}...` : "Starting battle...")
+		: "Look up at the big screen for a quick tutorial!";
+}
+
 function renderBattleState(state) {
 	battleState = state;
 	if (!battleGameId) {
@@ -783,6 +801,10 @@ function renderBattleState(state) {
 		return;
 	}
 	if (["battle", "resolving", "level-complete"].includes(state.status)) {
+		if (state.showTutorial) {
+			renderBattleTutorial(state);
+			return;
+		}
 		renderBattleMoveState(state);
 		return;
 	}
@@ -943,6 +965,8 @@ async function confirmBattleCharacter() {
 		roundResult: { messages: log, createdAt: Date.now() },
 		winner: null,
 		log,
+		showTutorial: true,
+		tutorialAcks: {},
 		battleStartedAt: serverTimestamp(),
 		lastActionAt: serverTimestamp()
 	});
@@ -961,6 +985,14 @@ async function submitBattleMove(moveId) {
 			token,
 			createdAt: serverTimestamp()
 		},
+		lastActionAt: serverTimestamp()
+	});
+}
+
+async function acknowledgeBattleTutorial() {
+	if (!battleSessionRef || !battlePlayerId) return;
+	await update(battleSessionRef, {
+		[`tutorialAcks/${battlePlayerId}`]: true,
 		lastActionAt: serverTimestamp()
 	});
 }
@@ -1128,6 +1160,9 @@ if (battleEls.startSoloButton) {
 }
 if (battleEls.confirmCharacterButton) {
 	battleEls.confirmCharacterButton.onclick = () => confirmBattleCharacter();
+}
+if (battleEls.tutorialGotItButton) {
+	battleEls.tutorialGotItButton.onclick = () => acknowledgeBattleTutorial();
 }
 if (battleEls.playAgainButton) {
 	battleEls.playAgainButton.onclick = () => playBattleAgain();
