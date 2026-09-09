@@ -143,7 +143,12 @@ a-scene {
 	align-self: center;
 }
 
-.ar-back-button:hover,
+.ar-back-button:hover {
+	background: #f0f0f0;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
 .ar-close:hover {
 	background: rgba(117, 117, 117, 0.78);
 }
@@ -228,7 +233,9 @@ a-scene {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	padding: 32px;
+	padding: 32px 32px calc(env(safe-area-inset-bottom, 32px) + 24px);
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	color: #fff;
 }
 
