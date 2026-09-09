@@ -155,6 +155,8 @@ const sceneContainer = document.getElementById("scene-container");
 const characterBadge = document.getElementById("character-badge");
 const scanHint = document.getElementById("scan-hint");
 const closeArBtn = document.getElementById("close-ar");
+const arHomeButton = document.getElementById("ar-home-button");
+const arBackButton = document.getElementById("ar-back-button");
 const characterStrip = document.getElementById("character-strip");
 
 
@@ -263,6 +265,18 @@ characterStrip.innerHTML = CHARACTERS
 // ==========================================================
 
 closeArBtn.onclick = () => {
+
+    window.location.href = "index.html";
+
+};
+
+arHomeButton.onclick = () => {
+
+    window.location.href = "index.html";
+
+};
+
+arBackButton.onclick = () => {
 
     window.location.href = "index.html";
 

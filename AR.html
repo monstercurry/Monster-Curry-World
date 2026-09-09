@@ -9,7 +9,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
 
-    <title>Monster Curry — Meet Your Characters in AR</title>
+    <title>Monster Curry World— Meet Your Characters in AR</title>
 
 
     <!-- ================= GOOGLE FONTS ================= -->
@@ -88,7 +88,7 @@
     >
 
         <div
-            class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center"
+            class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center"
         >
 
             <div
@@ -102,6 +102,10 @@
                 />
 
             </div>
+
+            <button class="home-button ar-home-button" id="ar-home-button" type="button">
+                Home
+            </button>
 
         </div>
 
@@ -145,6 +149,10 @@
         >
             Turn On Camera
         </button>
+        <button class="ar-back-button" id="ar-back-button" type="button">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            Back
+        </button>
 
     </div>
 
@@ -185,18 +193,17 @@
             </div>
 
 
-            <div
+            <button
                 class="ar-close"
                 id="close-ar"
+                type="button"
                 aria-label="Exit AR"
             >
                 ✕
-            </div>
+            </button>
 
 
         </div>
-
-
 
         <div
             class="ar-hint"
@@ -211,8 +218,6 @@
 
 
     </div>
-
-
 
     <!--
         ==========================================================

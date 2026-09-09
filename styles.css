@@ -44,6 +44,7 @@
 }
 .option-button {
   -webkit-tap-highlight-color: transparent !important;
+  appearance: none;
   -webkit-appearance: none;
   /* Use explicit selected state class instead of :active for iOS reliability */
 }
@@ -332,7 +333,7 @@ h3,
    This used to be scoped inside the mobile-only media query, which is
    why desktop/tablet buttons were unclickable. */
 #back-button,
-#home-button {
+#result-home-button {
   position: relative !important;
   z-index: 50 !important;
   pointer-events: auto !important;
@@ -1350,3 +1351,161 @@ h1{font-size:clamp(2rem,5vw,3rem);}
 }
 .battle-move-button.chosen strong { color: #111; }
 .battle-move-button.chosen span { color: rgba(0,0,0,0.85); }
+
+/* Header Home button */
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.16);
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+/* Home hub */
+.home-frame {
+  background: linear-gradient(145deg, #f5ad0f, #ed1d24) !important;
+  color: #fff;
+}
+
+.home-content {
+  width: 100%;
+  max-width: 1080px;
+  margin: auto;
+  text-align: center;
+}
+
+.home-kicker {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-content h1 {
+  max-width: 720px;
+  margin: 0 auto 14px;
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  line-height: 0.98;
+}
+
+.home-intro {
+  max-width: 600px;
+  margin: 0 auto 32px;
+  color: rgba(255,255,255,0.86);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.home-function-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+
+.home-function-card {
+  display: flex;
+  min-height: 300px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.16);
+}
+
+.home-function-test { background: rgba(110, 0, 0, 0.38); }
+.home-function-ar { background: rgba(255,255,255,0.16); }
+.home-function-battle { background: rgba(22, 28, 35, 0.7); }
+.home-function-icon { margin-bottom: 28px; font-size: 38px; }
+.home-function-card h2 { margin: 0 0 10px; font-size: 1.45rem; line-height: 1.05; }
+.home-function-card p { min-height: 74px; margin: 0 0 22px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+
+.home-function-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: auto;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #bc0100;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.home-function-button:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.2); }
+
+@media (max-width: 760px) {
+  .home-function-grid { grid-template-columns: 1fr; }
+  .home-function-card { min-height: 0; }
+  .home-function-card p { min-height: 0; }
+}
+
+@media (max-width: 599px) {
+  .home-frame {
+    width: calc(100% - 20px);
+    max-width: 430px;
+    margin: 10px auto;
+    padding: 18px 14px 22px;
+    border-radius: 22px;
+  }
+
+  .home-kicker {
+    margin-bottom: 8px;
+    font-size: 0.68rem;
+  }
+
+  .home-content h1 {
+    max-width: 340px;
+    margin-bottom: 10px;
+    font-size: clamp(1.8rem, 9vw, 2.35rem);
+  }
+
+  .home-intro {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .home-function-grid { gap: 10px; }
+
+  .home-function-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .home-function-icon {
+    margin-bottom: 14px;
+    font-size: 30px;
+  }
+
+  .home-function-card h2 {
+    margin-bottom: 7px;
+    font-size: 1.18rem;
+  }
+
+  .home-function-card p {
+    margin-bottom: 14px;
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+
+  .home-function-button {
+    min-height: 42px;
+    font-size: 0.88rem;
+  }
+}
+

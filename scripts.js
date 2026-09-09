@@ -30,7 +30,7 @@ const storefrontFirebaseConfig = {
 
 let db = null;
 let storefrontDb = null;
-let collection, addDoc, get, onValue, ref, serverTimestamp, update;
+let collection, addDoc, get, onDisconnect, onValue, ref, serverTimestamp, set, update;
 let firebaseAvailable = false;
 
 // Fire-and-forget: the rest of this file does NOT wait on this promise, so a
@@ -43,7 +43,7 @@ const firebaseReady = (async () => {
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js")
 		]);
 		({ collection, addDoc } = firestoreMod);
-		({ get, onValue, ref, serverTimestamp, update } = databaseMod);
+		({ get, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
 
 		const app = appMod.initializeApp(firebaseConfig);
 		db = firestoreMod.getFirestore(app);
@@ -292,6 +292,7 @@ window.showResult = function (p) {
 };
 
 /* ---------------- UI ELEMENTS ---------------- */
+const homeScreen = document.getElementById("home-screen");
 const introScreen = document.getElementById("intro-screen");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
@@ -300,11 +301,12 @@ const battleScreen = document.getElementById("battle-screen");
 
 const startButton = document.getElementById("start-button");
 const backButton = document.getElementById("back-button");
-const homeButton = document.getElementById("home-button");
-const arEdgeTabIntro = document.getElementById("ar-edge-tab-intro");
-const arEdgeTabResult = document.getElementById("ar-edge-tab-result");
-const battleEdgeTabIntro = document.getElementById("battle-edge-tab-intro");
-const battleEdgeTabResult = document.getElementById("battle-edge-tab-result");
+const headerHomeButton = document.getElementById("header-home-button");
+const personalityBackButton = document.getElementById("personality-back-button");
+const resultHomeButton = document.getElementById("result-home-button");
+const homeTestButton = document.getElementById("home-test-button");
+const homeArButton = document.getElementById("home-ar-button");
+const homeGameButton = document.getElementById("home-game-button");
 const launchArButton = document.getElementById("launch-ar-button");
 const arTeaserBackButton = document.getElementById("ar-teaser-back-button");
 const quizLogoFillWrapper = document.getElementById("quiz-logo-fill-wrapper");
@@ -439,6 +441,7 @@ let battleSelectedCharacterId = null;
 
 /* ---------------- HELPERS ---------------- */
 const SCREENS = {
+	home: homeScreen,
 	intro: introScreen,
 	quiz: quizScreen,
 	result: resultScreen,
@@ -457,10 +460,19 @@ function showScreen(name) {
 	active.classList.remove("hidden");
 	window.scrollTo({ top: 0, behavior: "smooth" });
 
-	// Show back button only on quiz screen, never on intro, result, or the AR teaser
+	// Show back button only on quiz screen.
 	if (backButton) {
 		backButton.style.display = name === "quiz" ? "inline-flex" : "none";
 	}
+	if (headerHomeButton) {
+		headerHomeButton.style.display = name === "home" ? "none" : "inline-flex";
+	}
+}
+
+function goHome() {
+	resetQuiz();
+	resetFeedback();
+	showScreen("home");
 }
 
 function openArTeaser(fromScreen) {
@@ -866,6 +878,26 @@ async function joinBattleLobby(initialState = null) {
 	});
 }
 
+let battlePresenceRef = null;
+let battleConnectedUnsubscribe = null;
+
+function setupBattlePresence() {
+	if (battleConnectedUnsubscribe) {
+		battleConnectedUnsubscribe();
+		battleConnectedUnsubscribe = null;
+	}
+	if (!battleSessionRef || !battlePlayerId) return;
+
+	battlePresenceRef = ref(storefrontDb, `sessions/${battleGameId}/presence/${battlePlayerId}`);
+	const connectedRef = ref(storefrontDb, ".info/connected");
+	battleConnectedUnsubscribe = onValue(connectedRef, (snapshot) => {
+		if (snapshot.val() !== true) return;
+		onDisconnect(battlePresenceRef).remove().then(() => {
+			set(battlePresenceRef, true);
+		});
+	});
+}
+
 async function connectBattleGame(gameId) {
 	const cleanGameId = sanitizeBattleGameId(gameId);
 	if (!cleanGameId) {
@@ -891,6 +923,7 @@ async function connectBattleGame(gameId) {
 	battleGameId = cleanGameId;
 	battlePlayerId = getBattlePlayerId(battleGameId);
 	battleSessionRef = nextSessionRef;
+	setupBattlePresence();
 	window.localStorage.setItem("storefront-last-game", battleGameId);
 	if (battleUnsubscribe) battleUnsubscribe();
 	battleUnsubscribe = onValue(battleSessionRef, snapshot => {
@@ -1126,20 +1159,16 @@ backButton.onclick = () => {
 	}
 };
 
-homeButton.onclick = () => {
-	resetQuiz();
-	resetFeedback();
-	showScreen("intro");
-};
+headerHomeButton?.addEventListener("click", goHome);
+resultHomeButton?.addEventListener("click", goHome);
+homeTestButton?.addEventListener("click", () => showScreen("intro"));
+personalityBackButton?.addEventListener("click", goHome);
+homeArButton?.addEventListener("click", () => { window.location.href = "AR.html"; });
+homeGameButton?.addEventListener("click", () => openBattleScreen("home"));
 
-showScreen("intro");
+showScreen("home");
 
 /* ---------------- AR TEASER ---------------- */
-// Desktop entry points: edge tab buttons on the intro and result screens
-if (arEdgeTabIntro) arEdgeTabIntro.onclick = () => openArTeaser("intro");
-if (arEdgeTabResult) arEdgeTabResult.onclick = () => openArTeaser("result");
-if (battleEdgeTabIntro) battleEdgeTabIntro.onclick = () => openBattleScreen("intro");
-if (battleEdgeTabResult) battleEdgeTabResult.onclick = () => openBattleScreen("result");
 
 // From the teaser screen: launch the standalone AR camera experience
 if (launchArButton) {
@@ -1179,126 +1208,6 @@ if (battleEls.backButton) {
 if (arTeaserBackButton) {
 	arTeaserBackButton.onclick = () => closeArTeaser();
 }
-
-/* ---------------- SWIPE NAVIGATION ---------------- */
-// Swipe left across the main content opens AR; swipe right opens Battle.
-// Swipe is intentionally NOT active on the quiz or AR teaser screens, so it
-// never conflicts with tapping answer options or the AR teaser's Back button.
-(function setupSwipeNav() {
-	const stageEl = document.querySelector(".stage");
-	if (!stageEl) return;
-
-	const SWIPE_THRESHOLD = 48;
-	const HORIZONTAL_DOMINANCE = 1.15;
-	// How far the pointer has to move before we commit to "this gesture is
-	// vertical" vs "this gesture is horizontal". Kept small so the decision
-	// (and the touch-action swap below) happens almost immediately.
-	const DIRECTION_LOCK_DISTANCE = 6;
-
-	let swipeStartX = 0;
-	let swipeStartY = 0;
-	let swipeLastY = 0;
-	let swipeActive = false;
-	let swipeIsTouch = false;
-	let swipeDirection = null; // "horizontal" | "vertical" | null (undecided)
-
-	function releaseTouchAction() {
-		// Clearing the inline override falls back to the stylesheet's
-		// touch-action:pan-y, restoring normal native scrolling.
-		stageEl.style.touchAction = "";
-	}
-
-	stageEl.addEventListener("pointerdown", (event) => {
-		if (!event.isPrimary) return;
-
-		const introVisible = introScreen && !introScreen.classList.contains("hidden");
-		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
-		if (!introVisible && !resultVisible) return;
-
-		// If the press starts on a button/link/input/etc., don't take pointer
-		// capture — capturing the pointer on .stage causes the browser to
-		// retarget the resulting "click" event to .stage instead of the
-		// control the user actually pressed, which silently breaks buttons
-		// like Start Quiz, Home, and "Check out other personalities" that
-		// live inside .stage on the intro/result screens.
-		if (event.target.closest("button, a, input, textarea, select, label, [role='button']")) return;
-
-		swipeStartX = event.clientX;
-		swipeStartY = event.clientY;
-		swipeLastY = event.clientY;
-		swipeActive = true;
-		swipeDirection = null;
-		swipeIsTouch = event.pointerType === "touch";
-
-		// .stage normally uses touch-action:pan-y so normal vertical
-		// scrolling still works. The problem: on Android, Chrome is allowed
-		// to start a native pan-y scroll on the compositor thread the moment
-		// it sees any touch movement that looks even slightly vertical —
-		// and it can do this *before* our JS runs, so calling
-		// preventDefault() in pointermove (even immediately) can arrive too
-		// late to stop it. iOS Safari doesn't commit that aggressively, so
-		// the old "wait until the drag clearly looks horizontal, then
-		// preventDefault()" approach worked there but not on Android — which
-		// is why it looked like Android needed two fingers (multi-touch was
-		// never eligible for that native fast path, so it never raced us).
-		// Fix: for touch pointers, take the browser out of the decision
-		// entirely by setting touch-action:none for the duration of the
-		// gesture, and manually replicate vertical scrolling ourselves in
-		// pointermove below.
-		if (swipeIsTouch) {
-			stageEl.style.touchAction = "none";
-		}
-		stageEl.setPointerCapture?.(event.pointerId);
-	});
-
-	stageEl.addEventListener("pointermove", (event) => {
-		if (!swipeActive || !event.isPrimary) return;
-		const deltaX = event.clientX - swipeStartX;
-		const deltaY = event.clientY - swipeStartY;
-
-		if (!swipeDirection && (Math.abs(deltaX) > DIRECTION_LOCK_DISTANCE || Math.abs(deltaY) > DIRECTION_LOCK_DISTANCE)) {
-			swipeDirection = Math.abs(deltaX) > Math.abs(deltaY) * HORIZONTAL_DOMINANCE ? "horizontal" : "vertical";
-		}
-
-		if (swipeIsTouch && swipeDirection === "vertical") {
-			// touch-action is "none" right now, so the browser won't scroll
-			// on its own — do it ourselves so vertical scrolling still feels
-			// native during a gesture that turned out not to be a swipe.
-			const stepY = event.clientY - swipeLastY;
-			window.scrollBy(0, -stepY);
-		} else {
-			event.preventDefault();
-		}
-		swipeLastY = event.clientY;
-	}, { passive: false });
-
-	stageEl.addEventListener("pointerup", (event) => {
-		if (!swipeActive || !event.isPrimary) return;
-		swipeActive = false;
-		if (swipeIsTouch) releaseTouchAction();
-		const deltaX = event.clientX - swipeStartX;
-		const deltaY = event.clientY - swipeStartY;
-		const horizontalDistance = Math.abs(deltaX);
-		const verticalDistance = Math.abs(deltaY);
-
-		if (swipeDirection === "vertical") return;
-		if (horizontalDistance < SWIPE_THRESHOLD || horizontalDistance < verticalDistance * HORIZONTAL_DOMINANCE) return;
-
-		const introVisible = introScreen && !introScreen.classList.contains("hidden");
-		const resultVisible = resultScreen && !resultScreen.classList.contains("hidden");
-
-		if (deltaX < 0 && (introVisible || resultVisible)) {
-			openArTeaser(introVisible ? "intro" : "result");
-		} else if (deltaX > 0 && (introVisible || resultVisible)) {
-			openBattleScreen(introVisible ? "intro" : "result");
-		}
-	});
-
-	stageEl.addEventListener("pointercancel", () => {
-		swipeActive = false;
-		if (swipeIsTouch) releaseTouchAction();
-	});
-})();
 
 /* ---------------- SHARE (pre-result gate) ---------------- */
 (function setupShare() {

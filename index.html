@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Curry Personality Test - Home (Fun Background)</title>
+	<title>Monster Curry World</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link
@@ -41,6 +41,7 @@
 		#option-list button,
 		#option-list label {
 			-webkit-tap-highlight-color: transparent !important;
+			appearance: none;
 			-webkit-appearance: none;
 		}
 
@@ -220,130 +221,6 @@
 			background: rgba(255, 255, 255, 0.18);
 		}
 
-		/* ---- AR entry points: desktop edge tab ---- */
-		.ar-edge-tab {
-			position: absolute;
-			top: 50%;
-			right: 0;
-			transform: translateY(-50%);
-			z-index: 40;
-			display: none;
-			/* shown on desktop via media query below */
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 2px;
-			width: 72px;
-			min-height: 68px;
-			background: rgba(0, 0, 0, 0.55);
-			color: #fff;
-			border: 1px solid rgba(255, 255, 255, 0.25);
-			border-right: none;
-			border-radius: 14px 0 0 14px;
-			padding: 10px 8px;
-			cursor: pointer;
-			transition: background 0.2s;
-		}
-
-		.ar-edge-tab:hover {
-			background: rgba(0, 0, 0, 0.75);
-		}
-
-		.battle-edge-tab {
-			top: calc(50% + 88px);
-		}
-
-		@media (min-width: 900px) {
-			.battle-edge-tab {
-				top: calc(50% + 82px);
-			}
-		}
-
-		.ar-edge-tab-label {
-			width: 100%;
-			text-align: center;
-			font-size: 0.7rem;
-			font-weight: 800;
-			letter-spacing: 0.05em;
-			line-height: 1;
-		}
-
-		/* ---- AR entry points: swipe hint (shown on every device) ---- */
-		.swipe-hint {
-			display: none;
-			/* overridden to flex below, kept as fallback default */
-			position: absolute;
-			top: 50%;
-			right: 6px;
-			transform: translateY(-50%);
-			z-index: 40;
-			flex-direction: column;
-			align-items: center;
-			gap: 2px;
-			color: rgba(255, 255, 255, 0.85);
-			pointer-events: none;
-			animation: swipe-hint-pulse 2.2s ease-in-out infinite;
-		}
-
-		.swipe-hint-arrow {
-			font-size: 1.4rem;
-			line-height: 1;
-			font-weight: 800;
-		}
-
-		.swipe-hint-text {
-			font-size: 0.65rem;
-			font-weight: 700;
-			writing-mode: vertical-rl;
-			text-orientation: mixed;
-		}
-
-		.swipe-hint-nav {
-			position: fixed;
-			top: calc(var(--header-height) + 14px);
-			right: auto;
-			left: 50%;
-			transform: translateX(-50%);
-			flex-direction: row;
-			gap: 12px;
-			width: max-content;
-			max-width: calc(100% - 32px);
-			padding: 12px 22px;
-			border-radius: 999px;
-			background: rgba(0, 0, 0, 0.42);
-			white-space: nowrap;
-		}
-
-		.swipe-hint-nav .swipe-hint-arrow {
-			font-size: 1.8rem;
-		}
-
-		.swipe-hint-nav .swipe-hint-text {
-			font-size: 1rem;
-			writing-mode: horizontal-tb;
-		}
-
-		@keyframes swipe-hint-pulse {
-
-			0%,
-			100% {
-				opacity: 0.45;
-			}
-
-			50% {
-				opacity: 1;
-			}
-		}
-
-		/* AR/Battle edge-tab buttons are retired on every breakpoint — the
-		   swipe hint below is now the single, consistent way to reach
-		   AR/Battle whether the visitor is on mobile touch or desktop
-		   (pointer events already support click-drag, so the same swipe
-		   gesture works with a mouse). */
-		.swipe-hint {
-			display: flex;
-		}
-
 		/* ---- AR teaser screen ---- */
 		.ar-teaser-frame {
 			background: linear-gradient(135deg, #1a1d23, #350000) !important;
@@ -428,12 +305,13 @@
 			alt="" loading="lazy" decoding="async" />
 	</div>
 	<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
-		<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-center items-center">
+		<div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center">
 			<div
 				class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
 				<img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry"
 					style="display:block;">
 			</div>
+			<button class="home-button" id="header-home-button" type="button">Home</button>
 		</div>
 	</header>
 
@@ -443,21 +321,34 @@
 				style="pointer-events:none;" aria-hidden="true"></div>
 			<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px]"
 				style="pointer-events:none;" aria-hidden="true"></div>
-			<article class="frame intro-frame" id="intro-screen">
-				<button class="ar-edge-tab" id="ar-edge-tab-intro" type="button" aria-label="Meet the characters in AR">
-					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
-					<span class="ar-edge-tab-label">AR</span>
-				</button>
-				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-intro" type="button"
-					aria-label="Join the storefront battle">
-					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
-					<span class="ar-edge-tab-label">BATTLE</span>
-				</button>
-				<div class="swipe-hint swipe-hint-nav" id="swipe-hint-intro" aria-hidden="true">
-					<span class="swipe-hint-arrow">←</span>
-					<span class="swipe-hint-text">Swipe middle: AR · Battle</span>
-					<span class="swipe-hint-arrow">→</span>
+			<article class="frame home-frame" id="home-screen">
+				<div class="home-content">
+					<span class="home-kicker">Monster Curry World</span>
+					<h1>Pick Your Flavour Adventure</h1>
+					<p class="home-intro">Discover your Curry personality, meet the characters in AR, or join the live storefront battle.</p>
+					<div class="home-function-grid">
+						<section class="home-function-card home-function-test">
+							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">quiz</span>
+							<h2>Curry Personality Test</h2>
+							<p>Answer a few fun questions to find the Monster Curry character that matches you.</p>
+							<button class="home-function-button" id="home-test-button" type="button">Take the test</button>
+						</section>
+						<section class="home-function-card home-function-ar">
+							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">view_in_ar</span>
+							<h2>Flavour Quest AR</h2>
+							<p>Point your camera at a Monster Curry standee and bring the characters to life.</p>
+							<button class="home-function-button" id="home-ar-button" type="button">Try the AR</button>
+						</section>
+						<section class="home-function-card home-function-battle">
+							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">sports_esports</span>
+							<h2>Storefront Game</h2>
+							<p>Enter the big-screen code, choose your character, and join the curry battle.</p>
+							<button class="home-function-button" id="home-game-button" type="button">Start the game</button>
+						</section>
+					</div>
 				</div>
+			</article>
+			<article class="frame intro-frame" id="intro-screen">
 				<div class="frame-body">
 					<div
 						class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
@@ -530,6 +421,10 @@
 						</div>
 					</div>
 				</div>
+				<button class="action-button personality-back-button" id="personality-back-button" type="button">
+					<span class="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_back</span>
+					Back
+				</button>
 			</article>
 
 			<article class="frame quiz-frame hidden" id="quiz-screen" style="display:none">
@@ -573,21 +468,6 @@
 			</article>
 
 			<article class="frame result-frame hidden" id="result-screen" style="display:none">
-				<button class="ar-edge-tab" id="ar-edge-tab-result" type="button"
-					aria-label="Meet the characters in AR">
-					<span class="material-symbols-outlined" style="font-size:20px;">view_in_ar</span>
-					<span class="ar-edge-tab-label">AR</span>
-				</button>
-				<button class="ar-edge-tab battle-edge-tab" id="battle-edge-tab-result" type="button"
-					aria-label="Join the storefront battle">
-					<span class="material-symbols-outlined" style="font-size:20px;">sports_esports</span>
-					<span class="ar-edge-tab-label">BATTLE</span>
-				</button>
-				<div class="swipe-hint swipe-hint-nav" id="swipe-hint-result" aria-hidden="true">
-					<span class="swipe-hint-arrow">←</span>
-					<span class="swipe-hint-text">Swipe middle: AR · Battle</span>
-					<span class="swipe-hint-arrow">→</span>
-				</div>
 				<div class="frame-body">
 					<div class="result-card even-space glass-effect rounded-2xl p-6"
 						style="width:100%;max-width:720px;margin:0 auto;text-align:center">
@@ -626,7 +506,7 @@
 						</div>
 					</div>
 				</div>
-				<button class="action-button relative z-30" id="home-button" type="button">Home</button>
+				<button class="action-button relative z-30" id="result-home-button" type="button">Home</button>
 			</article>
 
 			<article class="frame ar-teaser-frame hidden" id="ar-teaser-screen" style="display:none">
@@ -735,7 +615,10 @@
 						</div>
 					</div>
 				</div>
-				<button class="action-button relative z-30" id="battle-back-button" type="button">Back</button>
+				<button class="action-button relative z-30" id="battle-back-button" type="button">
+					<span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+					Back
+				</button>
 			</article>
 		</section>
 	</main>

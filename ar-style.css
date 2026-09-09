@@ -114,6 +114,40 @@ a-scene {
 	cursor: pointer;
 }
 
+.ar-close,
+.ar-back-button {
+	font-family: inherit;
+}
+
+.ar-back-button {
+	position: static;
+	z-index: auto;
+	margin-top: 12px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 0 16px;
+	border: 1px solid rgba(255,255,255,0.18);
+	border-radius: 999px;
+	background: #ffffff;
+	backdrop-filter: blur(6px);
+	color: #000000;
+	font-size: 0.9rem;
+	font-weight: 800;
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+#start-gate .ar-back-button {
+	align-self: center;
+}
+
+.ar-back-button:hover,
+.ar-close:hover {
+	background: rgba(117, 117, 117, 0.78);
+}
+
 .ar-hint {
 	align-self: center;
 	text-align: center;
