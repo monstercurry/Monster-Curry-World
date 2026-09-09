@@ -878,6 +878,27 @@ async function joinBattleLobby(initialState = null) {
 	});
 }
 
+let battleHiddenTimer = null;
+const BATTLE_HIDDEN_MARK_AWAY_MS = 10000; // 10s of being backgrounded before marking away
+
+function handleBattleVisibilityChange() {
+	if (!battlePresenceRef) return;
+
+	if (document.hidden) {
+		if (battleHiddenTimer) return;
+		battleHiddenTimer = window.setTimeout(() => {
+			battleHiddenTimer = null;
+			set(battlePresenceRef, false).catch(() => {});
+		}, BATTLE_HIDDEN_MARK_AWAY_MS);
+	} else {
+		window.clearTimeout(battleHiddenTimer);
+		battleHiddenTimer = null;
+		set(battlePresenceRef, true).catch(() => {});
+	}
+}
+
+document.addEventListener("visibilitychange", handleBattleVisibilityChange);
+
 let battlePresenceRef = null;
 let battleConnectedUnsubscribe = null;
 
