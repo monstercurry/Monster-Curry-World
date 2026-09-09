@@ -469,15 +469,30 @@
 
 			<article class="frame result-frame hidden" id="result-screen" style="display:none">
 				<div class="frame-body">
-					<div class="result-card even-space glass-effect rounded-2xl p-6"
-						style="width:100%;max-width:720px;margin:0 auto;text-align:center">
-						<div class="result-illustration" id="result-illustration">
-							<img id="result-illustration-img" src="" alt=""
-								style="width:100%;height:100%;object-fit:contain;">
+					<div class="result-card even-space glass-effect rounded-2xl p-6">
+						<div class="result-profile">
+							<div class="result-illustration" id="result-illustration">
+								<img id="result-illustration-img" src="" alt="">
+							</div>
+							<div class="result-summary">
+								<p class="result-eyebrow">You are...</p>
+								<h2 class="result-name" id="result-name">Personality name</h2>
+								<p class="result-title" id="result-title"></p>
+								<dl class="result-traits">
+									<div><dt>Catchphrase:</dt><dd id="result-trait-catchphrase"></dd></div>
+									<div><dt>Birthday:</dt><dd id="result-trait-birthday"></dd></div>
+									<div><dt>Favourite Food:</dt><dd id="result-trait-food"></dd></div>
+								</dl>
+								<button class="result-learn-more" id="result-learn-more" type="button"
+									aria-expanded="false" aria-controls="result-more">
+									Learn more <span aria-hidden="true">→</span>
+								</button>
+							</div>
 						</div>
-						<h2 class="result-name" id="result-name">Personality name</h2>
-						<p class="result-background" id="result-background"></p>
-						<p class="result-description" id="result-description"></p>
+						<div class="result-more" id="result-more" hidden>
+							<p class="result-background" id="result-background"></p>
+							<p class="result-description" id="result-description"></p>
+						</div>
 						<div class="feedback-section mt-8">
 							<h3 class="text-xl font-bold mb-4">Rate This Test</h3>
 
@@ -611,7 +626,7 @@
 							<h2 id="battle-gameover-title">Battle complete</h2>
 							<p id="battle-gameover-message">Thanks for playing.</p>
 							<button class="action-button battle-primary-button" id="battle-play-again-button"
-								type="button">Enter new code</button>
+								type="button">Redeem Voucher</button>
 						</div>
 					</div>
 				</div>

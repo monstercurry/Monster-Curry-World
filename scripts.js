@@ -219,6 +219,9 @@ const personalities = [
 		image: "images/Katsu-Chan.png",
 		name: "🍗 Katsu-Chan",
 		title: "The Classic Comfort Hero",
+		birthday: "12ᵗʰ May",
+		catchphrase: '"Simple is best! You can always count on me!"',
+		favouriteFood: "Katsu Curry",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
 		description: "Calm, comforting, and consistently good in any situation. You are reliable, friendly, and dependable. People gravitate toward you because you bring stability and warmth without making things complicated. You're everyone's safe choice — and that's a superpower."
 	},
@@ -227,6 +230,9 @@ const personalities = [
 		image: "images/Monstora_Sharemi.png",
 		name: "🍛 Monstora Sharemi",
 		title: "The Social Feast Buddy",
+		birthday: "3ʳᵈ November",
+		catchphrase: '"Food tastes way better when we eat together!"',
+		favouriteFood: "Super Monster Combo",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
 		description: "Outgoing, generous, and group-oriented — you love sharing and bringing people together. If you're eating with someone, expect extra spoons and shared bites. You thrive in social settings and make everyone feel included in the fun."
 	},
@@ -235,6 +241,9 @@ const personalities = [
 		image: "images/Giga_Nomu.png",
 		name: "🍖 Giga Nomu",
 		title: "The Big Appetite Beast",
+		birthday: "15ᵗʰ August",
+		catchphrase: '"Bring on the giant plate! I’m still hungry!"',
+		favouriteFood: "Super Monster Curry",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
 		description: "Bold, energetic, and fearless — you live for big experiences and never hold back. You always finish what others can't, and your enthusiasm is contagious. You're built for full-throttle living, and people love your unstoppable energy."
 	},
@@ -243,6 +252,9 @@ const personalities = [
 		image: "images/Tamago_Puffy.png",
 		name: "🥚 Tamago Puffy",
 		title: "The Soft & Cozy Dreamer",
+		birthday: "14ᵗʰ March",
+		catchphrase: '"Shhh... let’s stay under the blanket a bit longer..."',
+		favouriteFood: "Teriyaki Chicken Omelette Curry",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
 		description: "Gentle, cute, and comfort-loving — you find joy in the quiet, cozy moments of life. You're the person who makes others feel instantly at ease. Your warmth is subtle but deeply felt, and your emotional softness is your greatest strength."
 	},
@@ -251,6 +263,9 @@ const personalities = [
 		image: "images/Cheezu_Mellow.png",
 		name: "🧀 Cheezu Mellow",
 		title: "The Cheesy Comfort Lover",
+		birthday: "8ᵗʰ July",
+		catchphrase: '"Oh my goodness, this is so good my heart is melting!"',
+		favouriteFood: "Cheese Omelette Curry",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
 		description: "Affectionate, cozy, and a little over-the-top in the best way. You love indulgence and emotional warmth. You're expressive, caring, and impossible not to love. When you're around, people feel wrapped in something warm and good."
 	},
@@ -259,6 +274,9 @@ const personalities = [
 		image: "images/Ramy_Noodleton.png",
 		name: "🍜 Ramy Noodleton",
 		title: "The Chill Slurper",
+		birthday: "19ᵗʰ Febuary",
+		catchphrase: '"Just relax, go with the flow, and enjoy the slurp."',
+		favouriteFood: "Curry Ramen",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
 		description: "Relaxed, easygoing, and quietly cool — you go with the flow and never let life stress you out. You have a laid-back charm that draws people in. You know how to enjoy the moment without overcomplicating things."
 	},
@@ -267,6 +285,9 @@ const personalities = [
 		image: "images/Hot_Sizz.png",
 		name: "🔥 Hot Sizz",
 		title: "The Hotplate Performer",
+		birthday: "5ᵗʰ April",
+		catchphrase: '"Listen up, everyone! Let’s turn up the heat!"',
+		favouriteFood: "Chicken Karaage Hotplate",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
 		description: "Energetic, dramatic, and passionate — you bring heat wherever you go. You thrive in the spotlight and have the kind of presence people can't look away from. Your intensity is magnetic, and life is never boring when you're in the room."
 	},
@@ -275,6 +296,9 @@ const personalities = [
 		image: "images/Teppa_Spark.png",
 		name: "🍳 Teppa Spark",
 		title: "The Precision Show Chef",
+		birthday: "18ᵗʰ September",
+		catchphrase: '"Cooking is an art. Watch closely."',
+		favouriteFood: "Yaki Beef Curry",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
 		description: "Focused, skillful, and stylish — you do everything with intention and flair. You're the kind of person who makes hard things look effortless. Detail-oriented and quietly confident, your precision and cool-headedness make you someone people deeply respect."
 	}
@@ -283,9 +307,7 @@ const personalities = [
 window.CHARACTERS = personalities;
 window.showResult = function (p) {
 	updateQuizLogoProgress(questions.length);
-	resultName.textContent = p.name;
-	resultBackground.textContent = p.title + ' — ' + p.background;
-	resultDescription.textContent = p.description;
+	populateResult(p);
 	const img = document.getElementById('result-illustration-img');
 	if (img) { img.src = p.image; img.alt = p.name; }
 	showScreen('result');
@@ -316,6 +338,11 @@ const optionList = document.getElementById("option-list");
 const resultName = document.getElementById("result-name");
 const resultBackground = document.getElementById("result-background");
 const resultDescription = document.getElementById("result-description");
+const resultTraitCatchphrase = document.getElementById("result-trait-catchphrase");
+const resultTraitBirthday = document.getElementById("result-trait-birthday");
+const resultTraitFood = document.getElementById("result-trait-food");
+const resultLearnMoreButton = document.getElementById("result-learn-more");
+const resultMore = document.getElementById("result-more");
 const battleEls = {
 	codePanel: document.getElementById("battle-code-panel"),
 	lobbyPanel: document.getElementById("battle-lobby-panel"),
@@ -415,15 +442,11 @@ const BATTLE_LEVELS = {
 		{ name: "Curry Goblin", maxHp: 500, atk: 70, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash"] },
 		{ name: "Root Curry Brute", maxHp: 700, atk: 78, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare"] },
 		{ name: "Sporeback Brute", maxHp: 900, atk: 86, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
-		{ name: "Rotten Goblin", maxHp: 1180, atk: 90, color: "#718147", accent: "#b9b68b", asset: "./assets/enemies/rotten-goblin.webp", moves: ["filthy-swipe", "noxious-stench", "sludge-guard"] },
-		{ name: "Blaze Fiend", maxHp: 1580, atk: 94, color: "#e84c0f", accent: "#ffd44d", asset: "./assets/enemies/blaze-fiend.webp", moves: ["flame-claw", "ember-crush", "wildfire-roar"] }
 	],
 	multiplayer: [
 		{ name: "Curry Goblin", maxHp: 1400, atk: 82, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash", "curry-cloud"] },
 		{ name: "Root Curry Brute", maxHp: 1780, atk: 92, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare", "root-guard"] },
 		{ name: "Sporeback Brute", maxHp: 2180, atk: 102, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
-		{ name: "Rotten Goblin", maxHp: 2420, atk: 107, color: "#718147", accent: "#b9b68b", asset: "./assets/enemies/rotten-goblin.webp", moves: ["filthy-swipe", "noxious-stench", "sludge-guard"] },
-		{ name: "Blaze Fiend", maxHp: 2650, atk: 112, color: "#e84c0f", accent: "#ffd44d", asset: "./assets/enemies/blaze-fiend.webp", moves: ["flame-claw", "ember-crush", "wildfire-roar"] }
 	]
 };
 
@@ -496,6 +519,7 @@ function openBattleScreen(fromScreen) {
 }
 
 function closeBattleScreen() {
+	if (battleEls.manualCode) battleEls.manualCode.value = "";
 	showScreen(screenBeforeBattle);
 }
 
@@ -1105,6 +1129,20 @@ function resetQuiz() {
 	updateQuizQuestionCount(0);
 }
 
+function populateResult(personality) {
+	const displayName = personality.name.replace(/\p{Emoji_Presentation}\s*/gu, "").trim();
+	resultName.textContent = displayName;
+	document.getElementById("result-title").textContent = personality.title;
+	resultTraitCatchphrase.textContent = personality.catchphrase;
+	resultTraitBirthday.textContent = personality.birthday;
+	resultTraitFood.textContent = personality.favouriteFood;
+	resultBackground.textContent = personality.background;
+	resultDescription.textContent = personality.description;
+	resultMore.hidden = true;
+	resultLearnMoreButton.textContent = "Learn more →";
+	resultLearnMoreButton.setAttribute("aria-expanded", "false");
+}
+
 /* ---------------- QUIZ ---------------- */
 function renderQuestion() {
 	const q = questions[currentQuestion];
@@ -1117,11 +1155,17 @@ function renderQuestion() {
 		const btn = document.createElement("button");
 		btn.type = "button";
 		btn.className = "option-button";
+		btn.classList.toggle("selected", answers[currentQuestion] === i);
+		btn.setAttribute("aria-pressed", String(answers[currentQuestion] === i));
 		btn.textContent = opt.text;
 		btn.onclick = () => {
 			// Visual feedback: add .selected (iOS-safe alternative to :active)
-			optionList.querySelectorAll('.option-button').forEach(b => b.classList.remove('selected'));
+			optionList.querySelectorAll('.option-button').forEach(b => {
+				b.classList.remove('selected');
+				b.setAttribute('aria-pressed', 'false');
+			});
 			btn.classList.add('selected');
+			btn.setAttribute('aria-pressed', 'true');
 			answers[currentQuestion] = i;
 			setTimeout(() => {
 				if (currentQuestion < questions.length - 1) {
@@ -1154,9 +1198,7 @@ function renderResult() {
 	// Populate the result content now (so the share text below can reference
 	// the personality name), but don't reveal the result screen yet — the
 	// share popup gates that.
-	resultName.textContent = p.name;
-	resultBackground.textContent = p.title + " — " + p.background;
-	resultDescription.textContent = p.description;
+	populateResult(p);
 	const img = document.getElementById("result-illustration-img");
 	if (img) { img.src = p.image; img.alt = p.name; }
 
@@ -1186,6 +1228,15 @@ homeTestButton?.addEventListener("click", () => showScreen("intro"));
 personalityBackButton?.addEventListener("click", goHome);
 homeArButton?.addEventListener("click", () => { window.location.href = "AR.html"; });
 homeGameButton?.addEventListener("click", () => openBattleScreen("home"));
+
+resultLearnMoreButton?.addEventListener("click", () => {
+	const expanded = resultLearnMoreButton.getAttribute("aria-expanded") === "true";
+	resultMore.hidden = expanded;
+	resultLearnMoreButton.setAttribute("aria-expanded", String(!expanded));
+	resultLearnMoreButton.innerHTML = expanded
+		? "Learn more <span aria-hidden=\"true\">→</span>"
+		: "Show less <span aria-hidden=\"true\">↑</span>";
+});
 
 showScreen("home");
 
@@ -1219,7 +1270,9 @@ if (battleEls.tutorialGotItButton) {
 	battleEls.tutorialGotItButton.onclick = () => acknowledgeBattleTutorial();
 }
 if (battleEls.playAgainButton) {
-	battleEls.playAgainButton.onclick = () => playBattleAgain();
+	battleEls.playAgainButton.onclick = () => {
+		window.location.href = "https://www.monstercurry.com.sg/";
+	};
 }
 if (battleEls.backButton) {
 	battleEls.backButton.onclick = () => closeBattleScreen();
