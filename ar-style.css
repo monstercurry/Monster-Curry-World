@@ -170,6 +170,50 @@ a-scene {
 
 .ar-hint.hidden { opacity: 0; }
 
+/* ---------- Share button (shown while a character is being viewed) ---------- */
+.ar-share-button {
+	position: fixed;
+	left: 50%;
+	bottom: calc(env(safe-area-inset-bottom, 16px) + 20px);
+	transform: translateX(-50%) translateY(12px);
+	z-index: 11;
+
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+
+	background: #fff;
+	color: #bc0100;
+	border: none;
+	border-radius: 999px;
+	padding: 14px 28px;
+	font-family: inherit;
+	font-weight: 800;
+	font-size: 0.95rem;
+	white-space: nowrap;
+
+	box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+	cursor: pointer;
+
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.ar-share-button.visible {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateX(-50%) translateY(0);
+}
+
+.ar-share-button:active {
+	transform: translateX(-50%) translateY(0) scale(0.97);
+}
+
+.ar-share-button .material-symbols-outlined {
+	font-size: 20px;
+}
+
 /* ---------- Pre-start gate (camera permission needs a tap) ---------- */
 #start-gate {
 	position: fixed;
@@ -261,4 +305,133 @@ a-scene {
 #error-state p {
 	opacity: 0.75;
 	max-width: 280px;
+}
+
+/* ---------- Photo preview (after capture) ---------- */
+#photo-preview {
+	position: fixed;
+	inset: 0;
+	z-index: 200;
+	background: rgba(0,0,0,0.92);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	gap: 16px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+}
+
+#photo-preview.hidden { display: none; }
+
+#photo-preview-image {
+	max-width: 92vw;
+	max-height: 60vh;
+	border-radius: 16px;
+	box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+.photo-preview-actions {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.photo-preview-actions button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border: none;
+	border-radius: 999px;
+	padding: 12px 22px;
+	font-family: inherit;
+	font-weight: 800;
+	font-size: 0.9rem;
+	cursor: pointer;
+}
+
+#photo-share-button {
+	background: #fff;
+	color: #bc0100;
+}
+
+#photo-save-button {
+	background: rgba(255,255,255,0.14);
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.25);
+}
+
+#photo-retake-button {
+	background: transparent;
+	color: rgba(255,255,255,0.7);
+	border: 1px solid rgba(255,255,255,0.25);
+}
+
+#photo-preview-note {
+	color: rgba(255,255,255,0.7);
+	font-size: 0.85rem;
+	text-align: center;
+	max-width: 320px;
+	margin: 0;
+}
+
+.ar-share-button:disabled {
+	opacity: 0.7;
+	cursor: default;
+}
+
+/* ---------- Caption box (inside photo preview) ---------- */
+.photo-caption-box {
+	width: min(92vw, 420px);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.photo-caption-box textarea {
+	width: 100%;
+	resize: none;
+	padding: 12px 14px;
+	border-radius: 16px;
+	border: 1px solid rgba(255,255,255,0.15);
+	background: rgba(0,0,0,0.55);
+	backdrop-filter: blur(6px);
+	color: #fff;
+	font-family: inherit;
+	font-size: 0.9rem;
+	line-height: 1.4;
+}
+
+.photo-caption-box textarea::placeholder {
+	color: rgba(255,255,255,0.5);
+}
+
+.photo-caption-box button {
+	align-self: flex-end;
+	border: none;
+	border-radius: 999px;
+	padding: 8px 18px;
+	background: #fff;
+	color: #bc0100;
+	font-family: inherit;
+	font-weight: 800;
+	font-size: 0.8rem;
+	cursor: pointer;
+}
+
+.photo-caption-box button {
+	align-self: flex-end;
+	border: none;
+	border-radius: 999px;
+	padding: 8px 18px;
+	background: rgba(255,255,255,0.14);
+	color: #fff;
+	border: 1px solid rgba(255,255,255,0.25);
+	font-family: inherit;
+	font-weight: 700;
+	font-size: 0.8rem;
+	cursor: pointer;
 }

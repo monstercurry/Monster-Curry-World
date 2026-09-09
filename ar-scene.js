@@ -158,6 +158,239 @@ const closeArBtn = document.getElementById("close-ar");
 const arHomeButton = document.getElementById("ar-home-button");
 const arBackButton = document.getElementById("ar-back-button");
 const characterStrip = document.getElementById("character-strip");
+const shareButton = document.getElementById("ar-share-button");
+const shareButtonLabel = document.getElementById("ar-share-button-label");
+
+// ==========================================================
+// SHARE BUTTON / PHOTO CAPTURE
+// ==========================================================
+
+// Character currently being shown by MindAR (null when none in view).
+let activeCharacter = null;
+
+const photoPreview = document.getElementById("photo-preview");
+const photoPreviewImage = document.getElementById("photo-preview-image");
+const photoPreviewNote = document.getElementById("photo-preview-note");
+const photoShareButton = document.getElementById("photo-share-button");
+const photoSaveButton = document.getElementById("photo-save-button");
+const photoRetakeButton = document.getElementById("photo-retake-button");
+const photoBackButton = document.getElementById("photo-back-button");
+const photoCaptionText = document.getElementById("photo-caption-text");
+const photoCaptionCopyButton = document.getElementById("photo-caption-copy");
+
+let currentPhotoBlob = null;
+let currentPhotoUrl = null;
+
+function getShareUrl() {
+    return "https://reito-bt.github.io/Monster-Curry-Personality-Prototype-Website/";
+}
+
+function getCaptionFor(character) {
+    return `I found ${character.name} at Monster Curry! 🍛\n#MonsterCurry #MonsterCurryAR\nTry it yourself: ${getShareUrl()}`;
+}
+
+function getCoverSourceRect(source, naturalWidth, naturalHeight, targetRect) {
+
+    const sourceRect = source.getBoundingClientRect();
+
+    const scale = Math.max(
+        sourceRect.width / naturalWidth,
+        sourceRect.height / naturalHeight
+    );
+
+    const displayedWidth = naturalWidth * scale;
+    const displayedHeight = naturalHeight * scale;
+
+    const originX = sourceRect.left + (sourceRect.width - displayedWidth) / 2;
+    const originY = sourceRect.top + (sourceRect.height - displayedHeight) / 2;
+
+    return {
+        sx: (targetRect.left - originX) / scale,
+        sy: (targetRect.top - originY) / scale,
+        sWidth: targetRect.width / scale,
+        sHeight: targetRect.height / scale
+    };
+
+}
+
+function captureARPhoto() {
+
+    const videoEl = sceneContainer.querySelector(":scope > video");
+    const canvasEl = sceneContainer.querySelector("canvas.a-canvas");
+
+    const sceneEl = sceneContainer.querySelector("a-scene");
+
+    if (sceneEl && sceneEl.renderer && sceneEl.object3D && sceneEl.camera) {
+        sceneEl.renderer.render(sceneEl.object3D, sceneEl.camera);
+    }
+
+    if (!videoEl || !canvasEl) {
+        console.warn("Could not find camera feed or AR canvas to capture.");
+        return;
+    }
+
+    const targetRect = sceneContainer.getBoundingClientRect();
+    const targetWidth = Math.round(targetRect.width);
+    const targetHeight = Math.round(targetRect.height);
+
+    const captureCanvas = document.createElement("canvas");
+    captureCanvas.width = targetWidth;
+    captureCanvas.height = targetHeight;
+
+    const ctx = captureCanvas.getContext("2d");
+
+    const videoCrop = getCoverSourceRect(videoEl, videoEl.videoWidth, videoEl.videoHeight, targetRect);
+    ctx.drawImage(videoEl, videoCrop.sx, videoCrop.sy, videoCrop.sWidth, videoCrop.sHeight, 0, 0, targetWidth, targetHeight);
+
+    const canvasCrop = getCoverSourceRect(canvasEl, canvasEl.width, canvasEl.height, targetRect);
+    ctx.drawImage(canvasEl, canvasCrop.sx, canvasCrop.sy, canvasCrop.sWidth, canvasCrop.sHeight, 0, 0, targetWidth, targetHeight);
+
+    captureCanvas.toBlob(blob => {
+
+        if (!blob) {
+            console.warn("Photo capture failed.");
+            return;
+        }
+
+        showPhotoPreview(blob);
+
+    }, "image/png");
+
+}
+
+function showPhotoPreview(blob) {
+
+    currentPhotoBlob = blob;
+    currentPhotoUrl = URL.createObjectURL(blob);
+
+    photoPreviewImage.src = currentPhotoUrl;
+    photoPreviewNote.textContent = "";
+    photoCaptionText.value = getCaptionFor(activeCharacter || { name: "a Monster Curry character" });
+    photoPreview.classList.remove("hidden");
+
+}
+
+function hidePhotoPreview() {
+
+    photoPreview.classList.add("hidden");
+
+    if (currentPhotoUrl) URL.revokeObjectURL(currentPhotoUrl);
+
+    currentPhotoBlob = null;
+    currentPhotoUrl = null;
+
+}
+
+photoRetakeButton.onclick = hidePhotoPreview;
+
+photoBackButton.onclick = () => {
+    window.location.href = "index.html";
+};
+
+photoCaptionCopyButton.onclick = async () => {
+
+    try {
+        await navigator.clipboard.writeText(photoCaptionText.value);
+        flashCaptionCopyLabel("Copied!");
+    } catch (error) {
+        photoCaptionText.select();
+        flashCaptionCopyLabel("Select & copy");
+    }
+
+};
+
+function flashCaptionCopyLabel(message) {
+
+    const previous = photoCaptionCopyButton.textContent;
+    photoCaptionCopyButton.textContent = message;
+
+    setTimeout(() => {
+        photoCaptionCopyButton.textContent = previous;
+    }, 1800);
+
+}
+
+photoSaveButton.onclick = () => {
+
+    if (!currentPhotoBlob || !currentPhotoUrl) return;
+
+    const filename = `${activeCharacter?.id || "monster-curry"}-ar-photo.png`;
+
+    const link = document.createElement("a");
+    link.href = currentPhotoUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+};
+
+photoShareButton.onclick = async () => {
+
+    if (!currentPhotoBlob) return;
+
+    const character = activeCharacter || { name: "a Monster Curry character", id: "monster-curry" };
+    const caption = photoCaptionText.value;
+    const file = new File([currentPhotoBlob], `${character.id}-ar-photo.png`, { type: "image/png" });
+
+    navigator.clipboard.writeText(caption).catch(() => { });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+
+        try {
+            await navigator.share({
+                files: [file],
+                title: `Monster Curry — ${character.name}`,
+                text: caption
+            });
+            window.location.href = "index.html";
+            return;
+        } catch (error) {
+            if (error?.name === "AbortError") return;
+        }
+
+    }
+
+    photoSaveButton.click();
+    photoPreviewNote.textContent =
+        "Caption copied & photo saved.";
+    setTimeout(() => { window.location.href = "index.html"; }, 3000);
+
+};
+
+function showShareButton(character) {
+    activeCharacter = character;
+    shareButtonLabel.textContent = "Take a Photo";
+    shareButton.classList.add("visible");
+}
+
+function hideShareButton() {
+    activeCharacter = null;
+    shareButton.classList.remove("visible");
+}
+
+let isCapturing = false;
+
+shareButton.onclick = () => {
+
+    if (isCapturing) return;
+    isCapturing = true;
+
+    const previousLabel = shareButtonLabel.textContent;
+    shareButtonLabel.textContent = "Hold still…";
+    shareButton.disabled = true;
+
+    setTimeout(() => {
+
+        captureARPhoto();
+
+        shareButtonLabel.textContent = previousLabel;
+        shareButton.disabled = false;
+        isCapturing = false;
+
+    }, 600);
+
+};
 
 
 // ==========================================================
@@ -429,6 +662,7 @@ function initARScene() {
             renderer="
                 colorManagement: true;
                 physicallyCorrectLights: true;
+                preserveDrawingBuffer: true;
             "
             vr-mode-ui="
                 enabled: false
@@ -580,6 +814,7 @@ function initARScene() {
                 characterBadge.classList.remove("idle");
 
                 scanHint.classList.add("hidden");
+                showShareButton(character);
 
                 videoEl.currentTime = 0;
 
@@ -615,6 +850,7 @@ function initARScene() {
                 characterBadge.classList.add("idle");
 
                 scanHint.classList.remove("hidden");
+                hideShareButton();
 
             }
         );

@@ -4,10 +4,7 @@
 <head>
     <meta charset="UTF-8" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <title>Monster Curry World— Meet Your Characters in AR</title>
 
@@ -16,21 +13,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
-        rel="stylesheet"
-    />
+        rel="stylesheet" />
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
 
 
     <!-- ================= TAILWIND ================= -->
@@ -57,7 +47,7 @@
     <!-- ================= CSS ================= -->
 
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="ar-style.css?v=20260813a" />
+    <link rel="stylesheet" href="ar-style.css?v=v=20260909a" />
 
 
     <!--
@@ -83,23 +73,15 @@
 
     <!-- ================= HEADER ================= -->
 
-    <header
-        class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm"
-    >
+    <header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
 
-        <div
-            class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center"
-        >
+        <div class="max-w-[1200px] mx-auto px-gutter py-4 flex justify-between items-center">
 
             <div
-                class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter"
-            >
+                class="font-headline-lg text-headline-lg font-extrabold text-primary dark:text-primary-fixed-dim tracking-tighter">
 
-                <img
-                    src="images/Monster Curry Updated Logo_White Text 2.png"
-                    alt="Monster Curry"
-                    style="display: block;"
-                />
+                <img src="images/Monster Curry Updated Logo_White Text 2.png" alt="Monster Curry"
+                    style="display: block;" />
 
             </div>
 
@@ -117,11 +99,7 @@
 
     <div id="start-gate">
 
-        <img
-            class="logo"
-            src="images/MC_Logo_Round_White.png"
-            alt="Monster Curry"
-        />
+        <img class="logo" src="images/MC_Logo_Round_White.png" alt="Monster Curry" />
 
 
         <h1>
@@ -137,16 +115,10 @@
 
         <!-- Filled automatically by ar-scene.js -->
 
-        <div
-            class="character-strip"
-            id="character-strip"
-        ></div>
+        <div class="character-strip" id="character-strip"></div>
 
 
-        <button
-            id="start-button"
-            type="button"
-        >
+        <button id="start-button" type="button">
             Turn On Camera
         </button>
         <button class="ar-back-button" id="ar-back-button" type="button">
@@ -185,36 +157,30 @@
         <div class="ar-topbar">
 
 
-            <div
-                class="ar-badge idle"
-                id="character-badge"
-            >
+            <div class="ar-badge idle" id="character-badge">
                 Point at a standee...
             </div>
 
 
-            <button
-                class="ar-close"
-                id="close-ar"
-                type="button"
-                aria-label="Exit AR"
-            >
+            <button class="ar-close" id="close-ar" type="button" aria-label="Exit AR">
                 ✕
             </button>
 
 
         </div>
 
-        <div
-            class="ar-hint"
-            id="scan-hint"
-        >
+        <div class="ar-hint" id="scan-hint">
 
             <p>
                 Point your camera at any Monster Curry standee.
             </p>
 
         </div>
+
+        <button class="ar-share-button" id="ar-share-button" type="button">
+            <span class="material-symbols-outlined" aria-hidden="true">photo_camera</span>
+            <span id="ar-share-button-label">Take a Photo</span>
+        </button>
 
 
     </div>
@@ -227,11 +193,44 @@
 
     <div id="scene-container"></div>
 
+    <!-- ================= PHOTO PREVIEW ================= -->
+    <div id="photo-preview" class="hidden">
+
+        <img id="photo-preview-image" alt="Your AR photo" />
+
+        <div class="photo-caption-box">
+            <textarea id="photo-caption-text" rows="3"></textarea>
+            <button id="photo-caption-copy" type="button">Copy Caption</button>
+        </div>
+
+        <div class="photo-preview-actions">
+            <button id="photo-share-button" type="button">
+                <span class="material-symbols-outlined" aria-hidden="true">ios_share</span>
+                Share
+            </button>
+            <button id="photo-save-button" type="button">
+                <span class="material-symbols-outlined" aria-hidden="true">download</span>
+                Save Photo
+            </button>
+            <button id="photo-retake-button" type="button">
+                Retake
+            </button>
+        </div>
+
+        <button class="ar-back-button" id="photo-back-button" type="button">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            Back
+        </button>
+
+        <p id="photo-preview-note"></p>
+
+    </div>
+
 
 
     <!-- ================= AR LOGIC ================= -->
 
-    <script src="ar-scene.js?v=20260813a" defer></script>
+    <script src="ar-scene.js?v=v=20260909a" defer></script>
 
 
 </body>
