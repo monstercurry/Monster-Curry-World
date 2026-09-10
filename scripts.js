@@ -222,6 +222,7 @@ const personalities = [
 		birthday: "12ᵗʰ May",
 		catchphrase: '"Simple is best! You can always count on me!"',
 		favouriteFood: "Katsu Curry",
+		coreTraits: "Reliable · Friendly · Dependable · Simple taste · Always safe choice",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
 		description: "Calm, comforting, and consistently good in any situation. You are reliable, friendly, and dependable. People gravitate toward you because you bring stability and warmth without making things complicated. You're everyone's safe choice — and that's a superpower."
 	},
@@ -233,6 +234,7 @@ const personalities = [
 		birthday: "3ʳᵈ November",
 		catchphrase: '"Food tastes way better when we eat together!"',
 		favouriteFood: "Super Monster Combo",
+		coreTraits: "Outgoing · Generous · Friendly · Loves sharing · Group-oriented",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
 		description: "Outgoing, generous, and group-oriented — you love sharing and bringing people together. If you're eating with someone, expect extra spoons and shared bites. You thrive in social settings and make everyone feel included in the fun."
 	},
@@ -244,6 +246,7 @@ const personalities = [
 		birthday: "15ᵗʰ August",
 		catchphrase: '"Bring on the giant plate! I’m still hungry!"',
 		favouriteFood: "Super Monster Curry",
+		coreTraits: "Bold · Energetic · Greedy for food · Loves large portions · Fearless eater",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
 		description: "Bold, energetic, and fearless — you live for big experiences and never hold back. You always finish what others can't, and your enthusiasm is contagious. You're built for full-throttle living, and people love your unstoppable energy."
 	},
@@ -255,6 +258,7 @@ const personalities = [
 		birthday: "14ᵗʰ March",
 		catchphrase: '"Shhh... let’s stay under the blanket a bit longer..."',
 		favouriteFood: "Teriyaki Chicken Omelette Curry",
+		coreTraits: "Gentle · Cute · Emotional · Comfort-loving · Soft-spoken",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
 		description: "Gentle, cute, and comfort-loving — you find joy in the quiet, cozy moments of life. You're the person who makes others feel instantly at ease. Your warmth is subtle but deeply felt, and your emotional softness is your greatest strength."
 	},
@@ -266,6 +270,7 @@ const personalities = [
 		birthday: "8ᵗʰ July",
 		catchphrase: '"Oh my goodness, this is so good my heart is melting!"',
 		favouriteFood: "Cheese Omelette Curry",
+		coreTraits: "Affectionate · Cozy · Over-the-top emotional · Loves indulgence · Warm",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
 		description: "Affectionate, cozy, and a little over-the-top in the best way. You love indulgence and emotional warmth. You're expressive, caring, and impossible not to love. When you're around, people feel wrapped in something warm and good."
 	},
@@ -277,6 +282,7 @@ const personalities = [
 		birthday: "19ᵗʰ Febuary",
 		catchphrase: '"Just relax, go with the flow, and enjoy the slurp."',
 		favouriteFood: "Curry Ramen",
+		coreTraits: "Relaxed · Easygoing · Quietly cool · Comfort seeker · Go-with-flow",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
 		description: "Relaxed, easygoing, and quietly cool — you go with the flow and never let life stress you out. You have a laid-back charm that draws people in. You know how to enjoy the moment without overcomplicating things."
 	},
@@ -288,6 +294,7 @@ const personalities = [
 		birthday: "5ᵗʰ April",
 		catchphrase: '"Listen up, everyone! Let’s turn up the heat!"',
 		favouriteFood: "Chicken Karaage Hotplate",
+		coreTraits: "Energetic · Dramatic · Attention-grabbing · Passionate · Loud presence",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
 		description: "Energetic, dramatic, and passionate — you bring heat wherever you go. You thrive in the spotlight and have the kind of presence people can't look away from. Your intensity is magnetic, and life is never boring when you're in the room."
 	},
@@ -299,6 +306,7 @@ const personalities = [
 		birthday: "18ᵗʰ September",
 		catchphrase: '"Cooking is an art. Watch closely."',
 		favouriteFood: "Yaki Beef Curry",
+		coreTraits: "Focused · Skillful · Stylish · Confident · Detail-oriented",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
 		description: "Focused, skillful, and stylish — you do everything with intention and flair. You're the kind of person who makes hard things look effortless. Detail-oriented and quietly confident, your precision and cool-headedness make you someone people deeply respect."
 	}
@@ -337,6 +345,7 @@ const quizQuestionCount = document.getElementById("quiz-question-count");
 const questionPrompt = document.getElementById("question-prompt");
 const optionList = document.getElementById("option-list");
 const resultName = document.getElementById("result-name");
+const resultCoreTraits = document.getElementById("result-core-traits");
 const resultBackground = document.getElementById("result-background");
 const resultDescription = document.getElementById("result-description");
 const resultTraitCatchphrase = document.getElementById("result-trait-catchphrase");
@@ -344,6 +353,7 @@ const resultTraitBirthday = document.getElementById("result-trait-birthday");
 const resultTraitFood = document.getElementById("result-trait-food");
 const resultLearnMoreButton = document.getElementById("result-learn-more");
 const resultMore = document.getElementById("result-more");
+const resultShareButton = document.getElementById("result-share-button");
 const battleEls = {
 	codePanel: document.getElementById("battle-code-panel"),
 	lobbyPanel: document.getElementById("battle-lobby-panel"),
@@ -487,9 +497,7 @@ const BATTLE_LEVELS = {
 	]
 };
 
-// Set by setupShare() below. renderResult() calls shareGate.present() so the
-// share popup appears the instant the quiz finishes, and the result screen
-// only becomes visible once the person dismisses (or completes) that popup.
+// Set by setupShare() below.
 let shareGate = null;
 
 let battleGameId = null;
@@ -1265,6 +1273,7 @@ function populateResult(personality) {
 	resultTraitCatchphrase.textContent = personality.catchphrase;
 	resultTraitBirthday.textContent = personality.birthday;
 	resultTraitFood.textContent = personality.favouriteFood;
+	resultCoreTraits.textContent = personality.coreTraits;
 	resultBackground.textContent = personality.background;
 	resultDescription.textContent = personality.description;
 	resultMore.hidden = true;
@@ -1334,18 +1343,10 @@ function getPersonality() {
 function renderResult() {
 	const p = getPersonality();
 	updateQuizLogoProgress(questions.length);
-	// Populate the result content now (so the share text below can reference
-	// the personality name), but don't reveal the result screen yet — the
-	// share popup gates that.
 	populateResult(p);
 	const img = document.getElementById("result-illustration-img");
 	if (img) { img.src = p.image; img.alt = p.name; }
-
-	if (shareGate) {
-		shareGate.present(() => showScreen("result"));
-	} else {
-		showScreen("result");
-	}
+	showScreen("result");
 }
 
 /* ---------------- EVENTS ---------------- */
@@ -1387,7 +1388,9 @@ resultLearnMoreButton?.addEventListener("click", () => {
 		: "Show less <span aria-hidden=\"true\">↑</span>";
 });
 
-showScreen("home");
+resultShareButton?.addEventListener("click", () => shareGate?.present());
+
+showScreen(window.location.hash === "#quiz" ? "intro" : "home");
 
 /* ---------------- AR TEASER ---------------- */
 
@@ -1432,33 +1435,50 @@ if (arTeaserBackButton) {
 	arTeaserBackButton.onclick = () => closeArTeaser();
 }
 
-/* ---------------- SHARE (pre-result gate) ---------------- */
+/* ---------------- SHARE ---------------- */
 (function setupShare() {
 	const shareModal = document.getElementById("share-modal");
 	const shareLinkInput = document.getElementById("share-link-input");
 	const copyLinkBtn = document.getElementById("copy-share-link");
 	const closeShareBtn = document.getElementById("close-share-modal");
+	const shareSubtitle = document.getElementById("share-modal-subtitle");
+	const whatsappLink = document.getElementById("share-whatsapp-link");
+	const instagramLink = document.getElementById("share-instagram-link");
+	const facebookLink = document.getElementById("share-facebook-link");
+	const collectVoucherButton = document.getElementById("collect-food-voucher");
+	const voucherMessage = document.getElementById("food-voucher-message");
 	if (!shareModal) return;
-
-	// Called once the popup is dismissed (any path: close button, backdrop
-	// click, Escape, or the native share sheet finishing/cancelling).
-	let onDismiss = null;
 
 	// Always share the quiz landing page, even if the person shares from
 	// somewhere deeper in the app (e.g. AR.html down the line).
 	function getShareUrl() {
-		return window.location.origin + window.location.pathname.replace(/[^/]*$/, "index.html");
+		const quizUrl = new URL("index.html", window.location.href);
+		quizUrl.hash = "quiz";
+		return quizUrl.href;
 	}
 
 	function getShareText() {
 		const name = (resultName?.textContent || "").replace(/\p{Emoji_Presentation}\s*/gu, "").trim();
+		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
 		return name
-			? `I just found out I'm "${name}" on the Monster Curry Personality Quiz! Find out your flavour personality:`
+			? `I got ${name} on the Monster Curry Personality Quiz! My personality food is ${food}. Find your personality:`
 			: "Find out your Monster Curry flavour personality:";
 	}
 
 	function openModal(url) {
 		shareLinkInput.value = url;
+		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
+		if (shareSubtitle) shareSubtitle.textContent = `Share your personality to win 10% off your personality food: ${food}`;
+		if (collectVoucherButton) {
+			collectVoucherButton.hidden = true;
+			collectVoucherButton.textContent = `Collect your ${food} voucher`;
+		}
+		if (voucherMessage) voucherMessage.hidden = true;
+		const text = encodeURIComponent(getShareText());
+		const encodedUrl = encodeURIComponent(url);
+		if (whatsappLink) whatsappLink.href = `https://wa.me/?text=${text}%20${encodedUrl}`;
+		if (instagramLink) instagramLink.href = "https://www.instagram.com/";
+		if (facebookLink) facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
 		shareModal.classList.add("open");
 		document.body.style.overflow = "hidden";
 	}
@@ -1466,30 +1486,19 @@ if (arTeaserBackButton) {
 	function closeModal() {
 		shareModal.classList.remove("open");
 		document.body.style.overflow = "";
-		const cb = onDismiss;
-		onDismiss = null;
-		if (cb) cb();
 	}
 
-	// Entry point used by renderResult(): show the share UI, then invoke
-	// onDone once the person has dismissed it (with or without sharing).
-	async function present(onDone) {
-		onDismiss = onDone;
+	function present() {
 		const url = getShareUrl();
-		const text = getShareText();
-
-		if (navigator.share) {
-			try {
-				await navigator.share({ title: "Monster Curry Personality Quiz", text, url });
-				closeModal();
-				return;
-			} catch (err) {
-				// User cancelled the native share sheet, or it failed — fall
-				// back to the in-page modal rather than doing nothing.
-				if (err?.name === "AbortError") { closeModal(); return; }
-			}
-		}
 		openModal(url);
+	}
+
+	function markShareComplete() {
+		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
+		if (collectVoucherButton) {
+			collectVoucherButton.hidden = false;
+			collectVoucherButton.textContent = `Collect your ${food} voucher`;
+		}
 	}
 
 	if (copyLinkBtn) {
@@ -1497,13 +1506,38 @@ if (arTeaserBackButton) {
 			try {
 				await navigator.clipboard.writeText(shareLinkInput.value);
 				copyLinkBtn.textContent = "Copied!";
+				markShareComplete();
 			} catch (err) {
-				shareLinkInput.select();
-				copyLinkBtn.textContent = "Select & copy";
+				const copyArea = document.createElement("textarea");
+				copyArea.value = shareLinkInput.value;
+				copyArea.setAttribute("readonly", "");
+				copyArea.style.position = "fixed";
+				copyArea.style.opacity = "0";
+				document.body.appendChild(copyArea);
+				copyArea.select();
+				const copied = document.execCommand("copy");
+				copyArea.remove();
+				copyLinkBtn.textContent = copied ? "Copied!" : "Copy failed";
+				if (copied) markShareComplete();
 			}
 			setTimeout(() => { copyLinkBtn.textContent = "Copy"; }, 1800);
 		});
 	}
+
+	[whatsappLink, instagramLink, facebookLink].forEach((link) => {
+		link?.addEventListener("click", markShareComplete);
+	});
+
+	collectVoucherButton?.addEventListener("click", () => {
+		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
+		const code = `CURRY-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+		if (voucherMessage) {
+			voucherMessage.hidden = false;
+			voucherMessage.textContent = `Your 10% off ${food} voucher is ready: ${code}`;
+		}
+		collectVoucherButton.textContent = "Voucher collected!";
+		collectVoucherButton.disabled = true;
+	});
 
 	if (closeShareBtn) closeShareBtn.addEventListener("click", closeModal);
 	shareModal.addEventListener("click", (e) => { if (e.target === shareModal) closeModal(); });
