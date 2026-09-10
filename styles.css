@@ -1272,7 +1272,9 @@ header.fixed.top-0 img[alt="Monster Curry"] {
 /* Card radius & shadow stronger */
 .monster-red-gradient {
   border-radius: 28px;
-  box-shadow: 0 30px 80px rgba(188, 1, 0, 0.18);
+  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
+    0 8px 22px rgba(189, 31, 31, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
   max-width: 720px;
   width: 100%;
   box-sizing: border-box;
@@ -2217,21 +2219,30 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   line-height: 1;
   min-height: 40px;
-  padding: 0 18px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 0.6rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.85);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
+  font-size: 0.9rem;
   font-weight: 800;
   text-align: center;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.home-button .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+  font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 0, "opsz" 28;
 }
 
 .home-button:hover {
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.24);
   box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
 }
 
@@ -2239,6 +2250,9 @@ h1 {
 .home-frame {
   background: linear-gradient(145deg, #f5ad0f, #ed1d24) !important;
   color: #fff;
+  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
+    0 8px 22px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 .home-content {
