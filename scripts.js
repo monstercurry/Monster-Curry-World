@@ -384,6 +384,41 @@ const battleEls = {
 	characterWaitingOverlay: document.getElementById("battle-character-waiting-overlay"),
 };
 
+const battleReconnectBanner = document.getElementById("battle-reconnect-banner");
+
+function showBattleReconnectBanner(message) {
+	if (!battleReconnectBanner) return;
+	battleReconnectBanner.textContent = message;
+	battleReconnectBanner.classList.remove("hidden");
+}
+
+function hideBattleReconnectBanner() {
+	battleReconnectBanner?.classList.add("hidden");
+}
+
+let battleTeammateCountdownInterval = null;
+let battleTeammateCountdownValue = null;
+
+function startTeammateDisconnectCountdown(teammateName) {
+	if (battleTeammateCountdownInterval) return;
+	battleTeammateCountdownValue = 10;
+	showBattleReconnectBanner(`${teammateName} disconnected — the battle will end in ${battleTeammateCountdownValue} seconds if they don't reconnect.`);
+	battleTeammateCountdownInterval = window.setInterval(() => {
+		battleTeammateCountdownValue -= 1;
+		if (battleTeammateCountdownValue < 0) {
+			stopTeammateDisconnectCountdown();
+			return;
+		}
+		showBattleReconnectBanner(`${teammateName} disconnected — the battle will end in ${battleTeammateCountdownValue} seconds if they don't reconnect.`);
+	}, 1000);
+}
+
+function stopTeammateDisconnectCountdown() {
+	window.clearInterval(battleTeammateCountdownInterval);
+	battleTeammateCountdownInterval = null;
+	battleTeammateCountdownValue = null;
+}
+
 /* ---------------- STATE ---------------- */
 let currentQuestion = 0;
 const answers = Array(questions.length).fill(null);
@@ -512,7 +547,7 @@ function openBattleScreen(fromScreen) {
 	if (battleState) {
 		renderBattleState(battleState);
 	} else {
-		showBattlePanel("code");
+		attemptBattleReconnect();
 	}
 }
 
@@ -775,6 +810,18 @@ function renderBattleMoveState(state) {
 	}
 	showBattlePanel("move");
 	renderBattleTeam(players);
+
+	// Detect a disconnected teammate in multiplayer.
+	const presence = state.presence || {};
+	const teammate = players.find(player => player.id !== battlePlayerId);
+	const teammateDisconnected = Boolean(teammate) && presence[teammate.id] !== true;
+	if (teammateDisconnected) {
+		startTeammateDisconnectCountdown(teammate.name);
+	} else {
+		stopTeammateDisconnectCountdown();
+		hideBattleReconnectBanner();
+	}
+
 	battleEls.modeLabel.textContent = state.mode === "multiplayer" ? "Co-op Mode" : "Solo Mode";
 	battleEls.turnLabel.textContent = `Turn ${state.turn || 1}`;
 	battleEls.monsterName.textContent = state.monster?.name || "Monster";
@@ -826,10 +873,14 @@ function renderBattleTutorial(state) {
 function renderBattleState(state) {
 	battleState = state;
 	if (!battleGameId) {
+		stopTeammateDisconnectCountdown();
+		hideBattleReconnectBanner();
 		showBattlePanel("code");
 		return;
 	}
 	if (!state || state.status === "closed") {
+		stopTeammateDisconnectCountdown();
+		hideBattleReconnectBanner();
 		showBattlePanel("code");
 		battleEls.codeStatus.textContent = "That code has expired. Enter the new code shown on the big screen.";
 		return;
@@ -917,15 +968,46 @@ function handleBattleVisibilityChange() {
 
 	if (document.hidden) {
 		if (battleHiddenTimer) return;
-		battleHiddenTimer = window.setTimeout(() => {
+		battleHiddenTimer = window.setTimeout(async () => {
 			battleHiddenTimer = null;
-			set(battlePresenceRef, false).catch(() => { });
+			if (await battleSessionStillExists()) {
+				set(battlePresenceRef, false).catch(() => { });
+			}
 		}, BATTLE_HIDDEN_MARK_AWAY_MS);
 	} else {
 		window.clearTimeout(battleHiddenTimer);
 		battleHiddenTimer = null;
-		set(battlePresenceRef, true).catch(() => { });
+		markBattlePresent();
 	}
+}
+
+async function battleSessionStillExists() {
+	if (!battleSessionRef) return false;
+	try {
+		const snapshot = await get(battleSessionRef);
+		const state = snapshot.exists() ? snapshot.val() : null;
+		return Boolean(state) && !["closed", "game-over"].includes(state.status);
+	} catch (error) {
+		console.error("Could not check session", error);
+		return false;
+	}
+}
+
+async function markBattlePresent() {
+	if (!battlePresenceRef) return;
+
+	const stillActive = await battleSessionStillExists();
+	if (!stillActive) {
+		battlePresenceRef = null;
+		window.localStorage.removeItem("storefront-last-game");
+		stopTeammateDisconnectCountdown();
+		hideBattleReconnectBanner();
+		showBattlePanel("code");
+		battleEls.codeStatus.textContent = "Your last game has ended. Enter the code shown on the big screen.";
+		return;
+	}
+
+	set(battlePresenceRef, true).catch(() => { });
 }
 
 document.addEventListener("visibilitychange", handleBattleVisibilityChange);
@@ -945,9 +1027,47 @@ function setupBattlePresence() {
 	battleConnectedUnsubscribe = onValue(connectedRef, (snapshot) => {
 		if (snapshot.val() !== true) return;
 		onDisconnect(battlePresenceRef).remove().then(() => {
-			set(battlePresenceRef, true);
+			markBattlePresent();
 		});
 	});
+}
+
+async function attemptBattleReconnect() {
+	const storedGameId = sanitizeBattleGameId(window.localStorage.getItem("storefront-last-game"));
+	if (!storedGameId) {
+		hideBattleReconnectBanner();
+		showBattlePanel("code");
+		return;
+	}
+
+	showBattlePanel("code");
+	battleEls.codeStatus.textContent = "Reconnecting to your last game...";
+
+	await firebaseReady;
+	if (!firebaseAvailable) {
+		battleEls.codeStatus.textContent = "Couldn't reconnect (connection blocked). Enter the code shown on the big screen.";
+		return;
+	}
+
+	try {
+		const snapshot = await get(ref(storefrontDb, `sessions/${storedGameId}`));
+		const state = snapshot.val();
+		const stillActive = state && !["closed", "game-over"].includes(state.status);
+
+		if (!stillActive) {
+			stopTeammateDisconnectCountdown();
+			hideBattleReconnectBanner();
+			window.localStorage.removeItem("storefront-last-game");
+			battleEls.codeStatus.textContent = "Your last game has ended. Enter the code shown on the big screen.";
+			return;
+		}
+
+		showBattleReconnectBanner("You were disconnected from your last game — reconnecting you now.");
+		await connectBattleGame(storedGameId);
+	} catch (error) {
+		console.error(error);
+		battleEls.codeStatus.textContent = "Couldn't reconnect. Enter the code shown on the big screen.";
+	}
 }
 
 async function connectBattleGame(gameId) {
@@ -1087,6 +1207,7 @@ async function acknowledgeBattleTutorial() {
 }
 
 function playBattleAgain() {
+	hideBattleReconnectBanner();
 	if (battleUnsubscribe) {
 		battleUnsubscribe();
 		battleUnsubscribe = null;
@@ -1102,6 +1223,7 @@ function playBattleAgain() {
 }
 
 function joinBattleFromManualInput() {
+	hideBattleReconnectBanner();
 	const gameId = getBattleGameIdFromValue(battleEls.manualCode?.value || "");
 	if (!gameId) {
 		battleEls.codeStatus.textContent = "Enter the game code shown on the big screen.";

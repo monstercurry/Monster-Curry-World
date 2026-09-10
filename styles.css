@@ -26,6 +26,7 @@
 .personality-back-button {
   margin-top: -30px !important;
   margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+  z-index: 20;
 }
 
 
@@ -1991,6 +1992,20 @@ h1 {
 	cursor: not-allowed;
 	opacity: 0.6;
 }
+
+.battle-reconnect-banner {
+	margin: 0 0 12px;
+	padding: 10px 16px;
+	border-radius: 12px;
+	background: rgba(245, 173, 15, 0.18);
+	border: 1px solid rgba(245, 173, 15, 0.55);
+	color: #fff;
+	font-weight: 800;
+	font-size: 0.85rem;
+	text-align: center;
+}
+
+.battle-reconnect-banner.hidden { display: none; }
 
 @media (max-width: 899px) {
   .stage {
