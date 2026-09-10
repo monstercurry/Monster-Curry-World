@@ -322,7 +322,8 @@ const arTeaserScreen = document.getElementById("ar-teaser-screen");
 const battleScreen = document.getElementById("battle-screen");
 
 const startButton = document.getElementById("start-button");
-const backButton = document.getElementById("back-button");
+const quizBackButton = document.getElementById("quiz-back-button");
+const quizNextButton = document.getElementById("quiz-next-button");
 const headerHomeButton = document.getElementById("header-home-button");
 const personalityBackButton = document.getElementById("personality-back-button");
 const resultHomeButton = document.getElementById("result-home-button");
@@ -379,7 +380,8 @@ const battleEls = {
 	gameOverTitle: document.getElementById("battle-gameover-title"),
 	gameOverMessage: document.getElementById("battle-gameover-message"),
 	playAgainButton: document.getElementById("battle-play-again-button"),
-	backButton: document.getElementById("battle-back-button")
+	backButton: document.getElementById("battle-back-button"),
+	characterWaitingOverlay: document.getElementById("battle-character-waiting-overlay"),
 };
 
 /* ---------------- STATE ---------------- */
@@ -483,10 +485,6 @@ function showScreen(name) {
 	active.classList.remove("hidden");
 	window.scrollTo({ top: 0, behavior: "smooth" });
 
-	// Show back button only on quiz screen.
-	if (backButton) {
-		backButton.style.display = name === "quiz" ? "inline-flex" : "none";
-	}
 	if (headerHomeButton) {
 		headerHomeButton.style.display = name === "home" ? "none" : "inline-flex";
 	}
@@ -718,6 +716,15 @@ function renderBattleCharacterSelect(state) {
 	} else if (battleEls.selectedCharacter) {
 		battleEls.selectedCharacter.classList.add("hidden");
 	}
+
+	const hasConfirmed = Boolean(entry?.confirmed);
+	battleEls.characterWaitingOverlay?.classList.toggle("hidden", !hasConfirmed);
+	battleEls.characterGrid?.querySelectorAll(".battle-character-card").forEach(card => {
+		card.disabled = hasConfirmed;
+	});
+	if (battleEls.confirmCharacterButton) {
+		battleEls.confirmCharacterButton.disabled = hasConfirmed;
+	}
 }
 
 function renderBattleTeam(players) {
@@ -912,12 +919,12 @@ function handleBattleVisibilityChange() {
 		if (battleHiddenTimer) return;
 		battleHiddenTimer = window.setTimeout(() => {
 			battleHiddenTimer = null;
-			set(battlePresenceRef, false).catch(() => {});
+			set(battlePresenceRef, false).catch(() => { });
 		}, BATTLE_HIDDEN_MARK_AWAY_MS);
 	} else {
 		window.clearTimeout(battleHiddenTimer);
 		battleHiddenTimer = null;
-		set(battlePresenceRef, true).catch(() => {});
+		set(battlePresenceRef, true).catch(() => { });
 	}
 }
 
@@ -1004,7 +1011,7 @@ async function confirmBattleCharacter() {
 	const snapshot = await get(battleSessionRef);
 	const state = snapshot.val();
 	const ownEntry = state?.lobby?.[battlePlayerId];
-	if (!ownEntry || state.status !== "character-select") return;
+	if (!ownEntry || state.status !== "character-select" || ownEntry.confirmed) return;
 	const nextLobby = {
 		...(state.lobby || {}),
 		[battlePlayerId]: {
@@ -1148,6 +1155,17 @@ function renderQuestion() {
 	const q = questions[currentQuestion];
 	updateQuizLogoProgress(currentQuestion);
 	updateQuizQuestionCount(currentQuestion);
+	if (quizBackButton) {
+		quizBackButton.hidden = currentQuestion === 0;
+		quizBackButton.setAttribute("aria-label", "Previous question");
+	}
+	if (quizNextButton) {
+		quizNextButton.hidden = currentQuestion === questions.length - 1;
+		quizNextButton.disabled = answers[currentQuestion] === null;
+		quizNextButton.innerHTML = currentQuestion === questions.length - 1
+			? 'Finish <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>'
+			: 'Next <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>';
+	}
 	questionPrompt.textContent = q.prompt;
 	optionList.innerHTML = "";
 
@@ -1167,14 +1185,13 @@ function renderQuestion() {
 			btn.classList.add('selected');
 			btn.setAttribute('aria-pressed', 'true');
 			answers[currentQuestion] = i;
-			setTimeout(() => {
-				if (currentQuestion < questions.length - 1) {
-					currentQuestion++;
-					renderQuestion();
-				} else {
-					renderResult();
-				}
-			}, 180); // brief delay so user sees selection before advancing
+			if (quizNextButton) quizNextButton.disabled = false;
+			if (currentQuestion < questions.length - 1) {
+				currentQuestion++;
+				renderQuestion();
+			} else {
+				renderResult();
+			}
 		};
 		optionList.appendChild(btn);
 	});
@@ -1212,13 +1229,23 @@ function renderResult() {
 /* ---------------- EVENTS ---------------- */
 startButton.onclick = () => { resetQuiz(); showScreen("quiz"); renderQuestion(); };
 
-backButton.onclick = () => {
+quizBackButton.onclick = () => {
 	if (currentQuestion === 0) {
 		resetQuiz();
 		showScreen("intro");
 	} else {
 		currentQuestion--;
 		renderQuestion();
+	}
+};
+
+quizNextButton.onclick = () => {
+	if (answers[currentQuestion] === null) return;
+	if (currentQuestion < questions.length - 1) {
+		currentQuestion++;
+		renderQuestion();
+	} else {
+		renderResult();
 	}
 };
 

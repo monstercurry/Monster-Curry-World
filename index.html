@@ -325,25 +325,30 @@
 				<div class="home-content">
 					<span class="home-kicker">Monster Curry World</span>
 					<h1>Pick Your Flavour Adventure</h1>
-					<p class="home-intro">Discover your Curry personality, meet the characters in AR, or join the live storefront battle.</p>
+					<p class="home-intro">Discover your Curry personality, meet the characters in AR, or join the live
+						storefront battle.</p>
 					<div class="home-function-grid">
 						<section class="home-function-card home-function-test">
 							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">quiz</span>
 							<h2>Curry Personality Test</h2>
 							<p>Answer a few fun questions to find the Monster Curry character that matches you.</p>
-							<button class="home-function-button" id="home-test-button" type="button">Take the test</button>
+							<button class="home-function-button" id="home-test-button" type="button">Take the
+								test</button>
 						</section>
 						<section class="home-function-card home-function-ar">
-							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">view_in_ar</span>
+							<span class="material-symbols-outlined home-function-icon"
+								aria-hidden="true">view_in_ar</span>
 							<h2>Flavour Quest AR</h2>
 							<p>Point your camera at a Monster Curry standee and bring the characters to life.</p>
 							<button class="home-function-button" id="home-ar-button" type="button">Try the AR</button>
 						</section>
 						<section class="home-function-card home-function-battle">
-							<span class="material-symbols-outlined home-function-icon" aria-hidden="true">sports_esports</span>
+							<span class="material-symbols-outlined home-function-icon"
+								aria-hidden="true">sports_esports</span>
 							<h2>Storefront Game</h2>
 							<p>Enter the big-screen code, choose your character, and join the curry battle.</p>
-							<button class="home-function-button" id="home-game-button" type="button">Start the game</button>
+							<button class="home-function-button" id="home-game-button" type="button">Start the
+								game</button>
 						</section>
 					</div>
 				</div>
@@ -434,6 +439,16 @@
 							class="question-box bg-outline-variant/40 rounded-[28px] p-6 md:p-8 shadow-2xl backdrop-blur-md border border-white/10">
 
 							<div class="flex items-center justify-center flex-col text-center">
+								<div class="quiz-navigation" aria-label="Quiz navigation">
+									<button class="quiz-navigation-button" id="quiz-back-button" type="button">
+										<span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+										Back
+									</button>
+									<button class="quiz-navigation-button" id="quiz-next-button" type="button">
+										Next
+										<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+									</button>
+								</div>
 								<div class="quiz-progress-group">
 									<div class="quiz-progress-visual w-36 h-36 md:w-48 md:h-48 rounded-[24px] overflow-hidden bg-white/90 p-4 shadow-xl border border-white/30 flex items-center justify-center"
 										aria-hidden="true">
@@ -457,14 +472,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="w-full flex justify-center mt-4 relative z-30">
-					<button
-						class="px-8 py-3 rounded-full bg-white text-on-surface font-label-bold text-label-bold shadow-md hover:shadow-xl hover:bg-surface-container-low transition-all duration-300 active:scale-95 flex items-center gap-2"
-						id="back-button" type="button">
-						<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
-						Back
-					</button>
-				</div>
 			</article>
 
 			<article class="frame result-frame hidden" id="result-screen" style="display:none">
@@ -479,9 +486,18 @@
 								<h2 class="result-name" id="result-name">Personality name</h2>
 								<p class="result-title" id="result-title"></p>
 								<dl class="result-traits">
-									<div><dt>Catchphrase:</dt><dd id="result-trait-catchphrase"></dd></div>
-									<div><dt>Birthday:</dt><dd id="result-trait-birthday"></dd></div>
-									<div><dt>Favourite Food:</dt><dd id="result-trait-food"></dd></div>
+									<div>
+										<dt>Catchphrase:</dt>
+										<dd id="result-trait-catchphrase"></dd>
+									</div>
+									<div>
+										<dt>Birthday:</dt>
+										<dd id="result-trait-birthday"></dd>
+									</div>
+									<div>
+										<dt>Favourite Food:</dt>
+										<dd id="result-trait-food"></dd>
+									</div>
 								</dl>
 								<button class="result-learn-more" id="result-learn-more" type="button"
 									aria-expanded="false" aria-controls="result-more">
@@ -590,6 +606,10 @@
 									type="button">Confirm</button>
 							</div>
 							<div class="battle-character-grid" id="battle-character-grid"></div>
+
+							<div class="battle-waiting-overlay hidden" id="battle-character-waiting-overlay">
+								<p>Waiting for the other player to choose their character...</p>
+							</div>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-tutorial-panel">

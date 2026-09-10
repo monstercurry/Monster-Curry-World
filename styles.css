@@ -252,6 +252,48 @@ h3,
   margin: 0 auto 1rem;
 }
 
+.quiz-navigation{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1rem;
+}
+
+.quiz-navigation-button{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  border:0;
+  border-radius:999px;
+  padding:.55rem .8rem;
+  background:rgba(255,255,255,.92);
+  color:#111;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 3px 9px rgba(0,0,0,.12);
+  transition:background .2s, transform .15s, opacity .2s;
+}
+
+.quiz-navigation-button[hidden] {
+  display: none;
+}
+
+.quiz-navigation #quiz-back-button[hidden] + #quiz-next-button {
+  margin-left: auto;
+}
+
+.quiz-navigation-button:hover:not(:disabled){
+  background:#fff;
+  transform:translateY(-1px);
+}
+
+.quiz-navigation-button:disabled{
+  cursor:not-allowed;
+  opacity:.5;
+}
+
 .quiz-progress-visual {
   flex: 0 0 auto;
   margin-bottom: 0 !important;
@@ -623,8 +665,8 @@ h3,
   margin: 16px auto 0;
 }
 
-/* Keep back-button icons and labels centered as a single group. */
-#back-button,
+/* Keep navigation icons and labels centered as a single group. */
+.quiz-navigation-button,
 .personality-back-button,
 #battle-back-button {
   display: inline-flex;
@@ -649,7 +691,6 @@ h3,
    every button in the frame (Start Quiz, options, Home, AR launch, etc).
    This used to be scoped inside the mobile-only media query, which is
    why desktop/tablet buttons were unclickable. */
-#back-button,
 #result-home-button {
   position: relative !important;
   z-index: 50 !important;
@@ -1927,6 +1968,28 @@ h1 {
 #battle-back-button {
   background: rgba(255, 255, 255, 0.92);
   color: #111;
+}
+
+.battle-waiting-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 300;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32px;
+	text-align: center;
+	background: rgba(0, 0, 0, 0.72);
+	color: #fff;
+	font-weight: 800;
+	font-size: 1.05rem;
+}
+
+.battle-waiting-overlay.hidden { display: none; }
+
+.battle-character-card:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
 }
 
 @media (max-width: 899px) {
