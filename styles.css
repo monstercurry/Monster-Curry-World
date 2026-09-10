@@ -2248,18 +2248,33 @@ h1 {
 
 /* Home hub */
 .home-frame {
-  background: linear-gradient(145deg, #f5ad0f, #ed1d24) !important;
+  background: transparent;
   color: #fff;
-  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
-    0 8px 22px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: none;
 }
 
 .home-content {
   width: 100%;
   max-width: 1080px;
   margin: auto;
+  padding: clamp(1.75rem, 3vw, 2.5rem) clamp(2rem, 5vw, 4rem);
+  border-radius: 28px;
+  background: linear-gradient(145deg, #f5ad0f, #ed1d24);
+  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
+    0 8px 22px rgba(189, 31, 31, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
   text-align: center;
+}
+
+@media (min-width: 900px) {
+  .home-frame {
+    width: min(100%, 1040px);
+    max-width: 1040px;
+  }
+
+  .home-content {
+    max-width: 960px;
+  }
 }
 
 .home-kicker {
