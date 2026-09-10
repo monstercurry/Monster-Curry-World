@@ -153,7 +153,7 @@ body {
 }
 
 .result-frame {
-  background: linear-gradient(135deg, #f5ad0f, #ed1d24) !important;
+  background: #f5ac0f7f !important;
 }
 
 .frame-progress {
@@ -432,11 +432,15 @@ h3,
 .result-card {
   background: linear-gradient(135deg, #f5ad0f, #ed1d24);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
+    0 6px 18px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
+  width: min(100%, 840px);
+  margin: 0 auto;
 }
 
 /* make feedback area span full width inside the card but keep content constrained */
@@ -553,7 +557,7 @@ h3,
   display: grid;
   grid-template-columns: minmax(180px, 0.9fr) minmax(240px, 1.1fr);
   align-items: center;
-  gap: clamp(1.25rem, 4vw, 3rem);
+  gap: clamp(1.5rem, 4vw, 3rem);
   max-width: 760px;
   margin: 0 auto;
   text-align: left;
@@ -579,7 +583,7 @@ h3,
 }
 
 .result-eyebrow {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.6rem;
   color: rgba(255, 255, 255, 0.78);
   font-size: 0.95rem;
   font-weight: 800;
@@ -589,13 +593,13 @@ h3,
   margin: 0;
   color: #fff;
   font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1;
+  line-height: 1.08;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
 .result-title {
-  margin: 0.55rem 0 1.1rem;
+  margin: 0.75rem 0 1.35rem;
   color: rgba(255, 255, 255, 0.82);
   font-size: 1rem;
   font-weight: 700;
@@ -889,7 +893,7 @@ h3,
   }
 
   .result-frame {
-    background: linear-gradient(135deg, #ed1d24, #f5ad0f);
+    background: var(--header-red);
     color: #111;
   }
 
@@ -1115,6 +1119,27 @@ h3,
 .glass-effect {
   backdrop-filter: blur(8px);
   background-color: transparent;
+}
+
+/* Keep the result surface clean instead of inheriting the generic glass glow. */
+.result-card.glass-effect {
+  border: 0;
+  box-shadow: 0 24px 60px rgba(104, 24, 0, 0.28),
+    0 8px 22px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+@media (min-width: 900px) {
+  .result-card.glass-effect {
+    padding-top: clamp(2.75rem, 5vw, 4rem);
+  }
+
+  .result-frame {
+    width: min(100%, 1040px);
+    max-width: 1040px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .pulse-glow:hover {
