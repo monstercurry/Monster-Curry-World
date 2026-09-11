@@ -1,23 +1,3 @@
-/* ---------------- FIREBASE (loaded dynamically, not statically) ----------------
-   Firebase's SDK is fetched from gstatic.com. Ad blockers and browser tracking
-   protection (Opera GX's built-in blocker, Chrome extensions like uBlock Origin,
-   etc.) frequently block gstatic.com/firebasejs requests. A blocked *static*
-   import at the top of an ES module fails the ENTIRE module before a single
-   line of it runs — meaning every button on the page (Start Quiz, Back, Home,
-   star ratings, AR/Battle nav) silently had no click handler attached whenever
-   Firebase was blocked, which is exactly what browsers/extensions with
-   tracking protection do. Loading Firebase dynamically means the rest of the
-   app always initializes even if Firebase never loads; only feedback
-   submission and storefront battle multiplayer sync degrade gracefully. */
-const firebaseConfig = {
-	apiKey: "AIzaSyC1lCGw5eI3oFxw9_FKxBp86k1cMPGWbic",
-	authDomain: "monstercurryfeedback.firebaseapp.com",
-	projectId: "monstercurryfeedback",
-	storageBucket: "monstercurryfeedback.appspot.com",
-	messagingSenderId: "881609695456",
-	appId: "1:881609695456:web:b84a60ed669112d937b085"
-};
-
 const storefrontFirebaseConfig = {
 	apiKey: "AIzaSyBq5lzgJAY4H_7py32FCSHTnxuwvU-1Ixk",
 	authDomain: "storefront-game.firebaseapp.com",
@@ -28,32 +8,24 @@ const storefrontFirebaseConfig = {
 	appId: "1:805711728537:web:9aace7f18cd32020e78d08"
 };
 
-let db = null;
 let storefrontDb = null;
-let collection, addDoc, get, onDisconnect, onValue, ref, serverTimestamp, set, update;
+let get, onDisconnect, onValue, ref, serverTimestamp, set, update;
 let firebaseAvailable = false;
 
-// Fire-and-forget: the rest of this file does NOT wait on this promise, so a
-// blocked/slow/failed Firebase load never delays or breaks UI initialization.
 const firebaseReady = (async () => {
 	try {
-		const [appMod, firestoreMod, databaseMod] = await Promise.all([
+		const [appMod, databaseMod] = await Promise.all([
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
-			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"),
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js")
 		]);
-		({ collection, addDoc } = firestoreMod);
 		({ get, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
-
-		const app = appMod.initializeApp(firebaseConfig);
-		db = firestoreMod.getFirestore(app);
 
 		const storefrontApp = appMod.initializeApp(storefrontFirebaseConfig, "storefrontBattle");
 		storefrontDb = databaseMod.getDatabase(storefrontApp);
 
 		firebaseAvailable = true;
 	} catch (err) {
-		console.warn("Firebase failed to load (likely blocked by an ad/tracker blocker). Feedback submission and storefront battle sync are unavailable this session, but the quiz itself still works.", err);
+		console.warn("Firebase failed to load (likely blocked by an ad/tracker blocker). Storefront battle sync is unavailable this session, but the quiz itself still works.", err);
 		firebaseAvailable = false;
 	}
 	return firebaseAvailable;
@@ -506,6 +478,7 @@ let battleSessionRef = null;
 let battleUnsubscribe = null;
 let battleState = null;
 let battleSelectedCharacterId = null;
+let battleGameOverLocked = false;
 
 /* ---------------- HELPERS ---------------- */
 const SCREENS = {
@@ -535,7 +508,7 @@ function showScreen(name) {
 
 function goHome() {
 	resetQuiz();
-	resetFeedback();
+	battleGameOverLocked = false;
 	showScreen("home");
 }
 
@@ -855,6 +828,7 @@ function renderBattleMoveState(state) {
 }
 
 function renderBattleGameOver(state) {
+	battleGameOverLocked = true;
 	showBattlePanel("gameOver");
 	const playersWon = state.winner === "players";
 	const totalLevels = (BATTLE_LEVELS[state.mode] || BATTLE_LEVELS.solo).length;
@@ -879,6 +853,7 @@ function renderBattleTutorial(state) {
 }
 
 function renderBattleState(state) {
+	if (battleGameOverLocked) return;
 	battleState = state;
 	if (!battleGameId) {
 		stopTeammateDisconnectCountdown();
@@ -1100,6 +1075,7 @@ async function connectBattleGame(gameId) {
 		return;
 	}
 
+	battleGameOverLocked = false;
 	battleGameId = cleanGameId;
 	battlePlayerId = getBattlePlayerId(battleGameId);
 	battleSessionRef = nextSessionRef;
@@ -1216,6 +1192,7 @@ async function acknowledgeBattleTutorial() {
 
 function playBattleAgain() {
 	hideBattleReconnectBanner();
+	battleGameOverLocked = false;
 	if (battleUnsubscribe) {
 		battleUnsubscribe();
 		battleUnsubscribe = null;
@@ -1547,58 +1524,3 @@ if (arTeaserBackButton) {
 
 	shareGate = { present };
 })();
-
-/* ---------------- FEEDBACK ---------------- */
-let selectedRating = 0;
-
-const stars = document.querySelectorAll(".star");
-const submitBtn = document.getElementById("submit-feedback");
-const feedbackMessage = document.getElementById("feedback-message");
-
-function resetFeedback() {
-	selectedRating = 0;
-	stars.forEach(s => s.classList.remove("active"));
-	document.getElementById("feedback-comment").value = "";
-	feedbackMessage.textContent = "";
-}
-
-stars.forEach(star => {
-	star.onclick = () => {
-		selectedRating = Number(star.dataset.rating);
-		stars.forEach(s => s.classList.toggle("active", Number(s.dataset.rating) <= selectedRating));
-	};
-});
-
-submitBtn.onclick = async () => {
-	const comment = document.getElementById("feedback-comment").value.trim();
-	if (selectedRating === 0) { feedbackMessage.textContent = "Please select a star rating."; return; }
-
-	submitBtn.disabled = true;
-	submitBtn.textContent = "Sending…";
-
-	await firebaseReady;
-	if (!firebaseAvailable) {
-		feedbackMessage.textContent = "Couldn't send feedback (a browser or ad blocker may be blocking it). Please try again later.";
-		submitBtn.disabled = false;
-		submitBtn.textContent = "Submit Feedback";
-		return;
-	}
-
-	try {
-		await addDoc(collection(db, "feedback"), {
-			rating: selectedRating,
-			comment,
-			createdAt: new Date()
-		});
-		feedbackMessage.textContent = "Thanks for your feedback!";
-		document.getElementById("feedback-comment").value = "";
-		stars.forEach(s => s.classList.remove("active"));
-		selectedRating = 0;
-	} catch (err) {
-		console.error(err);
-		feedbackMessage.textContent = "Error sending feedback. Please try again.";
-	} finally {
-		submitBtn.disabled = false;
-		submitBtn.textContent = "Submit Feedback";
-	}
-};
