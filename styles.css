@@ -138,8 +138,7 @@ body {
   width: 100%;
   flex: 1 1 auto;
   overflow-y: auto;
-  padding-right: 6px;
-  /* prevents content being hidden under scrollbar */
+  padding-right: 0;
 }
 
 .intro-frame {
@@ -1543,14 +1542,29 @@ h1 {
     display: none !important;
   }
 
-  /* Outer frame colour matches desktop */
+    /* Outer frame colour matches desktop */
   .intro-frame {
     background: transparent !important;
     border-radius: 0;
-    padding: 0;
+    padding: 12px;
+  }
+
+  /* Kill the desktop-sized py-stack-lg (48px top/bottom) on mobile —
+     it was stacking with the frame/card's own padding and pushing
+     the card way down from the header */
+  .intro-frame .container {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  /* Was 6px to clear desktop scrollbars — mobile browsers overlay
+     their scrollbar so this isn't needed here */
+  .frame-body {
+    padding-right: 0;
   }
 
   .personality-back-button {
+    margin-top: 20px !important;
     margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
   }
 
