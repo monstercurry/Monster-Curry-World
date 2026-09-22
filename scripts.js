@@ -499,6 +499,9 @@ function showScreen(name) {
 	const active = SCREENS[name] || introScreen;
 	active.style.display = "flex";
 	active.classList.remove("hidden");
+	// Lets styles.css target the currently-active screen (used to safely
+	// open up overflow on the intro screen so its card shadow isn't clipped).
+	document.body.dataset.screen = name;
 	window.scrollTo({ top: 0, behavior: "smooth" });
 
 	if (headerHomeButton) {

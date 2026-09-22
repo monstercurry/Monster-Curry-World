@@ -70,6 +70,12 @@
 html,
 body {
   height: 100%;
+  /* Single, top-level guard against any horizontal scrollbar. Because this
+     is now the only place horizontal overflow is ever clipped, the inner
+     .phone-shell / .stage / .frame-body chain below is free to be opened
+     up to overflow: visible (see the intro-screen shadow fix near the end
+     of this file) without any risk of introducing side-scroll. */
+  overflow-x: hidden;
 }
 
 body {
@@ -1564,8 +1570,8 @@ h1 {
   }
 
   .personality-back-button {
-    margin-top: 20px !important;
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+    margin-top: 5px !important;
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px) !important;
   }
 
   .stage {
@@ -2407,4 +2413,21 @@ h1 {
   .result-more {
     text-align: left;
   }
+}
+
+/* =============================================================
+   INTRO SCREEN — let the card fit edge-to-edge and let its drop
+   shadow render in full, at every breakpoint.
+   ============================================================= */
+body[data-screen="intro"] .phone-shell,
+body[data-screen="intro"] .stage {
+  overflow: visible;
+}
+
+body[data-screen="intro"] #intro-screen {
+  overflow: visible;
+}
+
+body[data-screen="intro"] #intro-screen .frame-body {
+  overflow: visible;
 }
