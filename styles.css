@@ -105,7 +105,7 @@ body {
     display: block;
     padding: 0;
     background-size: cover;
-    background-attachment: fixed;
+    background-attachment: scroll;
   }
 }
 
@@ -126,6 +126,14 @@ body {
   position: relative;
   overflow: hidden;
   touch-action: pan-y;
+}
+
+.stage-decor {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .frame {
@@ -774,9 +782,7 @@ h3,
   margin: 16px auto 0 !important;
 }
 
-.stage>.absolute {
-  pointer-events: none !important;
-}
+.stage-decor>.absolute { pointer-events: none !important; }
 
 /* slightly smaller screens adjustment */
 @media (max-width:360px) {
@@ -1571,7 +1577,7 @@ h1 {
 
   .personality-back-button {
     margin-top: 5px !important;
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px) !important;
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
   }
 
   .stage {
