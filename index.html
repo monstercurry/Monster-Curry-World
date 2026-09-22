@@ -221,6 +221,111 @@
 			background: rgba(255, 255, 255, 0.18);
 		}
 
+		.personality-detail-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			color: #fff;
+		}
+
+		.personality-detail-illustration {
+			width: 140px;
+			height: 140px;
+			border-radius: 20px;
+			background: rgba(255, 255, 255, 0.08);
+			padding: 12px;
+			margin-bottom: 1rem;
+			display: grid;
+			place-items: center;
+		}
+
+		.personality-detail-illustration img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		.personality-detail-name {
+			font-family: var(--font-heading);
+			font-size: 1.4rem;
+			font-weight: 800;
+			margin: 0 0 4px;
+		}
+
+		.personality-detail-title {
+			font-size: 0.9rem;
+			font-weight: 700;
+			color: rgba(255, 255, 255, 0.75);
+			margin: 0 0 0.85rem;
+		}
+
+		.personality-detail-catchphrase {
+			font-size: 0.92rem;
+			font-style: italic;
+			font-weight: 600;
+			color: #f5ad0f;
+			margin: 0 0 1.1rem;
+			max-width: 40ch;
+		}
+
+		.personality-detail-traits {
+			display: grid;
+			gap: 0.5rem;
+			margin: 0 0 1rem;
+			width: 100%;
+			max-width: 320px;
+		}
+
+		.personality-detail-traits div {
+			display: grid;
+			grid-template-columns: minmax(100px, 0.7fr) 1fr;
+			align-items: center;
+			gap: 0.6rem;
+			padding: 0.5rem 0.65rem;
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.1);
+			text-align: left;
+		}
+
+		.personality-detail-traits dt {
+			margin: 0;
+			color: rgba(255, 255, 255, 0.6);
+			font-size: 0.72rem;
+			font-weight: 800;
+			text-transform: uppercase;
+			letter-spacing: 0.03em;
+		}
+
+		.personality-detail-traits dd {
+			margin: 0;
+			color: #fff;
+			font-size: 0.85rem;
+			font-weight: 700;
+		}
+
+		.personality-detail-core-traits,
+		.personality-detail-background,
+		.personality-detail-description {
+			font-size: 0.88rem;
+			line-height: 1.6;
+			margin: 0 0 0.75rem;
+			max-width: 44ch;
+			color: rgba(255, 255, 255, 0.85);
+		}
+
+		.personality-detail-core-traits strong,
+		.personality-detail-background strong,
+		.personality-detail-description strong {
+			color: #fff;
+			font-weight: 800;
+		}
+
+		.personality-detail-description {
+			margin-bottom: 0;
+			color: rgba(255, 255, 255, 0.92);
+		}
+
 		/* ---- AR teaser screen ---- */
 		.ar-teaser-frame {
 			background: linear-gradient(135deg, #1a1d23, #350000) !important;
@@ -717,18 +822,29 @@
 				<button id="personality-detail-back" type="button"
 					style="background:rgba(255,255,255,0.1);border:none;border-radius:999px;padding:8px 14px;color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:1rem;">←
 					All personalities</button>
-				<div style="display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;">
-					<img id="personality-detail-img" src="" alt=""
-						style="width:140px;height:140px;object-fit:contain;border-radius:20px;background:rgba(255,255,255,0.08);padding:12px;margin-bottom:1rem;">
-					<h3 id="personality-detail-name" style="font-size:1.3rem;font-weight:800;margin:0 0 4px;"></h3>
-					<p id="personality-detail-title"
-						style="font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.75);margin:0 0 1rem;"></p>
-					<p id="personality-detail-background"
-						style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.75);margin:0 0 0.75rem;max-width:44ch;">
-					</p>
-					<p id="personality-detail-description"
-						style="font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.9);margin:0;max-width:44ch;">
-					</p>
+				<div class="personality-detail-card">
+					<div class="personality-detail-illustration">
+						<img id="personality-detail-img" src="" alt="">
+					</div>
+					<h3 id="personality-detail-name" class="personality-detail-name"></h3>
+					<p id="personality-detail-title" class="personality-detail-title"></p>
+					<p id="personality-detail-catchphrase" class="personality-detail-catchphrase"></p>
+
+					<dl class="personality-detail-traits">
+						<div>
+							<dt>Birthday</dt>
+							<dd id="personality-detail-birthday"></dd>
+						</div>
+						<div>
+							<dt>Favourite Food</dt>
+							<dd id="personality-detail-food"></dd>
+						</div>
+					</dl>
+
+					<p class="personality-detail-core-traits"><strong>Core traits:</strong> <span
+							id="personality-detail-core-traits"></span></p>
+					<p id="personality-detail-background" class="personality-detail-background"></p>
+					<p id="personality-detail-description" class="personality-detail-description"></p>
 				</div>
 			</div>
 		</div>
@@ -760,6 +876,10 @@
 			var detailImg = document.getElementById('personality-detail-img');
 			var detailName = document.getElementById('personality-detail-name');
 			var detailTitle = document.getElementById('personality-detail-title');
+			var detailCatchphrase = document.getElementById('personality-detail-catchphrase');
+			var detailBirthday = document.getElementById('personality-detail-birthday');
+			var detailFood = document.getElementById('personality-detail-food');
+			var detailCoreTraits = document.getElementById('personality-detail-core-traits');
 			var detailBg = document.getElementById('personality-detail-background');
 			var detailDesc = document.getElementById('personality-detail-description');
 			if (!openBtn || !modal) return;
@@ -799,6 +919,10 @@
 				if (detailImg) { detailImg.src = c.image || ''; detailImg.alt = displayName; }
 				if (detailName) detailName.textContent = displayName;
 				if (detailTitle) detailTitle.textContent = c.title || '';
+				if (detailCatchphrase) detailCatchphrase.textContent = c.catchphrase || '';
+				if (detailBirthday) detailBirthday.textContent = c.birthday || '';
+				if (detailFood) detailFood.textContent = c.favouriteFood || '';
+				if (detailCoreTraits) detailCoreTraits.textContent = c.coreTraits || '';
 				if (detailBg) detailBg.textContent = c.background || '';
 				if (detailDesc) detailDesc.textContent = c.description || '';
 				if (modalTitle) modalTitle.textContent = displayName;
