@@ -1660,7 +1660,6 @@ h1 {
   /* Result card */
   .result-frame {
     padding: 12px;
-    overflow: hidden;
   }
 
   .result-card {
@@ -1669,7 +1668,6 @@ h1 {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
   }
 
   .result-illustration {
@@ -2435,5 +2433,24 @@ body[data-screen="intro"] #intro-screen {
 }
 
 body[data-screen="intro"] #intro-screen .frame-body {
+  overflow: visible;
+}
+
+/* =============================================================
+   RESULT SCREEN — same fix as the intro screen above: let the
+   result card's drop shadow render in full instead of being
+   clipped by the .phone-shell / .stage / .frame-body overflow
+   chain, at every breakpoint.
+   ============================================================= */
+body[data-screen="result"] .phone-shell,
+body[data-screen="result"] .stage {
+  overflow: visible;
+}
+
+body[data-screen="result"] #result-screen {
+  overflow: visible;
+}
+
+body[data-screen="result"] #result-screen .frame-body {
   overflow: visible;
 }
