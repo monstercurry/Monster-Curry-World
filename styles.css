@@ -2466,3 +2466,43 @@ body[data-screen="result"] #result-screen {
 body[data-screen="result"] #result-screen .frame-body {
   overflow: visible;
 }
+
+/* =============================================================
+   RESULT SCREEN — same fix as the intro screen above: let the
+   result card's drop shadow render in full instead of being
+   clipped by the .phone-shell / .stage / .frame-body overflow
+   chain, at every breakpoint.
+   ============================================================= */
+body[data-screen="result"] .phone-shell,
+body[data-screen="result"] .stage {
+  overflow: visible;
+}
+
+body[data-screen="result"] #result-screen {
+  overflow: visible;
+}
+
+body[data-screen="result"] #result-screen .frame-body {
+  overflow: visible;
+}
+
+/* =============================================================
+   QUIZ SCREEN — same fix as intro/result above: let the question
+   card's drop shadow (shadow-2xl) and each answer button's own
+   drop shadow render in full instead of being clipped by the
+   .phone-shell / .stage / .frame-body overflow chain, at every
+   breakpoint. !important here because .phone-shell/.stage/
+   .frame-body are each redeclared inside several other media
+   queries elsewhere in this file. */
+body[data-screen="quiz"] .phone-shell,
+body[data-screen="quiz"] .stage {
+  overflow: visible !important;
+}
+
+body[data-screen="quiz"] #quiz-screen {
+  overflow: visible !important;
+}
+
+body[data-screen="quiz"] #quiz-screen .frame-body {
+  overflow: visible !important;
+}
