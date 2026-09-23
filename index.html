@@ -7,12 +7,12 @@
 	<title>Monster Curry World</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="preload" href="Fonts/Rockwell-Bold.ttf" as="font" type="font/ttf" crossorigin>
 	<link
 		href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
 		rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 		rel="stylesheet">
-	<link rel="preload" href="assets/fonts/Rockwell-ExtraBold.woff2" as="font" type="font/woff2" crossorigin>
 	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 	<script id="tailwind-config">
 		tailwind.config = {
@@ -401,6 +401,11 @@
 </head>
 
 <body>
+	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+		<filter id="heading-thin">
+			<feMorphology operator="erode" radius="0.6" />
+		</filter>
+	</svg>
 	<div aria-hidden="true" class="fixed-bg-monsters">
 		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)"
 			src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8"
