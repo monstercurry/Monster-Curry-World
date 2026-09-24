@@ -2330,61 +2330,17 @@ h1 {
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
 }
 
-/* Locked cards (Flavour Discovery AR / Storefront Game) */
-.home-function-locked {
-  position: relative;
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.home-function-locked .home-function-icon {
-  opacity: 0.7;
-}
-
-.home-function-locked h2 {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.home-function-locked p {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.home-function-locked .home-function-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #f2ede9;
-  border: none;
-  color: #8a6a63;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-  cursor: not-allowed;
-}
-
-.home-function-locked .home-function-button .material-symbols-outlined {
-  font-size: 18px;
-}
-
-.home-function-locked .home-function-button:hover {
-  transform: none;
-  box-shadow: none;
-}
-
 @media (max-width: 760px) {
   .home-function-grid {
     grid-template-columns: 1fr;
   }
 
   .home-function-card {
-  min-height: 0;
+    min-height: 0;
   }
 
   .home-function-card p {
     min-height: 0;
-  }
-
-  .home-function-locked .home-function-button {
-    margin-top: 18px;
   }
 }
 
@@ -2419,12 +2375,8 @@ h1 {
   }
 
   .home-function-card {
-    padding: 20px 18px;
+    padding: 16px;
     border-radius: 16px;
-  }
-
-  .home-function-locked {
-    padding-bottom: 26px;
   }
 
   .home-function-icon {
