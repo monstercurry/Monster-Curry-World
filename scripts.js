@@ -788,7 +788,13 @@ function renderBattleGameOver(state) {
 	battleEls.gameOverTitle.textContent = playersWon ? "You won!" : "You lost";
 	battleEls.gameOverMessage.textContent = playersWon
 		? `Your curry party cleared all ${totalLevels} levels.`
-		: "The monster won. Try a different character combination.";
+		: "The monster won. Try again.";
+
+	// Only winners get to redeem a voucher
+	if (battleEls.playAgainButton) {
+		battleEls.playAgainButton.classList.toggle("hidden", !playersWon);
+		battleEls.playAgainButton.hidden = !playersWon;
+	}
 }
 
 function renderBattleTutorial(state) {
