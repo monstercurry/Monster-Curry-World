@@ -790,10 +790,12 @@ function renderBattleGameOver(state) {
 		? `Your curry party cleared all ${totalLevels} levels.`
 		: "The monster won. Try again.";
 
-	// Only winners get to redeem a voucher
+	// Winners redeem a voucher; losers get a "Try Again" button instead
 	if (battleEls.playAgainButton) {
-		battleEls.playAgainButton.classList.toggle("hidden", !playersWon);
-		battleEls.playAgainButton.hidden = !playersWon;
+		battleEls.playAgainButton.classList.remove("hidden");
+		battleEls.playAgainButton.hidden = false;
+		battleEls.playAgainButton.textContent = playersWon ? "Redeem Voucher" : "Try Again";
+		battleEls.playAgainButton.dataset.won = playersWon ? "1" : "0";
 	}
 }
 
@@ -1362,7 +1364,11 @@ if (battleEls.tutorialGotItButton) {
 }
 if (battleEls.playAgainButton) {
 	battleEls.playAgainButton.onclick = () => {
-		window.location.href = "https://www.monstercurry.com.sg/";
+		if (battleEls.playAgainButton.dataset.won === "1") {
+			window.location.href = "https://www.monstercurry.com.sg/";
+		} else {
+			playBattleAgain();
+		}
 	};
 }
 if (battleEls.backButton) {
