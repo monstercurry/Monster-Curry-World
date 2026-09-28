@@ -1,3 +1,6 @@
+import { CHARACTERS, MOVES, getLevelCount } from "./game-data.js?v=20260808-hard-enemies";
+import { buildPlayer, buildMonster } from "./shared.js?v=20260808-hard-enemies";
+
 const storefrontFirebaseConfig = {
 	apiKey: "AIzaSyBq5lzgJAY4H_7py32FCSHTnxuwvU-1Ixk",
 	authDomain: "storefront-game.firebaseapp.com",
@@ -14,14 +17,27 @@ let firebaseAvailable = false;
 
 const firebaseReady = (async () => {
 	try {
-		const [appMod, databaseMod] = await Promise.all([
+		const [appMod, databaseMod, authMod, appCheckMod] = await Promise.all([
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
-			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js")
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js"),
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"),
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js")
 		]);
 		({ get, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
 
 		const storefrontApp = appMod.initializeApp(storefrontFirebaseConfig, "storefrontBattle");
+
+		if (["localhost", "127.0.0.1"].includes(location.hostname) || location.hostname.startsWith("192.168.")) {
+			self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+		}
+
+		appCheckMod.initializeAppCheck(storefrontApp, {
+			provider: new appCheckMod.ReCaptchaEnterpriseProvider("6LcSsdItAAAAAByIYOLLgdp8E0HdfGOr2SoBjwyU"),
+			isTokenAutoRefreshEnabled: true
+		});
+
 		storefrontDb = databaseMod.getDatabase(storefrontApp);
+		await authMod.signInAnonymously(authMod.getAuth(storefrontApp));
 
 		firebaseAvailable = true;
 	} catch (err) {
@@ -193,7 +209,9 @@ const personalities = [
 		title: "The Classic Comfort Hero",
 		birthday: "12ᵗʰ May",
 		catchphrase: '"Simple is best! You can always count on me!"',
-		favouriteFood: "Katsu Curry",
+		favouriteFood: "Chicken Katsu Curry",
+		voucherUrl: "https://go.momos.com/oYi5u",
+		voucherDiscount: "$3 off Chicken Katsu Curry",
 		coreTraits: "Reliable · Friendly · Dependable · Simple taste · Always safe choice",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
 		description: "Calm, comforting, and consistently good in any situation. You are reliable, friendly, and dependable. People gravitate toward you because you bring stability and warmth without making things complicated. You're everyone's safe choice — and that's a superpower."
@@ -206,6 +224,8 @@ const personalities = [
 		birthday: "3ʳᵈ November",
 		catchphrase: '"Food tastes way better when we eat together!"',
 		favouriteFood: "Super Monster Combo",
+		voucherUrl: "https://go.momos.com/kvUxU",
+		voucherDiscount: "$35.00 Monster Combo Curry (U.P. $37.90)",
 		coreTraits: "Outgoing · Generous · Friendly · Loves sharing · Group-oriented",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
 		description: "Outgoing, generous, and group-oriented — you love sharing and bringing people together. If you're eating with someone, expect extra spoons and shared bites. You thrive in social settings and make everyone feel included in the fun."
@@ -218,6 +238,8 @@ const personalities = [
 		birthday: "15ᵗʰ August",
 		catchphrase: '"Bring on the giant plate! I’m still hungry!"',
 		favouriteFood: "Super Monster Curry",
+		voucherUrl: "https://go.momos.com/8sirg",
+		voucherDiscount: "Free add-on rice with Super Monster Curry",
 		coreTraits: "Bold · Energetic · Greedy for food · Loves large portions · Fearless eater",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
 		description: "Bold, energetic, and fearless — you live for big experiences and never hold back. You always finish what others can't, and your enthusiasm is contagious. You're built for full-throttle living, and people love your unstoppable energy."
@@ -230,6 +252,8 @@ const personalities = [
 		birthday: "14ᵗʰ March",
 		catchphrase: '"Shhh... let’s stay under the blanket a bit longer..."',
 		favouriteFood: "Teriyaki Chicken Omelette Curry",
+		voucherUrl: "https://go.momos.com/g7t4u",
+		voucherDiscount: "$15.90 Teriyaki Chicken Omelette Curry (U.P. $17.90)",
 		coreTraits: "Gentle · Cute · Emotional · Comfort-loving · Soft-spoken",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
 		description: "Gentle, cute, and comfort-loving — you find joy in the quiet, cozy moments of life. You're the person who makes others feel instantly at ease. Your warmth is subtle but deeply felt, and your emotional softness is your greatest strength."
@@ -242,6 +266,8 @@ const personalities = [
 		birthday: "8ᵗʰ July",
 		catchphrase: '"Oh my goodness, this is so good my heart is melting!"',
 		favouriteFood: "Cheese Omelette Curry",
+		voucherUrl: "https://go.momos.com/ekyIy",
+		voucherDiscount: "Free Extra Mozzarella Cheese on Cheese Omelette Curry",
 		coreTraits: "Affectionate · Cozy · Over-the-top emotional · Loves indulgence · Warm",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
 		description: "Affectionate, cozy, and a little over-the-top in the best way. You love indulgence and emotional warmth. You're expressive, caring, and impossible not to love. When you're around, people feel wrapped in something warm and good."
@@ -254,6 +280,8 @@ const personalities = [
 		birthday: "19ᵗʰ Febuary",
 		catchphrase: '"Just relax, go with the flow, and enjoy the slurp."',
 		favouriteFood: "Curry Ramen",
+		voucherUrl: "https://go.momos.com/jEXG7",
+		voucherDiscount: "20% off of all Curry Ramen",
 		coreTraits: "Relaxed · Easygoing · Quietly cool · Comfort seeker · Go-with-flow",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
 		description: "Relaxed, easygoing, and quietly cool — you go with the flow and never let life stress you out. You have a laid-back charm that draws people in. You know how to enjoy the moment without overcomplicating things."
@@ -265,7 +293,9 @@ const personalities = [
 		title: "The Hotplate Performer",
 		birthday: "5ᵗʰ April",
 		catchphrase: '"Listen up, everyone! Let’s turn up the heat!"',
-		favouriteFood: "Chicken Karaage Hotplate",
+		favouriteFood: "Salmon Teriyaki Hotplate",
+		voucherUrl: "https://go.momos.com/XfTft",
+		voucherDiscount: "20% off on Salmon Teriyaki Hotplate",
 		coreTraits: "Energetic · Dramatic · Attention-grabbing · Passionate · Loud presence",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
 		description: "Energetic, dramatic, and passionate — you bring heat wherever you go. You thrive in the spotlight and have the kind of presence people can't look away from. Your intensity is magnetic, and life is never boring when you're in the room."
@@ -278,6 +308,8 @@ const personalities = [
 		birthday: "18ᵗʰ September",
 		catchphrase: '"Cooking is an art. Watch closely."',
 		favouriteFood: "Yaki Beef Curry",
+		voucherUrl: "https://go.momos.com/qIwPp",
+		voucherDiscount: "$12.90 Yaki Beef Curry Rice (U.P. $15.50)",
 		coreTraits: "Focused · Skillful · Stylish · Confident · Detail-oriented",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
 		description: "Focused, skillful, and stylish — you do everything with intention and flair. You're the kind of person who makes hard things look effortless. Detail-oriented and quietly confident, your precision and cool-headedness make you someone people deeply respect."
@@ -410,64 +442,22 @@ const answers = Array(questions.length).fill(null);
 let screenBeforeArTeaser = "intro";
 let screenBeforeBattle = "intro";
 
-const BATTLE_MOVES = {
-	"crispy-slash": { id: "crispy-slash", name: "Crispy Slash", description: "Deals 25 Power damage." },
-	"heros-courage": { id: "heros-courage", name: "Hero's Courage", description: "Increase own Attack for 2 turns." },
-	"comfort-meal": { id: "comfort-meal", name: "Comfort Meal", description: "Heal self for 20% HP." },
-	"counter-guard": { id: "counter-guard", name: "Counter Guard", description: "Reduce damage and counter." },
-	"vine-whip": { id: "vine-whip", name: "Vine Whip", description: "Deals 20 Power damage." },
-	"sharing-feast": { id: "sharing-feast", name: "Sharing Feast", description: "Heal all allies." },
-	"rally-together": { id: "rally-together", name: "Rally Together", description: "Boost all allies' Attack." },
-	"tangling-vines": { id: "tangling-vines", name: "Tangling Vines", description: "Lower monster Attack." },
-	"mega-chomp": { id: "mega-chomp", name: "Mega Chomp", description: "Deals 30 Power damage." },
-	"devour": { id: "devour", name: "Devour", description: "Damage and recover HP." },
-	"belly-shield": { id: "belly-shield", name: "Belly Shield", description: "Gain a large shield." },
-	"hungry-challenge": { id: "hungry-challenge", name: "Hungry Challenge", description: "Taunt the monster." },
-	"egg-toss": { id: "egg-toss", name: "Egg Toss", description: "Deals 15 Power damage." },
-	"fluffy-hug": { id: "fluffy-hug", name: "Fluffy Hug", description: "Heal the weakest ally." },
-	"sunny-side-up": { id: "sunny-side-up", name: "Sunny Side Up", description: "Remove ally debuffs." },
-	"sweet-dreams": { id: "sweet-dreams", name: "Sweet Dreams", description: "Guard and regenerate." },
-	"cheese-wheel": { id: "cheese-wheel", name: "Cheese Wheel", description: "Deals 20 Power damage." },
-	"melted-cheese": { id: "melted-cheese", name: "Melted Cheese", description: "Shield the weakest ally." },
-	"cover-up": { id: "cover-up", name: "Cover Up", description: "Cover an ally." },
-	"comfort-feast": { id: "comfort-feast", name: "Comfort Feast", description: "Heal and guard all allies." },
-	"noodle-strike": { id: "noodle-strike", name: "Noodle Strike", description: "Deals 25 Power damage." },
-	"slurp-combo": { id: "slurp-combo", name: "Slurp Combo", description: "Attack twice." },
-	"cold-broth": { id: "cold-broth", name: "Cold Broth", description: "Boost own Attack." },
-	"finishing-slurp": { id: "finishing-slurp", name: "Finishing Slurp", description: "Big finishing hit." },
-	"sizzling-plate": { id: "sizzling-plate", name: "Sizzling Plate", description: "Deals 35 Power damage." },
-	"flame-burst": { id: "flame-burst", name: "Flame Burst", description: "Damage and burn." },
-	"heat-up": { id: "heat-up", name: "Heat Up", description: "Boost own Attack." },
-	"grand-performance": { id: "grand-performance", name: "Grand Performance", description: "Huge damage, then Defense down." },
-	"precision-skewer": { id: "precision-skewer", name: "Precision Skewer", description: "Deals 28 Power damage." },
-	"spark-plate": { id: "spark-plate", name: "Spark Plate", description: "Damage and lower monster Attack." },
-	"focus-flambe": { id: "focus-flambe", name: "Focus Flambe", description: "Boost own Attack." },
-	"final-showpiece": { id: "final-showpiece", name: "Final Showpiece", description: "Damage and gain shield." }
+const BATTLE_CHARACTER_DISPLAY = {
+	"katsu-chan": { image: "images/Katsu-Chan.png", playstyle: "Balanced all-rounder with an answer for every turn." },
+	"monstora-sharemi": { image: "images/Monstora_Sharemi.png", playstyle: "Team support who heals, buffs, and weakens foes." },
+	"giga-nomu": { image: "images/Giga_Nomu.png", playstyle: "Tough tank who taunts, shields, and heals by attacking." },
+	"tamago-puffy": { image: "images/Tamago_Puffy.png", playstyle: "Pure healer who cleanses and protects wounded allies." },
+	"cheezu-mellow": { image: "images/Cheezu_Mellow.png", playstyle: "Team guardian who shields, covers, and heals allies." },
+	"ramy-noodleton": { image: "images/Ramy_Noodleton.png", playstyle: "Combo finisher who punishes weakened monsters." },
+	"hot-sizz": { image: "images/Hot_Sizz.png", playstyle: "Glass cannon with explosive damage but fragile defense." },
+	"teppa-spark": { image: "images/Teppa_Spark.png", playstyle: "Versatile tactician with damage, debuffs, and shields." }
 };
 
-const BATTLE_CHARACTERS = [
-	{ id: "katsu-chan", quizId: "katsu", name: "Katsu-Chan", title: "The Classic Comfort Hero", playstyle: "Balanced all-rounder with an answer for every turn.", maxHp: 1100, atk: 90, image: "images/Katsu-Chan.png", screenAsset: "./assets/characters/katsu-chan.png", moves: ["crispy-slash", "heros-courage", "comfort-meal", "counter-guard"] },
-	{ id: "monstora-sharemi", quizId: "monstora", name: "Monstora Sharemi", title: "The Social Feast Buddy", playstyle: "Team support who heals, buffs, and weakens foes.", maxHp: 900, atk: 70, image: "images/Monstora_Sharemi.png", screenAsset: "./assets/characters/monstora-sharemi.png", moves: ["vine-whip", "sharing-feast", "rally-together", "tangling-vines"] },
-	{ id: "giga-nomu", quizId: "giga", name: "Giga Nomu", title: "The Big Appetite Beast", playstyle: "Tough tank who taunts, shields, and heals by attacking.", maxHp: 1500, atk: 80, image: "images/Giga_Nomu.png", screenAsset: "./assets/characters/giga-nomu.png", moves: ["mega-chomp", "devour", "belly-shield", "hungry-challenge"] },
-	{ id: "tamago-puffy", quizId: "tamago", name: "Tamago Puffy", title: "The Soft & Cozy Dreamer", playstyle: "Pure healer who cleanses and protects wounded allies.", maxHp: 950, atk: 60, image: "images/Tamago_Puffy.png", screenAsset: "./assets/characters/tamago-puffy.png", moves: ["egg-toss", "fluffy-hug", "sunny-side-up", "sweet-dreams"] },
-	{ id: "cheezu-mellow", quizId: "cheezu", name: "Cheezu Mellow", title: "The Cheesy Comfort Lover", playstyle: "Team guardian who shields, covers, and heals allies.", maxHp: 1200, atk: 80, image: "images/Cheezu_Mellow.png", screenAsset: "./assets/characters/cheezu-mellow.png", moves: ["cheese-wheel", "melted-cheese", "cover-up", "comfort-feast"] },
-	{ id: "ramy-noodleton", quizId: "ramy", name: "Ramy Noodleton", title: "The Chill Slurper", playstyle: "Combo finisher who punishes weakened monsters.", maxHp: 850, atk: 120, image: "images/Ramy_Noodleton.png", screenAsset: "./assets/characters/ramy-noodleton.png", moves: ["noodle-strike", "slurp-combo", "cold-broth", "finishing-slurp"] },
-	{ id: "hot-sizz", quizId: "hotsizz", name: "Hot Sizz", title: "The Hotplate Performer", playstyle: "Glass cannon with explosive damage but fragile defense.", maxHp: 850, atk: 140, image: "images/Hot_Sizz.png", screenAsset: "./assets/characters/hot-sizz.png", moves: ["sizzling-plate", "flame-burst", "heat-up", "grand-performance"] },
-	{ id: "teppa-spark", quizId: "teppa", name: "Teppa Spark", title: "The Precision Show Chef", playstyle: "Versatile tactician with damage, debuffs, and shields.", maxHp: 1000, atk: 100, image: "images/Teppa_Spark.png", screenAsset: "./assets/characters/teppa-spark.png", moves: ["precision-skewer", "spark-plate", "focus-flambe", "final-showpiece"] }
-];
-
-const BATTLE_LEVELS = {
-	solo: [
-		{ name: "Curry Goblin", maxHp: 500, atk: 70, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash"] },
-		{ name: "Root Curry Brute", maxHp: 700, atk: 78, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare"] },
-		{ name: "Sporeback Brute", maxHp: 900, atk: 86, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
-	],
-	multiplayer: [
-		{ name: "Curry Goblin", maxHp: 1400, atk: 82, color: "#657d2f", accent: "#f5ad0f", asset: "./assets/enemies/curry-goblin.webp", moves: ["sauce-swipe", "curry-splash", "curry-cloud"] },
-		{ name: "Root Curry Brute", maxHp: 1780, atk: 92, color: "#a9601d", accent: "#8cad2d", asset: "./assets/enemies/root-curry-brute.webp", moves: ["root-bash", "gravy-snare", "root-guard"] },
-		{ name: "Sporeback Brute", maxHp: 2180, atk: 102, color: "#557329", accent: "#c7b274", asset: "./assets/enemies/sporeback-brute.webp", moves: ["spore-punch", "mushroom-haze", "fungal-guard"] },
-	]
-};
+function getBattleCharacter(characterId) {
+	const base = CHARACTERS.find(c => c.id === characterId);
+	if (!base) return null;
+	return { ...base, ...(BATTLE_CHARACTER_DISPLAY[base.id] || {}) };
+}
 
 // Set by setupShare() below.
 let shareGate = null;
@@ -561,65 +551,6 @@ function getBattlePlayerId(gameId) {
 	return generated;
 }
 
-function battleEffects() {
-	return {
-		attackUpPct: 0,
-		attackUpTurns: 0,
-		attackDownPct: 0,
-		attackDownTurns: 0,
-		damageReductionPct: 0,
-		damageReductionTurns: 0,
-		defenseDownPct: 0,
-		defenseDownTurns: 0,
-		regenPct: 0,
-		regenTurns: 0,
-		burnPct: 0,
-		burnTurns: 0,
-		counterPower: 0,
-		coverForId: null,
-		tauntTurns: 0
-	};
-}
-
-function buildBattlePlayer(characterId, playerId, slot = 0) {
-	const character = BATTLE_CHARACTERS.find(c => c.id === characterId) || BATTLE_CHARACTERS[0];
-	return {
-		id: playerId,
-		slot,
-		characterId: character.id,
-		name: character.name,
-		title: character.title,
-		maxHp: character.maxHp,
-		hp: character.maxHp,
-		atk: character.atk,
-		shield: 0,
-		color: "#ed1d24",
-		accent: "#f5ad0f",
-		asset: character.screenAsset,
-		moves: character.moves,
-		effects: battleEffects()
-	};
-}
-
-function buildBattleMonster(mode = "solo", levelIndex = 0) {
-	const levels = BATTLE_LEVELS[mode] || BATTLE_LEVELS.solo;
-	const level = levels[Math.min(Math.max(levelIndex, 0), levels.length - 1)];
-	return {
-		id: `monster-${mode}-${levelIndex + 1}`,
-		name: level.name,
-		title: mode === "multiplayer" ? "Co-op challenge" : "Solo challenge",
-		maxHp: level.maxHp,
-		hp: level.maxHp,
-		atk: level.atk,
-		shield: 0,
-		color: level.color || "#1d6e58",
-		accent: level.accent || "#f5ad0f",
-		asset: level.asset || "./assets/monster-curry-beast.svg",
-		moves: level.moves,
-		effects: battleEffects()
-	};
-}
-
 function battleHpPercent(fighter) {
 	if (!fighter?.maxHp) return 0;
 	return Math.max(0, Math.min(100, Math.round((Number(fighter.hp || 0) / Number(fighter.maxHp)) * 100)));
@@ -667,7 +598,9 @@ function battleEffectText(fighter) {
 function renderBattleCharacters() {
 	if (!battleEls.characterGrid || battleEls.characterGrid.dataset.ready === "true") return;
 	battleEls.characterGrid.innerHTML = "";
-	BATTLE_CHARACTERS.forEach(character => {
+	CHARACTERS.forEach(base => {
+		const character =
+			getBattleCharacter(base.id);
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "battle-character-card";
@@ -688,7 +621,7 @@ function renderBattleCharacters() {
 
 function selectBattleCharacter(characterId, revealSelection = false) {
 	battleSelectedCharacterId = characterId;
-	const character = BATTLE_CHARACTERS.find(c => c.id === characterId);
+	const character = getBattleCharacter(characterId);
 	if (!character || !battleEls.selectedCharacter) return;
 	battleEls.selectedCharacter.classList.remove("hidden");
 	battleEls.selectedCharacterArt.src = character.image;
@@ -697,7 +630,7 @@ function selectBattleCharacter(characterId, revealSelection = false) {
 	battleEls.selectedCharacterTitle.textContent = character.title;
 	battleEls.selectedCharacterPlaystyle.textContent = character.playstyle;
 	battleEls.selectedCharacterStats.textContent = `HP ${character.maxHp} / Attack ${character.atk}`;
-	battleEls.selectedCharacterMoves.textContent = character.moves.map(moveId => BATTLE_MOVES[moveId]?.name || moveId).join(", ");
+	battleEls.selectedCharacterMoves.textContent = character.moves.map(moveId => MOVES[moveId]?.name || moveId).join(", ");
 	battleEls.characterGrid?.querySelectorAll(".battle-character-card").forEach(card => {
 		card.setAttribute("aria-pressed", String(card.dataset.characterId === character.id));
 	});
@@ -749,7 +682,7 @@ function renderBattleCharacterSelect(state) {
 function renderBattleTeam(players) {
 	battleEls.teamStatus.innerHTML = "";
 	players.forEach(player => {
-		const character = BATTLE_CHARACTERS.find(c => c.id === player.characterId);
+		const character = getBattleCharacter(player.characterId);
 		const node = document.createElement("article");
 		node.className = `battle-fighter-strip ${player.id === battlePlayerId ? "self" : ""}`;
 		node.innerHTML = `
@@ -769,7 +702,7 @@ function renderBattleMoveButtons(state, self) {
 	const locked = state.status !== "battle" || Boolean(state.pendingMoves?.[battlePlayerId]) || self.hp <= 0;
 	battleEls.moveGrid.innerHTML = "";
 	self.moves.forEach(moveId => {
-		const move = BATTLE_MOVES[moveId] || { id: moveId, name: moveId, description: "" };
+		const move = MOVES[moveId] || { id: moveId, name: moveId, description: "" };
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "battle-move-button";
@@ -834,7 +767,7 @@ function renderBattleGameOver(state) {
 	battleGameOverLocked = true;
 	showBattlePanel("gameOver");
 	const playersWon = state.winner === "players";
-	const totalLevels = (BATTLE_LEVELS[state.mode] || BATTLE_LEVELS.solo).length;
+	const totalLevels = getLevelCount(state.mode);
 	battleEls.gameOverTitle.textContent = playersWon ? "You won!" : "You lost";
 	battleEls.gameOverMessage.textContent = playersWon
 		? `Your curry party cleared all ${totalLevels} levels.`
@@ -1138,11 +1071,11 @@ async function confirmBattleCharacter() {
 		return;
 	}
 	const players = Object.fromEntries(readyEntries.map((entry, index) => {
-		const player = buildBattlePlayer(entry.characterId, entry.id, index);
+		const player = buildPlayer(entry.characterId, entry.id, index);
 		return [entry.id, player];
 	}));
 	const playerOrder = readyEntries.map(entry => entry.id);
-	const monster = buildBattleMonster(state.mode, 0);
+	const monster = buildMonster(state.mode, 0);
 	const log = [
 		`${readyEntries.length === 2 ? "Two players" : "One player"} entered ${state.mode === "multiplayer" ? "co-op" : "solo"} mode.`,
 		`${monster.name} enters the battle.`
@@ -1246,7 +1179,10 @@ function resetQuiz() {
 	updateQuizQuestionCount(0);
 }
 
+let currentPersonality = null;
+
 function populateResult(personality) {
+	currentPersonality = personality;
 	const displayName = personality.name.replace(/\p{Emoji_Presentation}\s*/gu, "").trim();
 	resultName.textContent = displayName;
 	document.getElementById("result-title").textContent = personality.title;
@@ -1422,11 +1358,11 @@ if (arTeaserBackButton) {
 	const copyLinkBtn = document.getElementById("copy-share-link");
 	const closeShareBtn = document.getElementById("close-share-modal");
 	const shareSubtitle = document.getElementById("share-modal-subtitle");
+	const shareFood = document.getElementById("share-modal-food");
 	const whatsappLink = document.getElementById("share-whatsapp-link");
 	const instagramLink = document.getElementById("share-instagram-link");
 	const facebookLink = document.getElementById("share-facebook-link");
 	const collectVoucherButton = document.getElementById("collect-food-voucher");
-	const voucherMessage = document.getElementById("food-voucher-message");
 	if (!shareModal) return;
 
 	// Always share the quiz landing page, even if the person shares from
@@ -1448,12 +1384,13 @@ if (arTeaserBackButton) {
 	function openModal(url) {
 		shareLinkInput.value = url;
 		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
-		if (shareSubtitle) shareSubtitle.textContent = `Share your personality to win 10% off your personality food: ${food}`;
+		const discount = currentPersonality?.voucherDiscount || "a discount";
+		if (shareSubtitle) shareSubtitle.textContent = `Share your personality to win ${discount}`;
+		if (shareFood) shareFood.textContent = `Your Personality Food: ${food}`;
 		if (collectVoucherButton) {
 			collectVoucherButton.hidden = true;
 			collectVoucherButton.textContent = `Collect your ${food} voucher`;
 		}
-		if (voucherMessage) voucherMessage.hidden = true;
 		const text = encodeURIComponent(getShareText());
 		const encodedUrl = encodeURIComponent(url);
 		if (whatsappLink) whatsappLink.href = `https://wa.me/?text=${text}%20${encodedUrl}`;
@@ -1475,9 +1412,11 @@ if (arTeaserBackButton) {
 
 	function markShareComplete() {
 		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
+		const discount = currentPersonality?.voucherDiscount || "your";
 		if (collectVoucherButton) {
-			collectVoucherButton.hidden = false;
+			collectVoucherButton.href = currentPersonality?.voucherUrl || "#";
 			collectVoucherButton.textContent = `Collect your ${food} voucher`;
+			collectVoucherButton.hidden = false;
 		}
 	}
 
@@ -1506,17 +1445,6 @@ if (arTeaserBackButton) {
 
 	[whatsappLink, instagramLink, facebookLink].forEach((link) => {
 		link?.addEventListener("click", markShareComplete);
-	});
-
-	collectVoucherButton?.addEventListener("click", () => {
-		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
-		const code = `CURRY-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-		if (voucherMessage) {
-			voucherMessage.hidden = false;
-			voucherMessage.textContent = `Your 10% off ${food} voucher is ready: ${code}`;
-		}
-		collectVoucherButton.textContent = "Voucher collected!";
-		collectVoucherButton.disabled = true;
 	});
 
 	if (closeShareBtn) closeShareBtn.addEventListener("click", closeModal);

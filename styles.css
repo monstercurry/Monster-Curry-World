@@ -707,6 +707,10 @@ h3,
 }
 
 .collect-food-voucher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   width: 100%;
   padding: 0.8rem 1rem;
   border: 0;
@@ -714,20 +718,15 @@ h3,
   background: #f5ad0f;
   color: #171717;
   font-weight: 800;
+  text-decoration: none;
   cursor: pointer;
   transition: transform 0.2s, filter 0.2s;
 }
 
-.collect-food-voucher:hover:not(:disabled) {
+.collect-food-voucher:hover {
   filter: brightness(1.08);
   transform: translateY(-2px);
 }
-
-.collect-food-voucher:disabled {
-  cursor: default;
-  opacity: 0.8;
-}
-
 .food-voucher-message {
   margin: 0;
   color: #f5ad0f;
@@ -1661,7 +1660,7 @@ h1 {
   .quiz-frame .question-box {
     padding: 16px;
     border-radius: 20px;
-  }
+  } 
 
   .question-heading {
     font-size: 1.6rem;

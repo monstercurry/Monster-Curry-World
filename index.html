@@ -5,6 +5,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Monster Curry World</title>
+	<link rel="icon" type="image/png" href="images/mc_red_logo.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="preload" href="Fonts/Rockwell-Bold.ttf" as="font" type="font/ttf" crossorigin>
@@ -408,10 +409,10 @@
 	</svg>
 	<div aria-hidden="true" class="fixed-bg-monsters">
 		<img class="monster-watermark" style="top:8%; left:4%; width:18rem; transform:rotate(-12deg)"
-			src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWTQqewwEA9dMzAuy-7ectQ8nUhhBBmwoVPIaQbwDFCg1B5rXhIF62GYcathlc2XsWCsJnM_kgF5FIz2sQeGJcVYHkN-NjN9Y8ncrXxV-8N0K3tCMElKKiutSGCDTVgeIKXVNvmYOX3klF4ZmU-P05Dshz3R7dFYfrHO1c3_zg-oH_JD1S3ZAQV60i71m_THU4GFOUwRJ1iT76NhzyTAVQsMy-BNsTE2rwX5nbHH7XEwqvPcY1xIbdFh0R2VgbJTAngVoeTwzmA8"
+			src="images/MonsterCurry_Fork.png"
 			alt="" loading="lazy" decoding="async" />
 		<img class="monster-watermark" style="top:6%; right:5%; width:14rem; transform:rotate(14deg)"
-			src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRGF7B3Sk7ggqVVNpdhkoxDAFMrjDbn5M1WLAZW71lLSBNSMKlu43ESquAOJouyUf6s9GtiyAwhNLpPRAk5LO-gu14-OEGIaOtK_WERrGKaejmg3PBXggukBv79EyhT2A5qkVeK_RN7kV-gmct2RHr3kVZCIt5GeRwhwsxJlQFNJVzmVfwsG8Wovhyc8NMJKbd_g7jzD3rNQg6ubrvsdP_RsYh7O4th-sf6NsmzcBd9o9_td-CSI0ZGQYd2rnUU2--y9UBhUYrTOM"
+			src="images/MonsterCurry_Combo.png"
 			alt="" loading="lazy" decoding="async" />
 	</div>
 	<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-on-background/80 shadow-sm">
@@ -472,16 +473,6 @@
 					<div
 						class="container max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
 						<div class="flex flex-col lg:flex-row gap-stack-lg items-center">
-							<div class="w-full lg:w-5/12 hidden md:block">
-								<div class="relative group">
-									<div
-										class="absolute -inset-4 bg-primary/20 rounded-[48px] blur-2xl group-hover:bg-primary/30 transition-all duration-500">
-									</div>
-									<img class="relative rounded-[40px] w-full h-[600px] object-cover shadow-2xl grayscale-[20%] hover:grayscale-0 transition-all duration-700"
-										src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19FznHCQn7o5-jtCW_ZjAGlDb5RWr3gmWr2zOF8v0M_c1XBk99JjeaPzbXKbAdKMxSuC6pi77-Feak8TQqSDTsa-G9zqvtZKz-D7xCJukq2uxxSCRTCFvhyTWwFRJxQpeXWj2EvVWn8o1ub1GP0fKGccdTNpe1hZeEbOKGcFYtO8MqtJUJ3UQ8XrCrO8IUsR4z_UsZwagcqZJ3Ce78ktudaTaqOmj8mvaZswT7qB1c4m4fGvomaQIWcH-pwKXXyaXLkJJbhi36ec"
-										alt="Curry plate" fetchpriority="high" decoding="async">
-								</div>
-							</div>
 							<div class="w-full lg:w-7/12">
 								<div
 									class="monster-red-gradient rounded-[40px] p-stack-md md:p-stack-lg flex flex-col items-center text-center text-on-primary shadow-[0px_20px_60px_rgba(188,1,0,0.3)] transition-transform hover:scale-[1.01] duration-500 relative z-20">
@@ -766,6 +757,7 @@
 		<div class="share-modal-card">
 			<h2>Share your personality!</h2>
 			<p id="share-modal-subtitle" style="margin:0;color:rgba(255,255,255,0.65);font-size:0.85rem;"></p>
+			<p id="share-modal-food" style="margin:0;color:#fff;font-size:0.9rem;font-weight:700;"></p>
 			<div class="share-link-row">
 				<input id="share-link-input" type="text" readonly>
 				<button id="copy-share-link" type="button">Copy</button>
@@ -795,10 +787,9 @@
 					</svg>
 				</a>
 			</div>
-			<button id="collect-food-voucher" class="collect-food-voucher" type="button" hidden>
+			<a id="collect-food-voucher" class="collect-food-voucher" href="#" target="_blank" rel="noopener" hidden>
 				Collect your food voucher
-			</button>
-			<p id="food-voucher-message" class="food-voucher-message" hidden></p>
+			</a>
 			<button id="close-share-modal" type="button">Close</button>
 		</div>
 	</div>
@@ -951,7 +942,7 @@
 			document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 		});
 	</script>
-	<script type="module" src="scripts.js?v=20260814-quiz-count1"></script>
+	<script type="module" src="scripts.js?v=20260925-shared-battle-data1"></script>
 </body>
 
 </html>
