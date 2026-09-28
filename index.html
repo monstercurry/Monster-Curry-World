@@ -684,6 +684,8 @@
 							<div class="battle-lobby-slots" id="battle-lobby-slots"></div>
 							<button class="action-button battle-primary-button" id="battle-start-solo-button"
 								type="button">Start Single Player</button>
+							<button class="action-button battle-leave-button" id="battle-lobby-leave-button"
+								type="button">Leave Game</button>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-character-panel">
@@ -700,9 +702,13 @@
 									type="button">Confirm</button>
 							</div>
 							<div class="battle-character-grid" id="battle-character-grid"></div>
+							<button class="action-button battle-leave-button" id="battle-character-leave-button"
+								type="button">Leave Game</button>
 
 							<div class="battle-waiting-overlay hidden" id="battle-character-waiting-overlay">
 								<p>Waiting for the other player to choose their character...</p>
+								<button class="action-button battle-leave-button battle-leave-button-overlay"
+									id="battle-character-waiting-leave-button" type="button">Leave Game</button>
 							</div>
 						</div>
 
@@ -711,6 +717,8 @@
 							<p id="battle-tutorial-status">A quick tutorial is showing on the big screen.</p>
 							<button class="action-button battle-primary-button" id="battle-tutorial-gotit-button"
 								type="button">Got It!</button>
+							<button class="action-button battle-leave-button" id="battle-tutorial-leave-button"
+								type="button" data-confirm-leave>Leave Game</button>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-move-panel">
@@ -734,6 +742,8 @@
 								<h3>Effects</h3>
 								<p id="battle-effects-text">Pick your next action.</p>
 							</div>
+							<button class="action-button battle-leave-button" id="battle-move-leave-button"
+								type="button" data-confirm-leave>Leave Game</button>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-gameover-panel">
@@ -942,7 +952,7 @@
 			document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 		});
 	</script>
-	<script type="module" src="scripts.js?v=20260925-shared-battle-data1"></script>
+	<script type="module" src="scripts.js?v=20260928-lobby-perms-fix1"></script>
 </body>
 
 </html>

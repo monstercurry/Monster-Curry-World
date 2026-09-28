@@ -1,5 +1,4 @@
 import { CHARACTERS, MOVES, getLevelCount } from "./game-data.js?v=20260808-hard-enemies";
-import { buildPlayer, buildMonster } from "./shared.js?v=20260808-hard-enemies";
 
 const storefrontFirebaseConfig = {
 	apiKey: "AIzaSyBq5lzgJAY4H_7py32FCSHTnxuwvU-1Ixk",
@@ -13,9 +12,17 @@ const storefrontFirebaseConfig = {
 
 let storefrontDb = null;
 let storefrontFirestore = null;
+let storefrontAuth = null;
 let firestoreDoc, firestoreGetDoc;
 let get, onDisconnect, onValue, ref, serverTimestamp, set, update;
 let firebaseAvailable = false;
+
+// The uid of the signed-in anonymous user. Every write this client makes to its own
+// lobby/pendingMoves/tutorialAcks entry must carry this, because database.rules.json
+// checks newData.child('uid').val() === auth.uid before allowing the write.
+function currentUid() {
+	return storefrontAuth?.currentUser?.uid || null;
+}
 
 const firebaseReady = (async () => {
 	try {
@@ -43,7 +50,8 @@ const firebaseReady = (async () => {
 
 		storefrontDb = databaseMod.getDatabase(storefrontApp);
 		storefrontFirestore = firestoreMod.getFirestore(storefrontApp);
-		await authMod.signInAnonymously(authMod.getAuth(storefrontApp));
+		storefrontAuth = authMod.getAuth(storefrontApp);
+		await authMod.signInAnonymously(storefrontAuth);
 
 		firebaseAvailable = true;
 	} catch (err) {
@@ -70,6 +78,18 @@ async function fetchVoucherUrl(personalityId) {
 		}
 	} catch (err) {
 		console.warn("Could not load voucher", err);
+	}
+	return null;
+}
+
+// Storefront battle prize: Firestore doc vouchers/storefront-win (field "url"). The rules only
+// let a phone read it while the kiosk's short-lived wins/{uid} record exists. The kiosk writes
+// that record just after the game ends, so retry a few times to cover the gap.
+async function fetchStorefrontWinUrl(attempts = 5) {
+	for (let i = 0; i < attempts; i += 1) {
+		const url = await fetchVoucherUrl("storefront-win");
+		if (url) return url;
+		if (i < attempts - 1) await new Promise(resolve => setTimeout(resolve, 1200));
 	}
 	return null;
 }
@@ -385,6 +405,11 @@ const battleEls = {
 	codeStatus: document.getElementById("battle-code-status"),
 	manualCode: document.getElementById("battle-manual-code"),
 	manualJoinButton: document.getElementById("battle-manual-join-button"),
+	lobbyLeaveButton: document.getElementById("battle-lobby-leave-button"),
+	characterLeaveButton: document.getElementById("battle-character-leave-button"),
+	characterWaitingLeaveButton: document.getElementById("battle-character-waiting-leave-button"),
+	tutorialLeaveButton: document.getElementById("battle-tutorial-leave-button"),
+	moveLeaveButton: document.getElementById("battle-move-leave-button"),
 	lobbyMessage: document.getElementById("battle-lobby-message"),
 	lobbySlots: document.getElementById("battle-lobby-slots"),
 	startSoloButton: document.getElementById("battle-start-solo-button"),
@@ -486,6 +511,52 @@ let battleUnsubscribe = null;
 let battleState = null;
 let battleSelectedCharacterId = null;
 let battleGameOverLocked = false;
+let battleVoucherState = "idle"; // idle | loading | ready | failed
+let battleRedeemLink = null;
+
+function getBattleRedeemLink() {
+	if (!battleRedeemLink && battleEls.playAgainButton) {
+		battleRedeemLink = document.createElement("a");
+		battleRedeemLink.className = battleEls.playAgainButton.className;
+		battleRedeemLink.target = "_blank";
+		battleRedeemLink.rel = "noopener noreferrer";
+		battleRedeemLink.textContent = "Redeem Voucher";
+		battleRedeemLink.hidden = true;
+		battleEls.playAgainButton.insertAdjacentElement("afterend", battleRedeemLink);
+	}
+	return battleRedeemLink;
+}
+
+function resetBattleVoucherUi() {
+	battleVoucherState = "idle";
+	const link = getBattleRedeemLink();
+	if (link) {
+		link.hidden = true;
+		link.removeAttribute("href");
+	}
+}
+
+async function loadBattleVoucher() {
+	const button = battleEls.playAgainButton;
+	const link = getBattleRedeemLink();
+	if (!button || !link || battleVoucherState === "loading") return;
+	battleVoucherState = "loading";
+	link.hidden = true;
+	button.hidden = false;
+	button.disabled = true;
+	button.textContent = "Getting your voucher...";
+	const url = await fetchStorefrontWinUrl();
+	button.disabled = false;
+	if (url) {
+		link.href = url;
+		link.hidden = false;
+		button.hidden = true;
+		battleVoucherState = "ready";
+	} else {
+		button.textContent = "Couldn't load voucher - tap to retry";
+		battleVoucherState = "failed";
+	}
+}
 
 /* ---------------- HELPERS ---------------- */
 const SCREENS = {
@@ -682,8 +753,12 @@ function renderBattleCharacterSelect(state) {
 	battleSelectedCharacterId = entry?.characterId || battleSelectedCharacterId;
 	if (battleSelectedCharacterId) {
 		selectBattleCharacter(battleSelectedCharacterId);
-	} else if (battleEls.selectedCharacter) {
-		battleEls.selectedCharacter.classList.add("hidden");
+	} else {
+		battleEls.selectedCharacter?.classList.add("hidden");
+		// Nothing is selected (e.g. re-joining after leaving): clear the highlight left on the old card.
+		battleEls.characterGrid?.querySelectorAll(".battle-character-card").forEach(card => {
+			card.setAttribute("aria-pressed", "false");
+		});
 	}
 
 	const hasConfirmed = Boolean(entry?.confirmed);
@@ -791,11 +866,23 @@ function renderBattleGameOver(state) {
 		: "The monster won. Try again.";
 
 	// Winners redeem a voucher; losers get a "Try Again" button instead
-	if (battleEls.playAgainButton) {
-		battleEls.playAgainButton.classList.remove("hidden");
-		battleEls.playAgainButton.hidden = false;
-		battleEls.playAgainButton.textContent = playersWon ? "Redeem Voucher" : "Try Again";
-		battleEls.playAgainButton.dataset.won = playersWon ? "1" : "0";
+	const button = battleEls.playAgainButton;
+	if (!button) return;
+	button.classList.remove("hidden");
+	button.dataset.won = playersWon ? "1" : "0";
+
+	if (!playersWon) {
+		resetBattleVoucherUi();
+		button.hidden = false;
+		button.disabled = false;
+		button.textContent = "Try Again";
+		return;
+	}
+
+	// Winners: fetch the voucher URL, then swap the button for a real <a target="_blank"> link.
+	// A genuine link tap always opens a new tab; window.open() after a network wait gets blocked.
+	if (battleVoucherState === "idle") {
+		loadBattleVoucher();
 	}
 }
 
@@ -884,22 +971,24 @@ async function joinBattleLobby(initialState = null) {
 		battleEls.codeStatus.textContent = "This battle lobby is full.";
 		return;
 	}
-	const nextLobby = {
-		...(state.lobby || {}),
-		[battlePlayerId]: {
+	const uid = currentUid();
+	if (!uid) {
+		battleEls.codeStatus.textContent = "Still connecting, try again in a moment.";
+		return;
+	}
+	// Only write our own lobby entry. status/mode are staff-owned fields (see
+	// database.rules.json) and get flipped by the kiosk once it sees two entries here.
+	await update(battleSessionRef, {
+		[`lobby/${battlePlayerId}`]: {
 			id: battlePlayerId,
+			uid,
 			slot,
 			label: `Player ${slot + 1}`,
-			joinedAt: Date.now(),
+			joinedAt: existing?.joinedAt || Date.now(),
+			soloRequested: Boolean(existing?.soloRequested),
 			characterId: existing?.characterId || null,
 			confirmed: Boolean(existing?.confirmed)
-		}
-	};
-	const joinedCount = Object.keys(nextLobby).length;
-	await update(battleSessionRef, {
-		status: joinedCount >= 2 ? "character-select" : "lobby",
-		mode: joinedCount >= 2 ? "multiplayer" : state.mode || null,
-		lobby: nextLobby,
+		},
 		lastActionAt: serverTimestamp()
 	});
 }
@@ -1057,15 +1146,15 @@ async function startBattleSolo() {
 	if (!battleSessionRef || !battlePlayerId) return;
 	const snapshot = await get(battleSessionRef);
 	const state = snapshot.val();
-	if (!state?.lobby?.[battlePlayerId]) return;
+	const ownEntry = state?.lobby?.[battlePlayerId];
+	if (!ownEntry) return;
+	// Flag our own entry; the kiosk (screen.js resolveLobbyTransitions) is the one
+	// that actually moves status -> "character-select" / mode -> "solo".
 	await update(battleSessionRef, {
-		status: "character-select",
-		mode: "solo",
-		lobby: {
-			[battlePlayerId]: {
-				...state.lobby[battlePlayerId],
-				slot: 0
-			}
+		[`lobby/${battlePlayerId}`]: {
+			...ownEntry,
+			slot: 0,
+			soloRequested: true
 		},
 		lastActionAt: serverTimestamp()
 	});
@@ -1077,51 +1166,16 @@ async function confirmBattleCharacter() {
 	const state = snapshot.val();
 	const ownEntry = state?.lobby?.[battlePlayerId];
 	if (!ownEntry || state.status !== "character-select" || ownEntry.confirmed) return;
-	const nextLobby = {
-		...(state.lobby || {}),
-		[battlePlayerId]: {
+	// Only confirm our own pick. The kiosk (screen.js resolveLobbyTransitions, section 2)
+	// watches for every expected player to be confirmed+characterId and is the one that
+	// builds players/monster and flips status -> "battle" — that write requires the
+	// staff uid, which this phone client will never have.
+	await update(battleSessionRef, {
+		[`lobby/${battlePlayerId}`]: {
 			...ownEntry,
 			characterId: battleSelectedCharacterId,
 			confirmed: true
-		}
-	};
-	const entries = Object.values(nextLobby);
-	const expectedCount = state.mode === "multiplayer" ? 2 : 1;
-	const readyEntries = entries
-		.filter(entry => entry.confirmed && entry.characterId)
-		.sort((a, b) => Number(a.slot || 0) - Number(b.slot || 0))
-		.slice(0, expectedCount);
-	if (readyEntries.length < expectedCount) {
-		await update(battleSessionRef, { lobby: nextLobby, lastActionAt: serverTimestamp() });
-		return;
-	}
-	const players = Object.fromEntries(readyEntries.map((entry, index) => {
-		const player = buildPlayer(entry.characterId, entry.id, index);
-		return [entry.id, player];
-	}));
-	const playerOrder = readyEntries.map(entry => entry.id);
-	const monster = buildMonster(state.mode, 0);
-	const log = [
-		`${readyEntries.length === 2 ? "Two players" : "One player"} entered ${state.mode === "multiplayer" ? "co-op" : "solo"} mode.`,
-		`${monster.name} enters the battle.`
-	];
-	await update(battleSessionRef, {
-		status: "battle",
-		lobby: nextLobby,
-		activePlayerIds: playerOrder,
-		playerOrder,
-		players,
-		monster,
-		levelIndex: 0,
-		turn: 1,
-		pendingMoves: {},
-		activeMoves: {},
-		roundResult: { messages: log, createdAt: Date.now() },
-		winner: null,
-		log,
-		showTutorial: true,
-		tutorialAcks: {},
-		battleStartedAt: serverTimestamp(),
+		},
 		lastActionAt: serverTimestamp()
 	});
 }
@@ -1152,6 +1206,7 @@ async function acknowledgeBattleTutorial() {
 }
 
 function playBattleAgain() {
+	resetBattleVoucherUi();
 	hideBattleReconnectBanner();
 	battleGameOverLocked = false;
 	if (battleUnsubscribe) {
@@ -1166,6 +1221,65 @@ function playBattleAgain() {
 	battleEls.manualCode.value = "";
 	showBattlePanel("code");
 	battleEls.codeStatus.textContent = "Look at the big screen and enter its new four-digit code.";
+}
+
+async function leaveBattleGame() {
+	resetBattleVoucherUi();
+	const leavingSessionRef = battleSessionRef;
+	const leavingPlayerId = battlePlayerId;
+	const leavingPresenceRef = battlePresenceRef;
+
+	// Best-effort: release our own lobby slot and presence flag so the kiosk (and anyone
+	// else waiting on this code) sees the slot open up immediately instead of waiting for
+	// the ~10s abandoned-session timeout. Only our own entries — the database rules only
+	// ever let a player touch their own lobby/presence keys, never anyone else's.
+	if (leavingSessionRef && leavingPlayerId) {
+		try {
+			await update(leavingSessionRef, {
+				[`lobby/${leavingPlayerId}`]: null,
+				lastActionAt: serverTimestamp()
+			});
+		} catch (error) {
+			console.warn("Could not remove lobby entry on leave", error);
+		}
+	}
+	if (leavingPresenceRef) {
+		try {
+			await onDisconnect(leavingPresenceRef).cancel();
+		} catch (error) {
+			// Ignore — the entry may already be gone.
+		}
+		try {
+			await set(leavingPresenceRef, null);
+		} catch (error) {
+			console.warn("Could not clear presence on leave", error);
+		}
+	}
+
+	if (battleConnectedUnsubscribe) {
+		battleConnectedUnsubscribe();
+		battleConnectedUnsubscribe = null;
+	}
+	if (battleUnsubscribe) {
+		battleUnsubscribe();
+		battleUnsubscribe = null;
+	}
+	window.clearTimeout(battleHiddenTimer);
+	battleHiddenTimer = null;
+	stopTeammateDisconnectCountdown();
+	hideBattleReconnectBanner();
+
+	battleGameOverLocked = false;
+	battleGameId = null;
+	battlePlayerId = null;
+	battleSessionRef = null;
+	battlePresenceRef = null;
+	battleState = null;
+	battleSelectedCharacterId = null;
+	window.localStorage.removeItem("storefront-last-game");
+	battleEls.manualCode.value = "";
+	showBattlePanel("code");
+	battleEls.codeStatus.textContent = "You left the game. Enter a code shown on the big screen to join another.";
 }
 
 function joinBattleFromManualInput() {
@@ -1353,6 +1467,33 @@ if (battleEls.manualCode) {
 		}
 	});
 }
+[battleEls.lobbyLeaveButton, battleEls.characterLeaveButton, battleEls.characterWaitingLeaveButton].forEach((button) => {
+	if (!button) return;
+	button.onclick = () => {
+		leaveBattleGame().catch((error) => console.error("Could not leave game", error));
+	};
+});
+// Mid-game buttons need two taps so a stray tap while mashing moves can't quit the fight.
+[battleEls.tutorialLeaveButton, battleEls.moveLeaveButton].forEach((button) => {
+	if (!button) return;
+	let armedTimer = null;
+	const disarm = () => {
+		window.clearTimeout(armedTimer);
+		armedTimer = null;
+		button.classList.remove("confirming");
+		button.textContent = "Leave Game";
+	};
+	button.onclick = () => {
+		if (!armedTimer) {
+			button.classList.add("confirming");
+			button.textContent = "Tap again to leave";
+			armedTimer = window.setTimeout(disarm, 3000);
+			return;
+		}
+		disarm();
+		leaveBattleGame().catch((error) => console.error("Could not leave game", error));
+	};
+});
 if (battleEls.startSoloButton) {
 	battleEls.startSoloButton.onclick = () => startBattleSolo();
 }
@@ -1364,10 +1505,10 @@ if (battleEls.tutorialGotItButton) {
 }
 if (battleEls.playAgainButton) {
 	battleEls.playAgainButton.onclick = () => {
-		if (battleEls.playAgainButton.dataset.won === "1") {
-			window.location.href = "https://www.monstercurry.com.sg/";
-		} else {
+		if (battleEls.playAgainButton.dataset.won !== "1") {
 			playBattleAgain();
+		} else if (battleVoucherState === "failed") {
+			loadBattleVoucher();
 		}
 	};
 }

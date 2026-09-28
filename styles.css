@@ -1812,6 +1812,30 @@ h1 {
   justify-self: center;
 }
 
+.battle-leave-button {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  justify-self: center;
+  margin-top: 4px;
+}
+
+.battle-leave-button:hover {
+  border-color: #fff !important;
+  color: #fff !important;
+}
+
+.battle-leave-button[data-confirm-leave] {
+  margin-top: 14px;
+}
+
+.battle-leave-button.confirming {
+  border-color: #ffb4b4 !important;
+  color: #ffb4b4 !important;
+}
+
 .battle-manual-join {
   display: grid;
   gap: 8px;
@@ -2074,14 +2098,20 @@ h1 {
 	inset: 0;
 	z-index: 300;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	gap: 20px;
 	padding: 32px;
 	text-align: center;
 	background: rgba(0, 0, 0, 0.72);
 	color: #fff;
 	font-weight: 800;
 	font-size: 1.05rem;
+}
+
+.battle-leave-button-overlay {
+	font-size: 0.9rem;
 }
 
 .battle-waiting-overlay.hidden { display: none; }
