@@ -12,18 +12,23 @@ const storefrontFirebaseConfig = {
 };
 
 let storefrontDb = null;
+let storefrontFirestore = null;
+let firestoreDoc, firestoreGetDoc;
 let get, onDisconnect, onValue, ref, serverTimestamp, set, update;
 let firebaseAvailable = false;
 
 const firebaseReady = (async () => {
 	try {
-		const [appMod, databaseMod, authMod, appCheckMod] = await Promise.all([
+		const [appMod, databaseMod, authMod, appCheckMod, firestoreMod] = await Promise.all([
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js"),
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"),
-			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js")
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js"),
+			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
 		]);
 		({ get, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
+		firestoreDoc = firestoreMod.doc;
+		firestoreGetDoc = firestoreMod.getDoc;
 
 		const storefrontApp = appMod.initializeApp(storefrontFirebaseConfig, "storefrontBattle");
 
@@ -37,6 +42,7 @@ const firebaseReady = (async () => {
 		});
 
 		storefrontDb = databaseMod.getDatabase(storefrontApp);
+		storefrontFirestore = firestoreMod.getFirestore(storefrontApp);
 		await authMod.signInAnonymously(authMod.getAuth(storefrontApp));
 
 		firebaseAvailable = true;
@@ -47,7 +53,26 @@ const firebaseReady = (async () => {
 	return firebaseAvailable;
 })();
 
-
+// Voucher links live in Firestore (collection "vouchers", doc id = personality id,
+// field "url") so they never appear in the page source.
+const voucherUrlCache = {};
+async function fetchVoucherUrl(personalityId) {
+	if (!personalityId) return null;
+	if (voucherUrlCache[personalityId]) return voucherUrlCache[personalityId];
+	const ready = await firebaseReady;
+	if (!ready || !storefrontFirestore) return null;
+	try {
+		const snap = await firestoreGetDoc(firestoreDoc(storefrontFirestore, "vouchers", personalityId));
+		const url = snap.exists() ? snap.data().url : null;
+		if (typeof url === "string" && /^https:\/\//.test(url)) {
+			voucherUrlCache[personalityId] = url;
+			return url;
+		}
+	} catch (err) {
+		console.warn("Could not load voucher", err);
+	}
+	return null;
+}
 
 /* ---------------- QUIZ DATA ---------------- */
 // Scoring: each option awards points to specific personalities.
@@ -210,7 +235,6 @@ const personalities = [
 		birthday: "12ᵗʰ May",
 		catchphrase: '"Simple is best! You can always count on me!"',
 		favouriteFood: "Chicken Katsu Curry",
-		voucherUrl: "https://go.momos.com/oYi5u",
 		voucherDiscount: "$3 off Chicken Katsu Curry",
 		coreTraits: "Reliable · Friendly · Dependable · Simple taste · Always safe choice",
 		background: "Katsu-Chan is the heart of every meal — never flashy, but always satisfying. Just like a classic chicken katsu curry, they are the person everyone trusts when they don't know what to choose.",
@@ -224,7 +248,6 @@ const personalities = [
 		birthday: "3ʳᵈ November",
 		catchphrase: '"Food tastes way better when we eat together!"',
 		favouriteFood: "Super Monster Combo",
-		voucherUrl: "https://go.momos.com/kvUxU",
 		voucherDiscount: "$35.00 Monster Combo Curry (U.P. $37.90)",
 		coreTraits: "Outgoing · Generous · Friendly · Loves sharing · Group-oriented",
 		background: "Monstora Sharemi believes food tastes better together. Always ordering the Monster Combo, they bring people to the table and make every meal feel like a party.",
@@ -238,7 +261,6 @@ const personalities = [
 		birthday: "15ᵗʰ August",
 		catchphrase: '"Bring on the giant plate! I’m still hungry!"',
 		favouriteFood: "Super Monster Curry",
-		voucherUrl: "https://go.momos.com/8sirg",
 		voucherDiscount: "Free add-on rice with Super Monster Curry",
 		coreTraits: "Bold · Energetic · Greedy for food · Loves large portions · Fearless eater",
 		background: "Giga Nomu never leaves anything behind. The bigger the portion, the happier they are. Just like a super monster curry, they live life with huge energy and an even bigger appetite.",
@@ -252,7 +274,6 @@ const personalities = [
 		birthday: "14ᵗʰ March",
 		catchphrase: '"Shhh... let’s stay under the blanket a bit longer..."',
 		favouriteFood: "Teriyaki Chicken Omelette Curry",
-		voucherUrl: "https://go.momos.com/g7t4u",
 		voucherDiscount: "$15.90 Teriyaki Chicken Omelette Curry (U.P. $17.90)",
 		coreTraits: "Gentle · Cute · Emotional · Comfort-loving · Soft-spoken",
 		background: "Tamago Puffy is soft on the outside and even softer inside. Warm, calming, and a little shy, they bring peace and sweetness wherever they go.",
@@ -266,7 +287,6 @@ const personalities = [
 		birthday: "8ᵗʰ July",
 		catchphrase: '"Oh my goodness, this is so good my heart is melting!"',
 		favouriteFood: "Cheese Omelette Curry",
-		voucherUrl: "https://go.momos.com/ekyIy",
 		voucherDiscount: "Free Extra Mozzarella Cheese on Cheese Omelette Curry",
 		coreTraits: "Affectionate · Cozy · Over-the-top emotional · Loves indulgence · Warm",
 		background: "Cheezu Mellow believes everything is better with cheese — especially life. Their presence melts stress away like cheese on hot curry.",
@@ -280,7 +300,6 @@ const personalities = [
 		birthday: "19ᵗʰ Febuary",
 		catchphrase: '"Just relax, go with the flow, and enjoy the slurp."',
 		favouriteFood: "Curry Ramen",
-		voucherUrl: "https://go.momos.com/jEXG7",
 		voucherDiscount: "20% off of all Curry Ramen",
 		coreTraits: "Relaxed · Easygoing · Quietly cool · Comfort seeker · Go-with-flow",
 		background: "Ramy Noodleton is the definition of chill. Always relaxed and enjoying noodle moments, they don't rush anything in life. Like a comforting ramen-curry fusion, they are smooth, soothing, and effortlessly likable.",
@@ -294,7 +313,6 @@ const personalities = [
 		birthday: "5ᵗʰ April",
 		catchphrase: '"Listen up, everyone! Let’s turn up the heat!"',
 		favouriteFood: "Salmon Teriyaki Hotplate",
-		voucherUrl: "https://go.momos.com/XfTft",
 		voucherDiscount: "20% off on Salmon Teriyaki Hotplate",
 		coreTraits: "Energetic · Dramatic · Attention-grabbing · Passionate · Loud presence",
 		background: "Hot Sizz arrives with a literal sizzle. Just like a hotplate curry, they are loud, exciting, and impossible to ignore. They love attention and always turn ordinary moments into performances.",
@@ -308,7 +326,6 @@ const personalities = [
 		birthday: "18ᵗʰ September",
 		catchphrase: '"Cooking is an art. Watch closely."',
 		favouriteFood: "Yaki Beef Curry",
-		voucherUrl: "https://go.momos.com/qIwPp",
 		voucherDiscount: "$12.90 Yaki Beef Curry Rice (U.P. $15.50)",
 		coreTraits: "Focused · Skillful · Stylish · Confident · Detail-oriented",
 		background: "Teppa Spark is cool, sharp, and precise. Like teppanyaki cooking, everything they do feels like a performance of skill and control. They may seem calm, but their presence always leaves a lasting impression.",
@@ -1389,6 +1406,8 @@ if (arTeaserBackButton) {
 		if (shareFood) shareFood.textContent = `Your Personality Food: ${food}`;
 		if (collectVoucherButton) {
 			collectVoucherButton.hidden = true;
+			collectVoucherButton.removeAttribute("href");
+			collectVoucherButton.dataset.ready = "";
 			collectVoucherButton.textContent = `Collect your ${food} voucher`;
 		}
 		const text = encodeURIComponent(getShareText());
@@ -1410,15 +1429,36 @@ if (arTeaserBackButton) {
 		openModal(url);
 	}
 
-	function markShareComplete() {
+	async function markShareComplete() {
+		if (!collectVoucherButton || !currentPersonality) return;
 		const food = resultTraitFood?.textContent?.trim() || "favourite curry";
-		const discount = currentPersonality?.voucherDiscount || "your";
-		if (collectVoucherButton) {
-			collectVoucherButton.href = currentPersonality?.voucherUrl || "#";
-			collectVoucherButton.textContent = `Collect your ${food} voucher`;
-			collectVoucherButton.hidden = false;
+		const label = `Collect your ${food} voucher`;
+		const personalityId = currentPersonality.id;
+
+		collectVoucherButton.hidden = false;
+		if (collectVoucherButton.dataset.ready === personalityId) return; // already loaded
+
+		collectVoucherButton.removeAttribute("href");
+		collectVoucherButton.textContent = "Loading your voucher...";
+		const url = await fetchVoucherUrl(personalityId);
+		if (currentPersonality?.id !== personalityId) return; // result changed while loading
+
+		if (url) {
+			collectVoucherButton.href = url;
+			collectVoucherButton.dataset.ready = personalityId;
+			collectVoucherButton.textContent = label;
+		} else {
+			collectVoucherButton.dataset.ready = "";
+			collectVoucherButton.textContent = "Couldn't load voucher - tap to retry";
 		}
 	}
+
+	collectVoucherButton?.addEventListener("click", (e) => {
+		if (!collectVoucherButton.getAttribute("href")) {
+			e.preventDefault();
+			markShareComplete();
+		}
+	});
 
 	if (copyLinkBtn) {
 		copyLinkBtn.addEventListener("click", async () => {
