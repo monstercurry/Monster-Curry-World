@@ -55,7 +55,7 @@ const firebaseReady = (async () => {
 
 		firebaseAvailable = true;
 	} catch (err) {
-		console.warn("Firebase failed to load (likely blocked by an ad/tracker blocker). Storefront battle sync is unavailable this session, but the quiz itself still works.", err);
+		console.warn("Storefront Firebase startup failed:", err?.code || err?.message || err, err);
 		firebaseAvailable = false;
 	}
 	return firebaseAvailable;
@@ -966,6 +966,12 @@ async function joinBattleLobby(initialState = null) {
 		return;
 	}
 	const existing = state.lobby?.[battlePlayerId];
+	const soloAlreadyStarted = Object.values(state.lobby || {}).some(entry => entry.soloRequested === true);
+	if (!existing && (state.status === "character-select" || soloAlreadyStarted)) {
+		showBattlePanel("code");
+		battleEls.codeStatus.textContent = "A game is already starting. Please wait for the next code.";
+		return;
+	}
 	const slot = existing ? Number(existing.slot) : findBattleOpenSlot(state);
 	if (slot === undefined) {
 		battleEls.codeStatus.textContent = "This battle lobby is full.";
