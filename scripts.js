@@ -748,6 +748,38 @@ function renderBattleLobby(state) {
 	battleEls.startSoloButton.disabled = !isInLobby;
 }
 
+let characterTimerInterval = null;
+const CHARACTER_TIMER_LIMIT_MS = 45000;
+
+function stopCharacterTimer() {
+	window.clearInterval(characterTimerInterval);
+	characterTimerInterval = null;
+	document.querySelectorAll(".battle-character-timer").forEach(el => el.classList.add("hidden"));
+}
+
+function updateCharacterTimer() {
+	const state = battleState;
+	const startedAt = Number(state?.characterSelectStartedAt || 0);
+	if (!state || state.status !== "character-select" || !startedAt) {
+		stopCharacterTimer();
+		return;
+	}
+	const remainingMs = Math.max(0, startedAt + CHARACTER_TIMER_LIMIT_MS - (Date.now() + serverTimeOffsetMs));
+	const seconds = Math.ceil(remainingMs / 1000);
+	document.querySelectorAll(".battle-character-timer").forEach(el => {
+		el.textContent = `Time left: ${seconds}s`;
+		el.style.color = seconds <= 10 ? "#ed1d24" : "";
+		el.classList.remove("hidden");
+	});
+}
+
+function syncCharacterTimer() {
+	updateCharacterTimer();
+	if (!characterTimerInterval && battleState?.characterSelectStartedAt) {
+		characterTimerInterval = window.setInterval(updateCharacterTimer, 250);
+	}
+}
+
 function renderBattleCharacterSelect(state) {
 	showBattlePanel("character");
 	const entry = state?.lobby?.[battlePlayerId];
@@ -770,6 +802,7 @@ function renderBattleCharacterSelect(state) {
 	if (battleEls.confirmCharacterButton) {
 		battleEls.confirmCharacterButton.disabled = hasConfirmed;
 	}
+	syncCharacterTimer();
 }
 
 function renderBattleTeam(players) {
@@ -1000,8 +1033,9 @@ async function joinBattleLobby(initialState = null) {
 		return;
 	}
 	const existing = state.lobby?.[battlePlayerId];
-	const soloAlreadyStarted = Object.values(state.lobby || {}).some(entry => entry.soloRequested === true);
-	if (!existing && (state.status === "character-select" || soloAlreadyStarted)) {
+	const soloAlreadyStarted = state.mode === "solo"
+		|| Object.values(state.lobby || {}).some(entry => entry.soloRequested === true);
+	if (!existing && soloAlreadyStarted) {
 		showBattlePanel("code");
 		battleEls.codeStatus.textContent = "A game is already starting. Please wait for the next code.";
 		return;
