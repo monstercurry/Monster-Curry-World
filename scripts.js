@@ -432,6 +432,7 @@ const battleEls = {
 	monsterHpBar: document.getElementById("battle-monster-hp-bar"),
 	monsterHpText: document.getElementById("battle-monster-hp-text"),
 	moveGrid: document.getElementById("battle-move-grid"),
+	moveTimer: document.getElementById("battle-move-timer"),
 	effectsText: document.getElementById("battle-effects-text"),
 	gameOverTitle: document.getElementById("battle-gameover-title"),
 	gameOverMessage: document.getElementById("battle-gameover-message"),
@@ -809,6 +810,38 @@ function renderBattleMoveButtons(state, self) {
 	});
 }
 
+let serverTimeOffsetMs = 0;
+let moveTimerInterval = null;
+const MOVE_TIMER_LIMIT_MS = 30000;
+
+function stopMoveTimer() {
+	window.clearInterval(moveTimerInterval);
+	moveTimerInterval = null;
+	battleEls.moveTimer?.classList.add("hidden");
+}
+
+function updateMoveTimer() {
+	const state = battleState;
+	const turnKey = `${Number(state?.levelIndex || 0)}:${Number(state?.turn || 1)}`;
+	const startedAt = Number(state?.moveTurnStartedAt || 0);
+	if (!state || state.status !== "battle" || state.showTutorial || state.moveTurnKey !== turnKey || !startedAt) {
+		stopMoveTimer();
+		return;
+	}
+	const remainingMs = Math.max(0, startedAt + MOVE_TIMER_LIMIT_MS - (Date.now() + serverTimeOffsetMs));
+	const seconds = Math.ceil(remainingMs / 1000);
+	battleEls.moveTimer.textContent = `Time left: ${seconds}s`;
+	battleEls.moveTimer.style.color = seconds <= 10 ? "#ed1d24" : "";
+	battleEls.moveTimer.classList.remove("hidden");
+}
+
+function syncMoveTimer() {
+	updateMoveTimer();
+	if (!moveTimerInterval && battleState?.moveTurnStartedAt) {
+		moveTimerInterval = window.setInterval(updateMoveTimer, 250);
+	}
+}
+
 function renderBattleMoveState(state) {
 	const players = battleOrderedPlayers(state);
 	const self = state.players?.[battlePlayerId];
@@ -853,6 +886,7 @@ function renderBattleMoveState(state) {
 		battleEls.effectsText.textContent = `${battleEffectText(self)} Monster: ${battleEffectText(state.monster)}`;
 	}
 	renderBattleMoveButtons(state, self);
+	syncMoveTimer();
 }
 
 function renderBattleGameOver(state) {
@@ -1138,6 +1172,9 @@ async function connectBattleGame(gameId) {
 	setupBattlePresence();
 	window.localStorage.setItem("storefront-last-game", battleGameId);
 	if (battleUnsubscribe) battleUnsubscribe();
+	onValue(ref(storefrontDb, ".info/serverTimeOffset"), snap => {
+		serverTimeOffsetMs = Number(snap.val()) || 0;
+	});
 	battleUnsubscribe = onValue(battleSessionRef, snapshot => {
 		renderBattleState(snapshot.val());
 	}, error => {
