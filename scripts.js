@@ -434,6 +434,8 @@ const battleEls = {
 	monsterHpText: document.getElementById("battle-monster-hp-text"),
 	moveGrid: document.getElementById("battle-move-grid"),
 	moveTimer: document.getElementById("battle-move-timer"),
+	tutorialTimer: document.getElementById("battle-tutorial-timer"),
+	lobbyTimer: document.getElementById("battle-lobby-timer"),
 	effectsText: document.getElementById("battle-effects-text"),
 	gameOverTitle: document.getElementById("battle-gameover-title"),
 	gameOverMessage: document.getElementById("battle-gameover-message"),
@@ -748,6 +750,7 @@ function renderBattleLobby(state) {
 		? "You are in. Start alone now, or wait for another player to enter the code."
 		: "This battle lobby is full. Please wait for the next reset.";
 	battleEls.startSoloButton.disabled = !isInLobby;
+	syncLobbyTimer();
 }
 
 let characterTimerInterval = null;
@@ -877,6 +880,69 @@ function syncMoveTimer() {
 	}
 }
 
+let tutorialTimerInterval = null;
+const TUTORIAL_TIMER_LIMIT_MS = 30000;
+
+function stopTutorialTimer() {
+	window.clearInterval(tutorialTimerInterval);
+	tutorialTimerInterval = null;
+	battleEls.tutorialTimer?.classList.add("hidden");
+}
+
+function updateTutorialTimer() {
+	const state = battleState;
+	const tutorialKey = `${Number(state?.levelIndex || 0)}:${Number(state?.turn || 1)}`;
+	const startedAt = Number(state?.tutorialStartedAt || 0);
+	if (!state || state.status !== "battle" || !state.showTutorial || state.tutorialKey !== tutorialKey || !startedAt) {
+		stopTutorialTimer();
+		return;
+	}
+	const remainingMs = Math.max(0, startedAt + TUTORIAL_TIMER_LIMIT_MS - (Date.now() + serverTimeOffsetMs));
+	const seconds = Math.ceil(remainingMs / 1000);
+	battleEls.tutorialTimer.textContent = `Time left: ${seconds}s`;
+	battleEls.tutorialTimer.style.color = seconds <= 10 ? "#ed1d24" : "";
+	battleEls.tutorialTimer.classList.remove("hidden");
+}
+
+function syncTutorialTimer() {
+	updateTutorialTimer();
+	if (!tutorialTimerInterval && battleState?.tutorialStartedAt) {
+		tutorialTimerInterval = window.setInterval(updateTutorialTimer, 250);
+	}
+}
+
+let lobbyTimerInterval = null;
+const LOBBY_TIMER_LIMIT_MS = 30000;
+
+function stopLobbyTimer() {
+	window.clearInterval(lobbyTimerInterval);
+	lobbyTimerInterval = null;
+	battleEls.lobbyTimer?.classList.add("hidden");
+}
+
+function updateLobbyTimer() {
+	const state = battleState;
+	const entries = state ? battleLobbyEntries(state) : [];
+	const startedAt = Number(state?.lobbyWaitStartedAt || 0);
+	if (!state || state.status !== "lobby" || entries.length !== 1 || entries[0].soloRequested === true
+		|| state.lobbyWaitEntryId !== entries[0].id || !startedAt) {
+		stopLobbyTimer();
+		return;
+	}
+	const remainingMs = Math.max(0, startedAt + LOBBY_TIMER_LIMIT_MS - (Date.now() + serverTimeOffsetMs));
+	const seconds = Math.ceil(remainingMs / 1000);
+	battleEls.lobbyTimer.textContent = `Time left: ${seconds}s`;
+	battleEls.lobbyTimer.style.color = seconds <= 10 ? "#ed1d24" : "";
+	battleEls.lobbyTimer.classList.remove("hidden");
+}
+
+function syncLobbyTimer() {
+	updateLobbyTimer();
+	if (!lobbyTimerInterval && battleState?.lobbyWaitStartedAt) {
+		lobbyTimerInterval = window.setInterval(updateLobbyTimer, 250);
+	}
+}
+
 function renderBattleMoveState(state) {
 	const players = battleOrderedPlayers(state);
 	const self = state.players?.[battlePlayerId];
@@ -967,6 +1033,7 @@ function renderBattleTutorial(state) {
 	battleEls.tutorialStatus.textContent = selfAcked
 		? (waitingOn.length ? `Waiting for ${waitingOn.map(p => p.name).join(", ")}...` : "Starting battle...")
 		: "Look up at the big screen for a quick tutorial!";
+	syncTutorialTimer();
 }
 
 function renderBattleState(state) {

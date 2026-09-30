@@ -2536,3 +2536,24 @@ body[data-screen="quiz"] #quiz-screen {
 body[data-screen="quiz"] #quiz-screen .frame-body {
   overflow: visible !important;
 }
+
+/* Redeem Voucher is an <a> (not a <button>), so it needs its own sizing and centering:
+   fit the text instead of stretching, and center the label like the other battle buttons. */
+a.action-button.battle-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: center;
+  align-self: center;
+  margin: 16px auto 0;
+  padding: 8px 18px;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+a.action-button.battle-primary-button[hidden] {
+  display: none;
+}
