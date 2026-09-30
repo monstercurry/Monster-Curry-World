@@ -998,7 +998,7 @@ function renderBattleGameOver(state) {
 	battleEls.gameOverTitle.textContent = playersWon ? "You won!" : "You lost";
 	battleEls.gameOverMessage.textContent = playersWon
 		? `Your curry party cleared all ${totalLevels} levels.`
-		: "The monster won. Try again.";
+		: "The monster won! Pass the quest to the next challenger!";
 
 	// Winners redeem a voucher; losers get a "Try Again" button instead
 	const button = battleEls.playAgainButton;
