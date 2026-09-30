@@ -126,8 +126,15 @@ async function loadGameData() {
   }
 }
 
-// Top-level await: scripts.js and shared.js wait here until the data is loaded (max 6s).
-await loadGameData();
+// Loaded only when a player opens the battle, so quiz-only visitors never touch Firebase here.
+// Await ensureGameData() before using CHARACTERS, MOVES or LEVELS.
+let gameDataPromise = null;
+export function ensureGameData() {
+  if (!gameDataPromise) {
+    gameDataPromise = loadGameData();
+  }
+  return gameDataPromise;
+}
 
 export function getCharacter(characterId) {
   return CHARACTERS.find((character) => character.id === characterId) || CHARACTERS[0];

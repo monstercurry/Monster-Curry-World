@@ -1,4 +1,4 @@
-import { CHARACTERS, MOVES, getLevelCount } from "./game-data.js?v=20260808-hard-enemies";
+import { CHARACTERS, MOVES, getLevelCount, ensureGameData } from "./game-data.js?v=20260930-lazy-data";
 
 const storefrontFirebaseConfig = {
 	apiKey: "AIzaSyBq5lzgJAY4H_7py32FCSHTnxuwvU-1Ixk",
@@ -14,7 +14,7 @@ let storefrontDb = null;
 let storefrontFirestore = null;
 let storefrontAuth = null;
 let firestoreDoc, firestoreGetDoc;
-let get, onDisconnect, onValue, ref, serverTimestamp, set, update;
+let get, goOffline, goOnline, onDisconnect, onValue, ref, serverTimestamp, set, update;
 let firebaseAvailable = false;
 
 // The uid of the signed-in anonymous user. Every write this client makes to its own
@@ -33,7 +33,7 @@ const firebaseReady = (async () => {
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js"),
 			import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
 		]);
-		({ get, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
+		({ get, goOffline, goOnline, onDisconnect, onValue, ref, serverTimestamp, set, update } = databaseMod);
 		firestoreDoc = firestoreMod.doc;
 		firestoreGetDoc = firestoreMod.getDoc;
 
@@ -49,6 +49,7 @@ const firebaseReady = (async () => {
 		});
 
 		storefrontDb = databaseMod.getDatabase(storefrontApp);
+		goOffline(storefrontDb); // stay disconnected until a player joins a battle
 		storefrontFirestore = firestoreMod.getFirestore(storefrontApp);
 		storefrontAuth = authMod.getAuth(storefrontApp);
 		await authMod.signInAnonymously(storefrontAuth);
@@ -603,9 +604,10 @@ function closeArTeaser() {
 	showScreen(screenBeforeArTeaser);
 }
 
-function openBattleScreen(fromScreen) {
+async function openBattleScreen(fromScreen) {
 	screenBeforeBattle = fromScreen;
 	showScreen("battle");
+	await ensureGameData();
 	renderBattleCharacters();
 	if (battleState) {
 		renderBattleState(battleState);
@@ -1157,6 +1159,7 @@ async function attemptBattleReconnect() {
 	}
 
 	try {
+		goOnline(storefrontDb);
 		const snapshot = await get(ref(storefrontDb, `sessions/${storedGameId}`));
 		const state = snapshot.val();
 		const stillActive = state && !["closed", "game-over"].includes(state.status);
@@ -1190,6 +1193,8 @@ async function connectBattleGame(gameId) {
 		return;
 	}
 
+	await ensureGameData();
+	goOnline(storefrontDb);
 	const nextSessionRef = ref(storefrontDb, `sessions/${cleanGameId}`);
 	const snapshot = await get(nextSessionRef);
 	const state = snapshot.val();
