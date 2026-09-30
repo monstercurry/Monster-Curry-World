@@ -572,6 +572,18 @@ const SCREENS = {
 	battle: battleScreen
 };
 
+function saveScreenState(name) {
+	const previousState = window.history.state;
+	const state = previousState && typeof previousState === "object" ? previousState : {};
+	window.history.replaceState({
+		...state,
+		monsterCurryScreen: name,
+		monsterCurryQuiz: { currentQuestion, answers: [...answers] },
+		monsterCurryPersonalityId: currentPersonality?.id || null,
+		monsterCurryBattleReturn: screenBeforeBattle
+	}, "", window.location.href);
+}
+
 function showScreen(name) {
 	Object.values(SCREENS).forEach(el => {
 		if (!el) return;
@@ -589,6 +601,7 @@ function showScreen(name) {
 	if (headerHomeButton) {
 		headerHomeButton.style.display = name === "home" ? "none" : "inline-flex";
 	}
+	saveScreenState(name);
 }
 
 function goHome() {
@@ -1488,6 +1501,7 @@ function populateResult(personality) {
 /* ---------------- QUIZ ---------------- */
 function renderQuestion() {
 	const q = questions[currentQuestion];
+	saveScreenState("quiz");
 	updateQuizLogoProgress(currentQuestion);
 	updateQuizQuestionCount(currentQuestion);
 	if (quizBackButton) {
@@ -1594,10 +1608,46 @@ resultLearnMoreButton?.addEventListener("click", () => {
 
 resultShareButton?.addEventListener("click", () => shareGate?.present());
 
-if (window.location.hash === "#battle") {
-  openBattleScreen("home");
+const initialHash = window.location.hash;
+if (initialHash === "#battle" || initialHash === "#quiz") {
+	window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+}
+
+if (initialHash === "#battle") {
+	openBattleScreen("home");
+} else if (initialHash === "#quiz") {
+	showScreen("intro");
 } else {
-  showScreen(window.location.hash === "#quiz" ? "intro" : "home");
+	const savedScreen = window.history.state?.monsterCurryScreen;
+	if (savedScreen === "battle") {
+		openBattleScreen(window.history.state?.monsterCurryBattleReturn || "home");
+	} else if (savedScreen === "quiz") {
+		const savedQuiz = window.history.state?.monsterCurryQuiz;
+		if (Array.isArray(savedQuiz?.answers) && savedQuiz.answers.length === answers.length) {
+			savedQuiz.answers.forEach((answer, index) => {
+				answers[index] = Number.isInteger(answer) && questions[index].options[answer] ? answer : null;
+			});
+			currentQuestion = Number.isInteger(savedQuiz.currentQuestion)
+				? Math.max(0, Math.min(questions.length - 1, savedQuiz.currentQuestion))
+				: 0;
+		}
+		showScreen("quiz");
+		renderQuestion();
+	} else if (savedScreen === "result") {
+		const personality = personalities.find(item => item.id === window.history.state?.monsterCurryPersonalityId);
+		if (personality) {
+			populateResult(personality);
+			const img = document.getElementById("result-illustration-img");
+			if (img) { img.src = personality.image; img.alt = personality.name; }
+			showScreen("result");
+		} else {
+			showScreen("home");
+		}
+	} else if (savedScreen && SCREENS[savedScreen]) {
+		showScreen(savedScreen);
+	} else {
+		showScreen("home");
+	}
 }
 
 /* ---------------- AR TEASER ---------------- */
