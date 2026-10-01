@@ -1594,11 +1594,7 @@ resultLearnMoreButton?.addEventListener("click", () => {
 
 resultShareButton?.addEventListener("click", () => shareGate?.present());
 
-if (window.location.hash === "#battle") {
-  openBattleScreen("home");
-} else {
-  showScreen(window.location.hash === "#quiz" ? "intro" : "home");
-}
+showScreen(window.location.hash === "#quiz" ? "intro" : "home");
 
 /* ---------------- AR TEASER ---------------- */
 
