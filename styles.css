@@ -2053,11 +2053,25 @@ h1 {
   background: rgba(255, 255, 255, 0.24);
 }
 
+/* Colour is set inline from JS (battleHpFillStyle): green when healthy, then
+   yellow -> orange -> red as HP drops. Same scale as the storefront screen. */
+@property --hp-from {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #2f9e4f;
+}
+
+@property --hp-to {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #5fd36a;
+}
+
 .battle-hp-track>div {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #32d27b, #f5ad0f, #ed1d24);
-  transition: width 260ms ease;
+  background: linear-gradient(90deg, var(--hp-from), var(--hp-to));
+  transition: width 260ms ease, --hp-from 600ms ease, --hp-to 600ms ease;
 }
 
 .battle-move-grid {
@@ -2556,4 +2570,782 @@ a.action-button.battle-primary-button {
 
 a.action-button.battle-primary-button[hidden] {
   display: none;
+}
+
+/* ===== Character select: simple, glanceable layout ===== */
+
+/* Grid cards: just the picture and the name */
+.battle-character-card {
+  justify-items: center;
+  align-content: center;
+  min-height: 0;
+  gap: 4px;
+  padding: 10px 8px 12px;
+  text-align: center;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.battle-character-card:active {
+  transform: scale(0.97);
+}
+
+.battle-character-card:hover,
+.battle-character-card:focus-visible,
+.battle-character-card[aria-pressed="true"] {
+  outline: none;
+  box-shadow: 0 0 0 3px #f5ad0f, 0 10px 24px rgba(245, 173, 15, 0.35);
+}
+
+.battle-character-card[aria-pressed="true"] {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.battle-character-card img {
+  height: 104px;
+}
+
+.battle-character-card .bcc-name {
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+/* Selected character: picture left, name + title + two bars right */
+.battle-selected-character {
+  justify-items: stretch;
+  gap: 12px;
+  padding: 14px;
+  text-align: left;
+  background: linear-gradient(160deg, rgba(245, 173, 15, 0.16), rgba(255, 255, 255, 0.06));
+  border-color: rgba(245, 173, 15, 0.55);
+}
+
+.bsc-top {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.bsc-art-frame {
+  display: grid;
+  place-items: center;
+  height: 144px;
+  border: 3px solid #f5ad0f;
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 40%, rgba(245, 173, 15, 0.45), rgba(40, 14, 10, 0.9) 72%);
+}
+
+.battle-selected-character .bsc-art-frame img {
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.4));
+}
+
+.bsc-info {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bsc-info h3 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  line-height: 1.05;
+}
+
+.bsc-title {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(245, 173, 15, 0.2);
+  color: #ffd36b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.bsc-stats {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.bsc-stat {
+  display: grid;
+  grid-template-columns: 30px 1fr 38px;
+  align-items: center;
+  gap: 8px;
+}
+
+.bsc-stat-label {
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.bsc-stat-num {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.bsc-bar {
+  display: block;
+  overflow: hidden;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.bsc-bar b {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.bsc-hp b {
+  background: linear-gradient(90deg, #2fbf71, #8be86f);
+}
+
+.bsc-atk b {
+  background: linear-gradient(90deg, #f5ad0f, #ed1d24);
+}
+
+/* Play style: one short line */
+.battle-selected-character .battle-character-playstyle {
+  max-width: none;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+@media (max-width: 360px) {
+  .bsc-top {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .bsc-art-frame {
+    height: 120px;
+  }
+}
+
+/* Attack moves list in the selected-character panel */
+.bsc-moves {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.bsc-moves-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #ffd36b;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bsc-moves-title::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  /* crossed-swords style icon: two diagonal blades */
+  -webkit-mask: linear-gradient(45deg, transparent 42%, #000 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, #000 42% 58%, transparent 58%);
+  mask: linear-gradient(45deg, transparent 42%, #000 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, #000 42% 58%, transparent 58%);
+}
+
+.bsc-move-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bsc-move {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bsc-move strong {
+  color: #fff;
+  font-size: 0.86rem;
+  line-height: 1.15;
+}
+
+.bsc-move span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ===== Battle VS cutscene (phone) =====
+   Same cutscene as the storefront screen. The kiosk CSS below is copied as-is (designed for
+   its 577 x 1439 portrait screen); on the phone it plays inside a stage of that size which
+   scripts.js scales to fit the phone screen (--vs-scale). The split cards are much wider
+   than the stage, so they still fill the whole phone screen edge to edge. */
+.vs-intro.vs-phone {
+  --red: #ed1d24;
+  --gold: #f5ad0f;
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  color: #fff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  touch-action: none;
+}
+
+.vs-phone .vs-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 577px;
+  height: 1439px;
+  margin: -719.5px 0 0 -288.5px;
+  scale: var(--vs-scale, 0.6);
+}
+
+/* iPhones and Android have no Impact font: use Anton (loaded in index.html) instead */
+.vs-phone .vs-banner strong,
+.vs-phone .vs-vs,
+.vs-phone .vs-fight {
+  font-family: Impact, Anton, "Arial Black", "Haettenschweiler", sans-serif;
+}
+
+/* ---- Copied from the storefront screen (Storefront/styles.css) ---- */
+/* ===== Battle intro cutscene (VS opening) ===== */
+/* Same look as the attract page: dark scene, red glow, white slash at -30deg, Inter 1000 caps,
+   gold kickers, red rounded bars, and the Impact VS with the red outline. 5 second timeline. */
+.vs-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(237, 29, 36, 0.3), transparent 62%),
+    linear-gradient(180deg, #08080b, #1b0a0b 50%, #08080b);
+}
+
+.vs-intro[hidden] {
+  display: none;
+}
+
+.vs-intro.is-playing {
+  animation: vs-exit 0.3s ease-in 4.7s forwards;
+}
+
+.vs-shake,
+.vs-flash {
+  position: absolute;
+  inset: 0;
+}
+
+.vs-glow,
+.vs-slash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  rotate: -30deg;
+  pointer-events: none;
+}
+
+.vs-glow {
+  width: 125%;
+  height: 40px;
+  background: linear-gradient(90deg, transparent, rgba(237, 29, 36, 0.9) 25%, rgba(237, 29, 36, 0.9) 75%, transparent);
+  filter: blur(18px);
+  opacity: 0;
+}
+
+.vs-slash {
+  z-index: 0; /* behind both fighters so the monster isn't cut by the line */
+  width: 125%;
+  height: 20px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), #fff 30%, #fff 70%, rgba(255, 255, 255, 0.15));
+  clip-path: polygon(0 50%, 50% 0, 100% 50%, 50% 100%);
+  scale: 0 1;
+}
+
+/* Split cards: two black cards divided along the same -30deg line as the slash.
+   Every piece is a long strip anchored on that line and rotated about it, so the split
+   always lines up with the slash. Paint order (set in index.html): cards, red glow,
+   accent edges, white slash. The edges sit just outside the 20px slash. */
+.vs-card,
+.vs-edge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1600px;
+  margin-left: -800px;
+  rotate: -30deg;
+  pointer-events: none;
+}
+
+.vs-card {
+  height: 900px;
+  background: #0a0a0c;
+}
+
+.vs-card-player {
+  margin-top: -900px;
+  transform-origin: 800px 900px;
+}
+
+.vs-card-monster {
+  margin-top: 0;
+  transform-origin: 800px 0;
+}
+
+.vs-edge {
+  height: 8px;
+}
+
+.vs-edge-player {
+  margin-top: -18px;
+  transform-origin: 800px 18px;
+  background: var(--vs-player-accent, var(--gold));
+}
+
+.vs-edge-monster {
+  margin-top: 10px;
+  transform-origin: 800px -10px;
+  background: var(--vs-monster-accent, var(--red));
+}
+
+.vs-level {
+  position: absolute;
+  top: 34px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--gold);
+  font-size: 18px;
+  font-weight: 1000;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.72);
+  opacity: 0;
+}
+
+/* Player: top-left, further back. Monster: bottom-right, bigger and in front (same as the attract page). */
+.vs-team {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 190px;
+  width: 100%;
+  height: 480px;
+  padding-left: 6px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.vs-team img {
+  height: 100%;
+  max-width: 68%;
+  object-fit: contain;
+  object-position: left bottom;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.44));
+}
+
+.vs-team[data-size="2"] img,
+.vs-team[data-size="3"] img,
+.vs-team[data-size="4"] img {
+  height: 76%;
+  max-width: 50%;
+  margin-right: -30px;
+}
+
+/* Co-op: keep the team high so it stays clear of the slash. */
+.vs-team[data-size="2"],
+.vs-team[data-size="3"],
+.vs-team[data-size="4"] {
+  align-items: flex-start;
+}
+
+.vs-monster-art {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 210px; /* low and to the right so it sits fully below the slash */
+  height: 460px;
+  max-width: 82%;
+  object-fit: contain;
+  object-position: right bottom;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.5));
+}
+
+/* Name blocks: no box. JS (setVsName) splits each name into letters; they slam in one at a time,
+   a bar slashes under the name, then a wave of lifts runs through it. Same look as the VS:
+   Impact italic, white fill, thick outline in the fighter's colour, hard dark drop shadow. */
+.vs-banner {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  gap: 4px;
+  max-width: 520px;
+  color: #fff;
+}
+
+.vs-banner > span {
+  color: var(--gold);
+  font-size: 15px;
+  font-weight: 1000;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.vs-banner strong {
+  font-family: Impact, "Arial Black", "Haettenschweiler", sans-serif;
+  font-style: italic;
+  font-size: 56px;
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-text-stroke: 9px var(--name-accent, var(--red));
+  paint-order: stroke fill;
+  filter: drop-shadow(4px 5px 0 #111);
+}
+
+.vs-banner strong::after {
+  content: "";
+  display: block;
+  height: 7px;
+  margin-top: 6px;
+  background: var(--name-accent, var(--red));
+  transform: skewX(-24deg);
+}
+
+.vs-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.vs-letter {
+  display: inline-block;
+}
+
+.vs-banner small {
+  color: #fff7e8;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.vs-banner-player {
+  right: 48px;
+  top: 176px;
+  text-align: right;
+  --name-accent: var(--vs-player-accent, var(--gold));
+  --name-start: 1.5s;
+  --wave-start: 2.9s;
+}
+
+/* Co-op: the team name can wrap to two lines, so keep it high, clear of the team's heads. */
+.vs-intro.is-team .vs-banner-player {
+  top: 82px;
+}
+
+.vs-banner-player > span {
+  color: #fff7e8;
+}
+
+.vs-banner-player strong::after {
+  transform-origin: 100% 50%;
+}
+
+.vs-banner-monster {
+  left: 44px;
+  bottom: 96px;
+  text-align: left;
+  --name-accent: var(--vs-monster-accent, var(--red));
+  --name-start: 1.7s;
+  --wave-start: 3.05s;
+}
+
+.vs-banner-monster strong::after {
+  transform-origin: 0 50%;
+}
+
+.vs-vs,
+.vs-fight {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  translate: -50% -50%;
+  display: block;
+  padding: 0 8px;
+  color: #fff;
+  font-family: Impact, "Arial Black", "Haettenschweiler", sans-serif;
+  font-style: italic;
+  font-weight: 1000;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-text-stroke: 12px var(--red);
+  paint-order: stroke fill;
+  rotate: -8deg;
+  filter:
+    drop-shadow(6px 7px 0 #111)
+    drop-shadow(0 0 18px rgba(237, 29, 36, 0.95));
+  opacity: 0;
+}
+
+.vs-vs {
+  font-size: 200px;
+  letter-spacing: -4px;
+}
+
+.vs-fight {
+  font-size: 138px;
+  letter-spacing: -3px;
+}
+
+.vs-flash {
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 7;
+}
+
+/* Timeline (seconds): cards .0/.12, glow+slash .3, fighters .4/.6, banners 1.5/1.7, VS slam 2.4,
+   VS out 3.6, FIGHT! 3.7, everything exits 4.3-4.7, fade 4.7-5.0 */
+.vs-intro.is-playing .vs-card-player,
+.vs-intro.is-playing .vs-edge-player {
+  animation: vs-card-in-player 0.45s cubic-bezier(0.2, 1, 0.3, 1) 0s both, vs-card-out-player 0.4s ease-in 4.3s forwards;
+}
+.vs-intro.is-playing .vs-card-monster,
+.vs-intro.is-playing .vs-edge-monster {
+  animation: vs-card-in-monster 0.45s cubic-bezier(0.2, 1, 0.3, 1) 0.12s both, vs-card-out-monster 0.4s ease-in 4.3s forwards;
+}
+.vs-intro.is-playing .vs-shake { animation: vs-shake 0.55s linear 2.4s; }
+.vs-intro.is-playing .vs-glow { animation: vs-fade-in 0.5s ease-out 0.3s forwards; }
+.vs-intro.is-playing .vs-slash { animation: vs-slash-in 0.45s ease-out 0.3s forwards; }
+.vs-intro.is-playing .vs-level { animation: vs-fade-in 0.4s ease-out 0.5s forwards; }
+.vs-intro.is-playing .vs-team {
+  animation: vs-fighter-left 0.8s cubic-bezier(0.2, 1.2, 0.3, 1) 0.4s both, vs-fighter-out-left 0.4s ease-in 4.3s forwards;
+}
+.vs-intro.is-playing .vs-monster-art {
+  animation: vs-fighter-right 0.8s cubic-bezier(0.2, 1.2, 0.3, 1) 0.6s both, vs-fighter-out-right 0.4s ease-in 4.3s forwards;
+}
+.vs-intro.is-playing .vs-banner-player { animation: vs-fighter-out-right 0.4s ease-in 4.3s forwards; }
+.vs-intro.is-playing .vs-banner-monster { animation: vs-fighter-out-left 0.4s ease-in 4.3s forwards; }
+.vs-intro.is-playing .vs-banner > span { animation: vs-kicker-in 0.35s ease-out var(--name-start) both; }
+.vs-intro.is-playing .vs-banner small { animation: vs-kicker-in 0.35s ease-out calc(var(--name-start) + 0.8s) both; }
+.vs-intro.is-playing .vs-letter {
+  animation:
+    vs-letter-slam 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--name-start) + 0.1s + var(--i, 0) * 0.05s) both,
+    vs-letter-wave 0.45s ease-in-out calc(var(--wave-start) + var(--i, 0) * 0.04s);
+}
+.vs-intro.is-playing .vs-banner strong::after {
+  scale: 0 1;
+  animation: vs-name-bar 0.4s cubic-bezier(0.2, 1, 0.3, 1) calc(var(--name-start) + 0.9s) both;
+}
+.vs-intro.is-playing .vs-vs { animation: vs-slam-in 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 2.4s both, vs-vs-out 0.25s ease-in 3.6s forwards; }
+.vs-intro.is-playing .vs-fight { animation: vs-fight-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 3.7s both; }
+.vs-intro.is-playing .vs-flash { animation: vs-flash 0.5s ease-out 2.4s; }
+
+/* Cards slide in/out along the line's perpendicular, from the top-left and bottom-right corners,
+   so their edges stay parallel to the slash the whole way. */
+@keyframes vs-card-in-player { from { translate: -420px -730px; } to { translate: 0 0; } }
+@keyframes vs-card-in-monster { from { translate: 420px 730px; } to { translate: 0 0; } }
+@keyframes vs-card-out-player { to { translate: -420px -730px; } }
+@keyframes vs-card-out-monster { to { translate: 420px 730px; } }
+@keyframes vs-slash-in { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes vs-fade-in { to { opacity: 1; } }
+@keyframes vs-fighter-left { from { translate: -700px 0; } to { translate: 0 0; } }
+@keyframes vs-fighter-right { from { translate: 700px 0; } to { translate: 0 0; } }
+@keyframes vs-fighter-out-left { to { translate: -800px 0; } }
+@keyframes vs-fighter-out-right { to { translate: 800px 0; } }
+@keyframes vs-letter-slam {
+  0% { opacity: 0; scale: 3.2; translate: 0 -60px; rotate: var(--r, -8deg); }
+  100% { opacity: 1; scale: 1; translate: 0 0; rotate: 0deg; }
+}
+@keyframes vs-letter-wave {
+  0%, 100% { translate: 0 0; scale: 1; filter: none; }
+  40% { translate: 0 -12px; scale: 1.2; filter: drop-shadow(0 0 12px var(--name-accent, var(--red))); }
+}
+@keyframes vs-name-bar { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes vs-kicker-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes vs-slam-in {
+  from { opacity: 0; scale: 5; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes vs-vs-out { to { opacity: 0; scale: 1.5; } }
+@keyframes vs-fight-pop {
+  0% { opacity: 0; scale: 0.3; }
+  60% { opacity: 1; scale: 1.15; }
+  100% { opacity: 1; scale: 1; }
+}
+@keyframes vs-flash { from { opacity: 0.9; } to { opacity: 0; } }
+@keyframes vs-shake {
+  0%, 100% { translate: 0 0; }
+  15% { translate: -14px 8px; }
+  30% { translate: 12px -10px; }
+  45% { translate: -9px -6px; }
+  60% { translate: 8px 7px; }
+  80% { translate: -4px 3px; }
+}
+@keyframes vs-exit { to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-intro.is-playing .vs-shake { animation: none; }
+  .vs-intro.is-playing .vs-card,
+  .vs-intro.is-playing .vs-edge,
+  .vs-intro.is-playing .vs-letter,
+  .vs-intro.is-playing .vs-banner > span,
+  .vs-intro.is-playing .vs-banner small { animation: none; }
+  .vs-intro.is-playing .vs-banner strong::after { animation: none; scale: 1 1; }
+}
+
+
+.vs-team img {
+  scale: -1 1;
+  /* The mirror flips the picture inside its box, so anchor it right to keep it on the left. */
+  object-position: right bottom;
+}
+
+/* ===== Co-op VS colours =====
+   Each name part carries its own outline colour (set in screen.js setVsNameParts):
+   player 1's colour, black for "&", player 2's colour. In solo there is one part with no
+   colour of its own, so it keeps using --name-accent as before. */
+.vs-name-part {
+  -webkit-text-stroke-color: var(--part-accent, var(--name-accent, var(--red)));
+}
+
+/* Lines split half and half between the two players. In solo both variables hold the same
+   colour, so the lines look exactly as before. */
+.vs-banner-player strong::after {
+  background: linear-gradient(90deg,
+    var(--vs-player-accent, var(--gold)) 50%,
+    var(--vs-player-accent-2, var(--vs-player-accent, var(--gold))) 50%);
+}
+
+.vs-edge-player {
+  background: linear-gradient(90deg,
+    var(--vs-player-accent, var(--gold)) 50%,
+    var(--vs-player-accent-2, var(--vs-player-accent, var(--gold))) 50%);
+}
+
+
+/* ===== "Attacking in progress" overlay (phone move screen) ===== */
+.battle-resolving {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  touch-action: none;
+}
+
+.battle-resolving[hidden] {
+  display: none;
+}
+
+.battle-resolving-banner {
+  width: 100%;
+  padding: 16px 12px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-top: 2px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.battle-resolving-banner strong {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.battle-resolving-dots::after {
+  content: "";
+  animation: battle-resolving-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes battle-resolving-dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-resolving-dots::after { animation: none; }
+}
+
+/* ===== Fighter cards with effects (phone move screen) ===== */
+.battle-fighter-strip > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.battle-fighter-strip img {
+  width: 64px;
+  height: 64px;
+}
+
+.battle-fighter-strip.monster {
+  border-color: #ed1d24;
+}
+
+.battle-fighter-strip > div > strong {
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+
+.battle-fighter-effects {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.battle-fighter-effects b {
+  flex: none;
+  color: #f5ad0f;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

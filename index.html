@@ -10,11 +10,11 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="preload" href="Fonts/Rockwell-Bold.ttf" as="font" type="font/ttf" crossorigin>
 	<link
-		href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;700&display=swap"
 		rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 		rel="stylesheet">
-	<link rel="stylesheet" href="styles.css?v=20260814-quiz-count2" />
+	<link rel="stylesheet" href="styles.css?v=20261002-vssync1" />
 	<style>
 		/* iOS tap highlight fix — prevents grey/blue flash on selected options */
 		* {
@@ -675,19 +675,27 @@
 						</div>
 
 						<div class="battle-panel hidden" id="battle-character-panel">
-							<h2>Choose Your Curry Personality Character!</h2>
+							<h2>Pick Your Fighter!</h2>
 							<p class="battle-character-timer hidden"
 								style="text-align:center;font-weight:800;font-size:1.1rem;margin:8px 0;"></p>
 							<div class="battle-selected-character hidden" id="battle-selected-character">
-								<img id="battle-selected-character-art" alt="">
-								<h3 id="battle-selected-character-name">Character</h3>
-								<p id="battle-selected-character-title">Title</p>
-								<p class="battle-character-playstyle" id="battle-selected-character-playstyle">Play
-									style</p>
-								<p id="battle-selected-character-stats">HP 0 / Attack 0</p>
-								<p id="battle-selected-character-moves">Moves</p>
+								<div class="bsc-top">
+									<div class="bsc-art-frame">
+										<img id="battle-selected-character-art" alt="">
+									</div>
+									<div class="bsc-info">
+										<h3 id="battle-selected-character-name">Character</h3>
+										<span class="bsc-title" id="battle-selected-character-title">Title</span>
+										<div class="bsc-stats" id="battle-selected-character-stats"></div>
+									</div>
+								</div>
+								<p class="battle-character-playstyle" id="battle-selected-character-playstyle">Play style</p>
+								<div class="bsc-moves">
+									<h4 class="bsc-moves-title">Attack Moves</h4>
+									<ol class="bsc-move-list" id="battle-selected-character-moves"></ol>
+								</div>
 								<button class="action-button battle-primary-button" id="battle-confirm-character-button"
-									type="button">Confirm</button>
+									type="button">Let's Battle!</button>
 							</div>
 							<div class="battle-character-grid" id="battle-character-grid"></div>
 							<button class="action-button battle-leave-button" id="battle-character-leave-button"
@@ -723,21 +731,27 @@
 							</div>
 							<p class="hidden" id="battle-move-timer"
 								style="text-align:center;font-weight:800;font-size:1.1rem;margin:8px 0;"></p>
-							<div class="battle-team-status" id="battle-team-status"></div>
-							<div class="battle-monster-status">
-								<span id="battle-monster-name">Monster</span>
-								<div class="battle-hp-track">
-									<div id="battle-monster-hp-bar"></div>
+							<article class="battle-fighter-strip monster" id="battle-monster-card">
+								<img id="battle-monster-art" alt="">
+								<div>
+									<span>Monster</span>
+									<strong id="battle-monster-name">Monster</strong>
+									<div class="battle-hp-track">
+										<div id="battle-monster-hp-bar"></div>
+									</div>
+									<small id="battle-monster-hp-text">0/0 HP</small>
 								</div>
-								<strong id="battle-monster-hp-text">0 / 0</strong>
-							</div>
+								<p class="battle-fighter-effects"><b>Effects</b><span id="battle-monster-effects">None</span></p>
+							</article>
+							<div class="battle-team-status" id="battle-team-status"></div>
 							<div class="battle-move-grid" id="battle-move-grid"></div>
-							<div class="battle-effects-box">
-								<h3>Effects</h3>
-								<p id="battle-effects-text">Pick your next action.</p>
-							</div>
 							<button class="action-button battle-leave-button" id="battle-move-leave-button"
 								type="button" data-confirm-leave>Leave Game</button>
+							<div class="battle-resolving" id="battle-resolving" hidden role="status" aria-live="polite">
+								<div class="battle-resolving-banner">
+									<strong>Attacking in progress<span class="battle-resolving-dots" aria-hidden="true"></span></strong>
+								</div>
+							</div>
 						</div>
 
 						<div class="battle-panel hidden" id="battle-gameover-panel">
@@ -946,7 +960,28 @@
 			document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
 		});
 	</script>
-	<script type="module" src="scripts.js?v=20260928-lobby-perms-fix1"></script>
+	<!-- Battle VS cutscene (phone). Same as the storefront screen's; filled and played by scripts.js. -->
+	<div id="battle-vs-intro" class="vs-intro vs-phone" hidden aria-hidden="true">
+		<div class="vs-stage">
+			<div class="vs-shake">
+				<div class="vs-card vs-card-player"></div>
+				<div class="vs-card vs-card-monster"></div>
+				<div class="vs-glow"></div>
+				<div class="vs-edge vs-edge-player"></div>
+				<div class="vs-edge vs-edge-monster"></div>
+				<div class="vs-slash"></div>
+				<span id="bvs-level" class="vs-level">Level 1</span>
+				<div id="bvs-team" class="vs-team"></div>
+				<img id="bvs-monster-art" class="vs-monster-art" alt="">
+				<div class="vs-banner vs-banner-player"><span id="bvs-player-kicker">You</span><strong id="bvs-player-name">Player</strong></div>
+				<div class="vs-banner vs-banner-monster"><span>Monster</span><strong id="bvs-monster-name">Monster</strong><small id="bvs-monster-hp">HP</small></div>
+				<span class="vs-vs">VS</span>
+				<strong class="vs-fight">FIGHT!</strong>
+			</div>
+		</div>
+		<div class="vs-flash"></div>
+	</div>
+	<script type="module" src="scripts.js?v=20261002-vssync1"></script>
 </body>
 
 </html>
