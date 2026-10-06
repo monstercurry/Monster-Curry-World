@@ -490,15 +490,18 @@ const answers = Array(questions.length).fill(null);
 let screenBeforeArTeaser = "intro";
 let screenBeforeBattle = "intro";
 
+// Battle pictures: WebP copies of the character PNGs. The original 2048px PNGs (2 to 3MB each)
+// are too heavy for many Android phones, which leave them blank when several are on screen.
+// image = 1024px (selected character, VS intro), thumb = 384px (character grid, team strip).
 const BATTLE_CHARACTER_DISPLAY = {
-	"katsu-chan": { vsImage: "images/vs/katsu-chan.webp", image: "images/Katsu-Chan.png", playstyle: "Balanced all-rounder with an answer for every turn." },
-	"monstora-sharemi": { vsImage: "images/vs/monstora-sharemi.webp", image: "images/Monstora_Sharemi.png", playstyle: "Team support who heals, buffs, and weakens foes." },
-	"giga-nomu": { vsImage: "images/vs/giga-nomu.webp", image: "images/Giga_Nomu.png", playstyle: "Tough tank who taunts, shields, and heals by attacking." },
-	"tamago-puffy": { vsImage: "images/vs/tamago-puffy.webp", image: "images/Tamago_Puffy.png", playstyle: "Pure healer who cleanses and protects wounded allies." },
-	"cheezu-mellow": { vsImage: "images/vs/cheezu-mellow.webp", image: "images/Cheezu_Mellow.png", playstyle: "Team guardian who shields, covers, and heals allies." },
-	"ramy-noodleton": { vsImage: "images/vs/ramy-noodleton.webp", image: "images/Ramy_Noodleton.png", playstyle: "Combo finisher who punishes weakened monsters." },
-	"hot-sizz": { vsImage: "images/vs/hot-sizz.webp", image: "images/Hot_Sizz.png", playstyle: "Glass cannon with explosive damage but fragile defense." },
-	"teppa-spark": { vsImage: "images/vs/teppa-spark.webp", image: "images/Teppa_Spark.png", playstyle: "Versatile tactician with damage, debuffs, and shields." }
+	"katsu-chan": { vsImage: "images/vs/katsu-chan.webp", image: "images/vs/katsu-chan.webp", thumb: "images/vs/katsu-chan-small.webp", playstyle: "Balanced all-rounder with an answer for every turn." },
+	"monstora-sharemi": { vsImage: "images/vs/monstora-sharemi.webp", image: "images/vs/monstora-sharemi.webp", thumb: "images/vs/monstora-sharemi-small.webp", playstyle: "Team support who heals, buffs, and weakens foes." },
+	"giga-nomu": { vsImage: "images/vs/giga-nomu.webp", image: "images/vs/giga-nomu.webp", thumb: "images/vs/giga-nomu-small.webp", playstyle: "Tough tank who taunts, shields, and heals by attacking." },
+	"tamago-puffy": { vsImage: "images/vs/tamago-puffy.webp", image: "images/vs/tamago-puffy.webp", thumb: "images/vs/tamago-puffy-small.webp", playstyle: "Pure healer who cleanses and protects wounded allies." },
+	"cheezu-mellow": { vsImage: "images/vs/cheezu-mellow.webp", image: "images/vs/cheezu-mellow.webp", thumb: "images/vs/cheezu-mellow-small.webp", playstyle: "Team guardian who shields, covers, and heals allies." },
+	"ramy-noodleton": { vsImage: "images/vs/ramy-noodleton.webp", image: "images/vs/ramy-noodleton.webp", thumb: "images/vs/ramy-noodleton-small.webp", playstyle: "Combo finisher who punishes weakened monsters." },
+	"hot-sizz": { vsImage: "images/vs/hot-sizz.webp", image: "images/vs/hot-sizz.webp", thumb: "images/vs/hot-sizz-small.webp", playstyle: "Glass cannon with explosive damage but fragile defense." },
+	"teppa-spark": { vsImage: "images/vs/teppa-spark.webp", image: "images/vs/teppa-spark.webp", thumb: "images/vs/teppa-spark-small.webp", playstyle: "Versatile tactician with damage, debuffs, and shields." }
 };
 
 function getBattleCharacter(characterId) {
@@ -738,7 +741,7 @@ function renderBattleCharacters() {
 		button.dataset.characterId = character.id;
 		button.setAttribute("aria-pressed", String(character.id === battleSelectedCharacterId));
 		button.innerHTML = `
-			<img src="${character.image}" alt="" aria-hidden="true">
+			<img src="${character.thumb || character.image}" alt="" aria-hidden="true">
 			<strong class="bcc-name">${character.name}</strong>
 		`;
 		button.addEventListener("click", () => selectBattleCharacter(character.id, true));
@@ -860,7 +863,7 @@ function renderBattleTeam(players) {
 		const node = document.createElement("article");
 		node.className = `battle-fighter-strip ${player.id === battlePlayerId ? "self" : ""}`;
 		node.innerHTML = `
-			<img src="${character?.image || ""}" alt="${player.name}">
+			<img src="${character?.thumb || character?.image || ""}" alt="${player.name}">
 			<div>
 				<span>${player.id === battlePlayerId ? "You" : `Player ${Number(player.slot || 0) + 1}`}</span>
 				<strong>${player.name}</strong>
@@ -1101,6 +1104,7 @@ function renderBattleTutorial(state) {
 // moment from the shared game state (battle, tutorial finished, turn 1), so no new database field is needed.
 const BATTLE_VS_MS = 5000;
 const BATTLE_VS_ART_WAIT_MS = 800;
+const BATTLE_VS_WARMUP_MAX_MS = 700; // longest the phone waits for the first frame before starting anyway
 // Monster art folder on this website. The file name comes from the monster's asset path in Firebase
 // (e.g. ".../curry-goblin.webp" loads images/enemies/curry-goblin.webp).
 const BATTLE_MONSTER_ART_FOLDER = "images/enemies/";
@@ -1288,8 +1292,28 @@ async function playBattleVsIntro(state, key) {
 
 	intro.hidden = false;
 	updateBattleVsScale(); // re-measure now that the cutscene has its real on-screen size
+
+	// Warm-up: iPhones need a moment to build the cutscene's first frame (big layers, blur and
+	// shadow effects, the Anton font). If the animation clock starts at the same time, that
+	// first ~2 seconds (cards sliding in, fighters, names) is over before anything is drawn and
+	// the phone only shows it from the white flash. So: draw it once invisibly, wait until the
+	// phone has actually painted it, then start the animation from 0.
+	intro.classList.add("is-warming");
+	await Promise.race([
+		Promise.all([
+			document.fonts?.load ? document.fonts.load('138px Anton').catch(() => { }) : Promise.resolve(),
+			new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 60))))
+		]),
+		new Promise(resolve => window.setTimeout(resolve, BATTLE_VS_WARMUP_MAX_MS))
+	]);
+	if (!battleVsActive || battleVsKey !== key) {
+		intro.classList.remove("is-warming");
+		return;
+	}
+
 	void intro.offsetWidth; // restart the CSS animations
 	intro.classList.add("is-playing");
+	intro.classList.remove("is-warming");
 	window.clearTimeout(battleVsTimer);
 	battleVsTimer = window.setTimeout(endBattleVsIntro, BATTLE_VS_MS);
 }
@@ -1300,7 +1324,7 @@ function endBattleVsIntro() {
 	battleVsActive = false;
 	const intro = document.getElementById("battle-vs-intro");
 	if (intro) {
-		intro.classList.remove("is-playing");
+		intro.classList.remove("is-playing", "is-warming");
 		intro.hidden = true;
 	}
 }

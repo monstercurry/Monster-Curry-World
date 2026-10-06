@@ -3463,3 +3463,10 @@ a.action-button.battle-primary-button[hidden] {
   padding: 0.22em 0.32em;
   line-height: 1.15;
 }
+
+/* Phone VS warm-up (scripts.js): the cutscene is drawn once, invisibly, before its animation
+   starts, so iPhones don't skip the opening while they prepare the first frame. */
+.vs-intro.vs-phone.is-warming .vs-stage,
+.vs-intro.vs-phone.is-warming .vs-flash {
+  opacity: 0.001; /* the dark backdrop shows straight away; the content waits for its cue */
+}
