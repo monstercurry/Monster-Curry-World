@@ -3470,3 +3470,18 @@ a.action-button.battle-primary-button[hidden] {
 .vs-intro.vs-phone.is-warming .vs-flash {
   opacity: 0.001; /* the dark backdrop shows straight away; the content waits for its cue */
 }
+
+/* iPhone / iPad Safari: the bottom tab bar floats over the page, so the cutscene's box runs
+   underneath it. Keep the monster's name, underline and HP clear of it (about 72 screen px,
+   on top of the home-bar inset). The @supports test only matches iOS / iPadOS browsers. */
+@supports (-webkit-touch-callout: none) {
+  .vs-intro.vs-phone {
+    --vs-bot: calc((env(safe-area-inset-bottom, 0px) + 72px) / var(--vs-scale));
+  }
+}
+
+/* iPhone Safari: its floating bottom tab bar covers about the last 70px of the screen and the
+   page can't detect it, so keep the monster name (and its underline) above that on iOS. */
+.vs-intro.vs-phone.is-ios {
+  --vs-bot: calc((env(safe-area-inset-bottom, 0px) + 76px) / var(--vs-scale));
+}
