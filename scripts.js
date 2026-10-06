@@ -1190,11 +1190,6 @@ function updateBattleVsScale() {
 	const stageHeight = height / scale;
 	const k = Math.max(0.78, Math.min(1, 0.78 + 0.22 * ((stageHeight - BATTLE_VS_MIN_H) / 310)));
 	intro.style.setProperty("--vs-scale", String(scale));
-	// iPhone/iPad Safari draws its bottom tab bar on top of the page, so the cutscene can't see it.
-	// Flag iOS so the CSS keeps the monster's name clear of that bar.
-	const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-		|| (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-	intro.classList.toggle("is-ios", isIOS);
 	intro.style.setProperty("--vs-h", stageHeight.toFixed(1));
 	intro.style.setProperty("--vs-k", k.toFixed(3));
 }
