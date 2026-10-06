@@ -1130,10 +1130,15 @@ function maybePlayBattleVsIntro(state) {
 // Each part can have its own outline colour: co-op uses each player's colour and black for "&".
 function setVsNameParts(element, parts) {
 	element.replaceChildren();
-	element.setAttribute("aria-label", parts.map(part => part.text).join(" "));
+	element.setAttribute("aria-label", parts.filter(part => !part.br).map(part => part.text).join(" "));
 
 	let index = 0;
 	parts.forEach((part, partIndex) => {
+		// { br: true } starts a new line (co-op: one player per line). No spaces around it.
+		if (part.br) {
+			element.appendChild(document.createElement("br"));
+			return;
+		}
 		const partElement = document.createElement("span");
 		partElement.className = "vs-name-part";
 		if (part.accent) partElement.style.setProperty("--part-accent", part.accent);
@@ -1157,20 +1162,32 @@ function setVsNameParts(element, parts) {
 		});
 
 		element.appendChild(partElement);
-		if (partIndex < parts.length - 1) element.appendChild(document.createTextNode(" "));
+		const next = parts[partIndex + 1];
+		if (next && !next.br) element.appendChild(document.createTextNode(" "));
 	});
 }
 
-// The cutscene is built for the 577 x 1439 storefront screen; scale that stage to fit this phone.
+// The cutscene is built on a 577px wide stage. The stage is scaled to the phone's WIDTH and its height
+// stretches to the phone's height (stageHeight = phone height / scale), so it fills any phone screen.
+// Short screens (Safari with toolbars) get slightly smaller text (--vs-k, never below 0.78).
+// Very wide screens (landscape, tablets) fall back to fitting the height, with the stage centred.
+const BATTLE_VS_STAGE_W = 577;
+const BATTLE_VS_MIN_H = 940;
 function updateBattleVsScale() {
 	const intro = document.getElementById("battle-vs-intro");
 	if (!intro) return;
 	const width = window.visualViewport?.width || window.innerWidth;
 	const height = window.visualViewport?.height || window.innerHeight;
-	intro.style.setProperty("--vs-scale", String(Math.min(width / 577, height / 1439)));
+	const scale = Math.min(width / BATTLE_VS_STAGE_W, height / BATTLE_VS_MIN_H);
+	const stageHeight = height / scale;
+	const k = Math.max(0.78, Math.min(1, 0.78 + 0.22 * ((stageHeight - BATTLE_VS_MIN_H) / 310)));
+	intro.style.setProperty("--vs-scale", String(scale));
+	intro.style.setProperty("--vs-h", stageHeight.toFixed(1));
+	intro.style.setProperty("--vs-k", k.toFixed(3));
 }
 
 window.addEventListener("resize", updateBattleVsScale);
+window.visualViewport?.addEventListener("resize", updateBattleVsScale);
 
 async function playBattleVsIntro(state, key) {
 	const intro = document.getElementById("battle-vs-intro");
@@ -1220,18 +1237,18 @@ async function playBattleVsIntro(state, key) {
 	if (players.length > 1) {
 		const parts = [];
 		players.forEach((player, playerIndex) => {
-			if (playerIndex > 0) parts.push({ text: "&", accent: "#111" });
+			if (playerIndex > 0) parts.push({ br: true }, { text: "&", accent: "#111" });
 			parts.push({ text: player.name, accent: playerAccent(player) });
 		});
 		setVsNameParts(nameEl, parts);
 	} else {
 		setVsNameParts(nameEl, [{ text: players[0]?.name || "Player" }]);
 	}
-	nameEl.style.fontSize = players.length > 1 ? "40px" : "";
 	setVsNameParts(document.getElementById("bvs-monster-name"), [{ text: monster.name }]);
 	document.getElementById("bvs-monster-hp").textContent = `HP ${monster.maxHp}`;
 
 	intro.classList.toggle("is-team", players.length > 1);
+	intro.dataset.players = String(Math.min(players.length, 4));
 	intro.style.setProperty("--vs-player-accent", playerAccent(players[0]));
 	intro.style.setProperty("--vs-player-accent-2", playerAccent(players[1] || players[0]));
 	intro.style.setProperty("--vs-monster-accent", monster.color || monster.accent || "#ed1d24");

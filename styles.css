@@ -2816,6 +2816,14 @@ a.action-button.battle-primary-button[hidden] {
   color: #fff;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   touch-action: none;
+  /* Set by scripts.js updateBattleVsScale(): scale = phone width / 577, --vs-h = stage height in
+     stage pixels (phone height / scale), --vs-k = text size factor (0.78 on short screens, 1 on tall). */
+  --vs-scale: 0.6;
+  --vs-h: 1439;
+  --vs-k: 1;
+  /* iPhone notch / home bar, converted to stage pixels */
+  --vs-top: calc(env(safe-area-inset-top, 0px) / var(--vs-scale));
+  --vs-bot: calc(env(safe-area-inset-bottom, 0px) / var(--vs-scale));
 }
 
 .vs-phone .vs-stage {
@@ -2823,8 +2831,8 @@ a.action-button.battle-primary-button[hidden] {
   left: 50%;
   top: 50%;
   width: 577px;
-  height: 1439px;
-  margin: -719.5px 0 0 -288.5px;
+  height: calc(var(--vs-h) * 1px);
+  margin: calc(var(--vs-h) * -0.5px) 0 0 -288.5px;
   scale: var(--vs-scale, 0.6);
 }
 
@@ -3255,6 +3263,95 @@ a.action-button.battle-primary-button[hidden] {
   background: linear-gradient(90deg,
     var(--vs-player-accent, var(--gold)) 50%,
     var(--vs-player-accent-2, var(--vs-player-accent, var(--gold))) 50%);
+}
+
+
+/* ===== Phone VS: fill the whole screen (width-fit) =====
+   The stage is 577px wide and as tall as the phone needs (--vs-h). Instead of the kiosk's fixed
+   top offsets, the pieces are anchored to the top (level, player name), the middle (the slash,
+   the fighters' feet) and the bottom (monster art, monster name), so they follow the phone's
+   height. Text sizes follow --vs-k. */
+.vs-phone .vs-stage {
+  --c: calc(var(--vs-h) * 0.5px); /* the slash / VS line */
+  --art: clamp(250px, calc(var(--vs-h) * 0.30px), 392px); /* player art size */
+  --mart: clamp(290px, calc(var(--vs-h) * 0.33px), 460px); /* monster art size */
+  --name-size: calc(56px * var(--vs-k));
+}
+
+.vs-phone .vs-level {
+  top: calc(var(--vs-top) + 22px);
+}
+
+/* Names */
+.vs-phone .vs-banner strong {
+  font-size: var(--name-size);
+  -webkit-text-stroke-width: calc(9px * var(--vs-k));
+}
+
+.vs-phone .vs-banner > span {
+  font-size: calc(15px * var(--vs-k));
+}
+
+.vs-phone .vs-banner small {
+  font-size: calc(16px * var(--vs-k));
+}
+
+.vs-phone .vs-banner-player,
+.vs-phone .vs-intro.is-team .vs-banner-player,
+.vs-phone.is-team .vs-banner-player {
+  top: calc(var(--vs-top) + 56px);
+  right: 36px;
+  max-width: 520px;
+}
+
+/* Co-op: one player per line ("Name" / "& Name"), so a little smaller than solo */
+.vs-phone.is-team .vs-banner-player strong {
+  font-size: calc(46px * var(--vs-k));
+  line-height: 1.04;
+}
+
+/* Co-op: every player stays on their own single line */
+.vs-phone.is-team .vs-banner-player strong {
+  white-space: nowrap;
+}
+
+.vs-phone.is-team .vs-team img {
+  height: 92%;
+}
+
+.vs-phone[data-players="3"] .vs-banner-player strong,
+.vs-phone[data-players="4"] .vs-banner-player strong {
+  font-size: calc(38px * var(--vs-k));
+}
+
+.vs-phone .vs-banner-monster {
+  left: 32px;
+  bottom: calc(var(--vs-bot) + 40px);
+  max-width: 540px;
+}
+
+/* Player art: feet just above the slash line, left side */
+.vs-phone .vs-team {
+  top: calc(var(--c) - 30px - var(--art));
+  height: var(--art);
+}
+
+/* Co-op: the team sits right under the (taller) two-line name and keeps clear of the slash */
+.vs-phone.is-team .vs-team {
+  top: calc(var(--vs-top) + 56px + 38px + 108px * var(--vs-k) + 22px);
+  height: calc(var(--c) - 40px - (var(--vs-top) + 56px + 38px + 108px * var(--vs-k) + 22px));
+}
+
+.vs-phone[data-players="3"] .vs-team,
+.vs-phone[data-players="4"] .vs-team {
+  top: calc(var(--vs-top) + 56px + 38px + 150px * var(--vs-k) + 22px);
+  height: calc(var(--c) - 40px - (var(--vs-top) + 56px + 38px + 150px * var(--vs-k) + 22px));
+}
+
+/* Monster art: bottom right, standing above its name */
+.vs-phone .vs-monster-art {
+  height: var(--mart);
+  bottom: calc(var(--vs-bot) + 40px + 118px * var(--vs-k) + 10px);
 }
 
 
