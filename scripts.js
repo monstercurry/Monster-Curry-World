@@ -1176,8 +1176,12 @@ const BATTLE_VS_MIN_H = 940;
 function updateBattleVsScale() {
 	const intro = document.getElementById("battle-vs-intro");
 	if (!intro) return;
-	const width = window.visualViewport?.width || window.innerWidth;
-	const height = window.visualViewport?.height || window.innerHeight;
+	// Measure the cutscene's own box when it is showing: on iOS Safari the visual viewport can
+	// include the area under the address bar and bottom bar, which would make the stage taller
+	// than the space it really gets (cutting off the top and bottom).
+	const showing = !intro.hidden && intro.clientWidth > 0 && intro.clientHeight > 0;
+	const width = showing ? intro.clientWidth : (window.visualViewport?.width || window.innerWidth);
+	const height = showing ? intro.clientHeight : (window.visualViewport?.height || window.innerHeight);
 	const scale = Math.min(width / BATTLE_VS_STAGE_W, height / BATTLE_VS_MIN_H);
 	const stageHeight = height / scale;
 	const k = Math.max(0.78, Math.min(1, 0.78 + 0.22 * ((stageHeight - BATTLE_VS_MIN_H) / 310)));
@@ -1262,6 +1266,7 @@ async function playBattleVsIntro(state, key) {
 	if (!battleVsActive || battleVsKey !== key) return;
 
 	intro.hidden = false;
+	updateBattleVsScale(); // re-measure now that the cutscene has its real on-screen size
 	void intro.offsetWidth; // restart the CSS animations
 	intro.classList.add("is-playing");
 	window.clearTimeout(battleVsTimer);

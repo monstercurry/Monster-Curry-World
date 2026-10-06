@@ -3446,3 +3446,14 @@ a.action-button.battle-primary-button[hidden] {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+.vs-intro.vs-phone {
+  --vs-top: calc(env(safe-area-inset-top, 0px) / var(--vs-scale) + 18px);
+  --vs-bot: calc(env(safe-area-inset-bottom, 0px) / var(--vs-scale) + 22px);
+}
+
+.vs-phone .vs-vs,
+.vs-phone .vs-fight {
+  padding: 0.22em 0.32em;
+  line-height: 1.15;
+}
