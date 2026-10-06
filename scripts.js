@@ -491,14 +491,14 @@ let screenBeforeArTeaser = "intro";
 let screenBeforeBattle = "intro";
 
 const BATTLE_CHARACTER_DISPLAY = {
-	"katsu-chan": { image: "images/Katsu-Chan.png", playstyle: "Balanced all-rounder with an answer for every turn." },
-	"monstora-sharemi": { image: "images/Monstora_Sharemi.png", playstyle: "Team support who heals, buffs, and weakens foes." },
-	"giga-nomu": { image: "images/Giga_Nomu.png", playstyle: "Tough tank who taunts, shields, and heals by attacking." },
-	"tamago-puffy": { image: "images/Tamago_Puffy.png", playstyle: "Pure healer who cleanses and protects wounded allies." },
-	"cheezu-mellow": { image: "images/Cheezu_Mellow.png", playstyle: "Team guardian who shields, covers, and heals allies." },
-	"ramy-noodleton": { image: "images/Ramy_Noodleton.png", playstyle: "Combo finisher who punishes weakened monsters." },
-	"hot-sizz": { image: "images/Hot_Sizz.png", playstyle: "Glass cannon with explosive damage but fragile defense." },
-	"teppa-spark": { image: "images/Teppa_Spark.png", playstyle: "Versatile tactician with damage, debuffs, and shields." }
+	"katsu-chan": { vsImage: "images/vs/katsu-chan.webp", image: "images/Katsu-Chan.png", playstyle: "Balanced all-rounder with an answer for every turn." },
+	"monstora-sharemi": { vsImage: "images/vs/monstora-sharemi.webp", image: "images/Monstora_Sharemi.png", playstyle: "Team support who heals, buffs, and weakens foes." },
+	"giga-nomu": { vsImage: "images/vs/giga-nomu.webp", image: "images/Giga_Nomu.png", playstyle: "Tough tank who taunts, shields, and heals by attacking." },
+	"tamago-puffy": { vsImage: "images/vs/tamago-puffy.webp", image: "images/Tamago_Puffy.png", playstyle: "Pure healer who cleanses and protects wounded allies." },
+	"cheezu-mellow": { vsImage: "images/vs/cheezu-mellow.webp", image: "images/Cheezu_Mellow.png", playstyle: "Team guardian who shields, covers, and heals allies." },
+	"ramy-noodleton": { vsImage: "images/vs/ramy-noodleton.webp", image: "images/Ramy_Noodleton.png", playstyle: "Combo finisher who punishes weakened monsters." },
+	"hot-sizz": { vsImage: "images/vs/hot-sizz.webp", image: "images/Hot_Sizz.png", playstyle: "Glass cannon with explosive damage but fragile defense." },
+	"teppa-spark": { vsImage: "images/vs/teppa-spark.webp", image: "images/Teppa_Spark.png", playstyle: "Versatile tactician with damage, debuffs, and shields." }
 };
 
 function getBattleCharacter(characterId) {
@@ -1193,6 +1193,27 @@ function updateBattleVsScale() {
 window.addEventListener("resize", updateBattleVsScale);
 window.visualViewport?.addEventListener("resize", updateBattleVsScale);
 
+// Load and decode the cutscene pictures ahead of time (as soon as the phone knows the line-up,
+// e.g. during the tutorial), so the VS intro can start on its first frame instead of stalling
+// while the phone decodes images.
+const battleVsArtCache = new Map();
+function warmBattleVsArt(state) {
+	const urls = battleOrderedPlayers(state || {})
+		.map(player => getBattleCharacter(player.characterId))
+		.map(character => character?.vsImage || character?.image)
+		.filter(Boolean);
+	const monsterFile = String(state?.monster?.asset || "").split("?")[0].split("/").pop();
+	if (monsterFile) urls.push(`${BATTLE_MONSTER_ART_FOLDER}${monsterFile}`);
+	urls.forEach(url => {
+		if (battleVsArtCache.has(url)) return;
+		const image = new Image();
+		image.decoding = "async";
+		image.src = url;
+		const ready = (image.decode ? image.decode() : Promise.resolve()).catch(() => { });
+		battleVsArtCache.set(url, { image, ready });
+	});
+}
+
 async function playBattleVsIntro(state, key) {
 	const intro = document.getElementById("battle-vs-intro");
 	if (!intro) return;
@@ -1217,7 +1238,7 @@ async function playBattleVsIntro(state, key) {
 		const image = new Image();
 		image.alt = "";
 		image.decoding = "async";
-		image.src = character.image;
+		image.src = character.vsImage || character.image;
 		team.appendChild(image);
 		images.push(image);
 	});
@@ -1319,6 +1340,7 @@ function renderBattleState(state) {
 		return;
 	}
 	if (["battle", "resolving", "level-complete"].includes(state.status)) {
+		warmBattleVsArt(state);
 		if (state.showTutorial) {
 			renderBattleTutorial(state);
 			return;

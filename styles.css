@@ -3447,6 +3447,12 @@ a.action-button.battle-primary-button[hidden] {
   text-transform: uppercase;
 }
 
+/* ===== Phone VS: breathing room + no clipped FIGHT! / VS =====
+   1. A little more space at the top (LEVEL) and bottom (monster name), on top of the
+      notch / home bar insets, so nothing sits right against the browser bars.
+   2. Safari crops text that has a filter (the drop shadows) to its text box, and the slanted
+      italic letters stick out past that box, so the top right of FIGHT! / VS got cut off.
+      Extra padding and line height make the box big enough to hold the whole slanted text. */
 .vs-intro.vs-phone {
   --vs-top: calc(env(safe-area-inset-top, 0px) / var(--vs-scale) + 18px);
   --vs-bot: calc(env(safe-area-inset-bottom, 0px) / var(--vs-scale) + 22px);
