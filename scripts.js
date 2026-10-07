@@ -623,6 +623,12 @@ async function openBattleScreen(fromScreen) {
 	}
 }
 
+// Empty the code box when the player has been disconnected or their game has ended, so the
+// old code isn't sitting there; the next code on the big screen is always a new one.
+function clearBattleCodeInput() {
+	if (battleEls.manualCode) battleEls.manualCode.value = "";
+}
+
 function closeBattleScreen() {
 	if (battleEls.manualCode) battleEls.manualCode.value = "";
 	showScreen(screenBeforeBattle);
@@ -995,6 +1001,7 @@ function renderBattleMoveState(state) {
 	const self = state.players?.[battlePlayerId];
 	if (!self) {
 		showBattlePanel("code");
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "This battle already has its players.";
 		return;
 	}
@@ -1347,6 +1354,7 @@ function renderBattleState(state) {
 		stopTeammateDisconnectCountdown();
 		hideBattleReconnectBanner();
 		showBattlePanel("code");
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "That code has expired. Enter the new code shown on the big screen.";
 		return;
 	}
@@ -1357,6 +1365,7 @@ function renderBattleState(state) {
 	if (state.status === "character-select") {
 		if (!state.lobby?.[battlePlayerId]) {
 			showBattlePanel("code");
+			clearBattleCodeInput();
 			battleEls.codeStatus.textContent = "This battle lobby is full.";
 			return;
 		}
@@ -1394,6 +1403,7 @@ async function joinBattleLobby(initialState = null) {
 	const state = initialState || await getBattleSession();
 	if (!state || ["closed", "game-over"].includes(state.status)) {
 		showBattlePanel("code");
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "That code is no longer active. Enter the new code shown on the big screen.";
 		return;
 	}
@@ -1411,6 +1421,7 @@ async function joinBattleLobby(initialState = null) {
 	}
 	const slot = existing ? Number(existing.slot) : findBattleOpenSlot(state);
 	if (slot === undefined) {
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "This battle lobby is full.";
 		return;
 	}
@@ -1479,6 +1490,7 @@ async function markBattlePresent() {
 		stopTeammateDisconnectCountdown();
 		hideBattleReconnectBanner();
 		showBattlePanel("code");
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "Your last game has ended. Enter the code shown on the big screen.";
 		return;
 	}
@@ -1535,6 +1547,7 @@ async function attemptBattleReconnect() {
 			stopTeammateDisconnectCountdown();
 			hideBattleReconnectBanner();
 			window.localStorage.removeItem("storefront-last-game");
+			clearBattleCodeInput();
 			battleEls.codeStatus.textContent = "Your last game has ended. Enter the code shown on the big screen.";
 			return;
 		}
@@ -1586,6 +1599,7 @@ async function connectBattleGame(gameId) {
 	}, error => {
 		console.error(error);
 		showBattlePanel("code");
+		clearBattleCodeInput();
 		battleEls.codeStatus.textContent = "Firebase connection failed.";
 	});
 	await joinBattleLobby(state);
