@@ -1588,7 +1588,6 @@ async function connectBattleGame(gameId) {
 	battleGameId = cleanGameId;
 	battlePlayerId = getBattlePlayerId(battleGameId);
 	battleSessionRef = nextSessionRef;
-	setupBattlePresence();
 	window.localStorage.setItem("storefront-last-game", battleGameId);
 	if (battleUnsubscribe) battleUnsubscribe();
 	onValue(ref(storefrontDb, ".info/serverTimeOffset"), snap => {
@@ -1603,6 +1602,11 @@ async function connectBattleGame(gameId) {
 		battleEls.codeStatus.textContent = "Firebase connection failed.";
 	});
 	await joinBattleLobby(state);
+	// Presence is set up after joining: the database rules only accept a presence flag
+	// from the phone that owns the matching lobby entry.
+	if (state?.lobby?.[battlePlayerId] || (await get(ref(storefrontDb, `sessions/${cleanGameId}/lobby/${battlePlayerId}`))).exists()) {
+		setupBattlePresence();
+	}
 }
 
 async function startBattleSolo() {
@@ -1696,16 +1700,8 @@ async function leaveBattleGame() {
 	// else waiting on this code) sees the slot open up immediately instead of waiting for
 	// the ~10s abandoned-session timeout. Only our own entries — the database rules only
 	// ever let a player touch their own lobby/presence keys, never anyone else's.
-	if (leavingSessionRef && leavingPlayerId) {
-		try {
-			await update(leavingSessionRef, {
-				[`lobby/${leavingPlayerId}`]: null,
-				lastActionAt: serverTimestamp()
-			});
-		} catch (error) {
-			console.warn("Could not remove lobby entry on leave", error);
-		}
-	}
+	// Presence is cleared first, while our lobby entry still exists, because the rules
+	// check that entry's uid before accepting a presence write.
 	if (leavingPresenceRef) {
 		try {
 			await onDisconnect(leavingPresenceRef).cancel();
@@ -1716,6 +1712,16 @@ async function leaveBattleGame() {
 			await set(leavingPresenceRef, null);
 		} catch (error) {
 			console.warn("Could not clear presence on leave", error);
+		}
+	}
+	if (leavingSessionRef && leavingPlayerId) {
+		try {
+			await update(leavingSessionRef, {
+				[`lobby/${leavingPlayerId}`]: null,
+				lastActionAt: serverTimestamp()
+			});
+		} catch (error) {
+			console.warn("Could not remove lobby entry on leave", error);
 		}
 	}
 
